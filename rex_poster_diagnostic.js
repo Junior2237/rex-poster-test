@@ -1,28 +1,25 @@
 
 /*
- * REX — POSTER OVERRIDE DIAGNOSTIC
- * Version 1.1.0
+ * REX — POSTER RESOLUTION DIAGNOSTIC
+ * Version 1.2.0
  *
- * Tests whether Rex uses custom poster images
- * or replaces them with built-in TMDB artwork.
+ * Tests whether Rex renders different
+ * source resolutions at different quality.
  *
- * No API credentials required.
- * Does not affect Trakt Top 20 modules.
+ * Does NOT modify the Trakt Top 20 module.
  */
 
 var WidgetMetadata = {
   id: "junior.rex.poster.diagnostic",
-  title: "REX — Poster Override Diagnostic",
-  description:
-    "Compare TMDB poster overrides with direct original-resolution images",
+  title: "REX — Poster Resolution Diagnostic",
+  description: "185px versus original TMDB poster",
   author: "Junior",
-  version: "1.1.0",
+  version: "1.2.0",
   requiredVersion: "0.0.1",
-
   modules: [
     {
       id: "poster-override-test",
-      title: "TEST — Poster Override",
+      title: "TEST — Poster Resolution",
       functionName: "loadPosterDiagnostic",
       cacheDuration: 0,
       params: []
@@ -32,71 +29,33 @@ var WidgetMetadata = {
 
 async function loadPosterDiagnostic() {
 
-  /*
-   * Known reference:
-   *
-   * The Matrix:
-   * TMDB Movie ID 603
-   *
-   * Barbie:
-   * TMDB Movie ID 346698
-   *
-   * We deliberately assign Barbie artwork
-   * to a Matrix item.
-   */
-
-  var barbiePoster =
+  var poster =
     "/iuFNMS8U5cb6xfzi51Dbkovj7vM.jpg";
 
-  var originalBarbiePoster =
-    "https://image.tmdb.org/t/p/original" +
-    barbiePoster;
+  var low =
+    "https://image.tmdb.org/t/p/w185" + poster;
+
+  var original =
+    "https://image.tmdb.org/t/p/original" + poster;
 
   return [
-
-    /*
-     * TEST A
-     *
-     * TMDB-backed movie with a deliberately
-     * incorrect poster override.
-     *
-     * Expected if override works:
-     * The Matrix title with Barbie artwork.
-     */
-
-    {
-      id: "movie.603",
-      type: "tmdb",
-      mediaType: "movie",
-
-      title: "TEST A — TMDB Override",
-
-      posterPath: barbiePoster,
-      detailPoster: barbiePoster,
-      coverUrl: originalBarbiePoster
-    },
-
-    /*
-     * TEST B
-     *
-     * URL-backed item using the direct
-     * original-resolution Barbie image.
-     *
-     * Expected:
-     * Barbie artwork.
-     */
-
     {
       id: "https://www.themoviedb.org/movie/603",
       type: "url",
       mediaType: "movie",
-
-      title: "TEST B — Direct Original",
-
-      posterPath: originalBarbiePoster,
-      detailPoster: originalBarbiePoster,
-      coverUrl: originalBarbiePoster
+      title: "TEST A — LOW 185px",
+      posterPath: low,
+      detailPoster: low,
+      coverUrl: low
+    },
+    {
+      id: "https://www.themoviedb.org/movie/346698",
+      type: "url",
+      mediaType: "movie",
+      title: "TEST B — ORIGINAL",
+      posterPath: original,
+      detailPoster: original,
+      coverUrl: original
     }
-
   ];
 }
