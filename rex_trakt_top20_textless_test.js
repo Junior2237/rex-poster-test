@@ -1,36 +1,34 @@
 
 /*
- * REX — TRAKT TOP 20 TEXTLESS POSTERS
- * Version 1.0.0 — Separate test module
+ * REX — TRAKT TOP 20 TEXTLESS TEST
+ * Version 1.2.0
  *
- * Uses the user's existing Trakt lists:
+ * Separate test module.
+ * Does not modify production widgets.
  *
- * 1. today-s-top-20-movies
- * 2. today-s-top-20-tv-shows
+ * Movies:
+ * today-s-top-20-movies
  *
- * Selects high-resolution, language-neutral
- * TMDB posters and keeps Trakt ranking.
- *
- * Does not modify or reorder Trakt lists.
- * Does not modify existing Rex widgets.
+ * TV:
+ * today-s-top-20-tv-shows
  */
 
 var WidgetMetadata = {
   id: "junior.trakt.top20.textless.test",
   title: "Trakt Top 20 — Textless Test",
   description:
-    "Test HD textless TMDB posters with the existing Trakt Top 20 lists",
+    "Test high-quality textless TMDB posters using existing Trakt rankings",
   author: "Custom Rex Home",
-  version: "1.0.0",
+  version: "1.2.0",
   requiredVersion: "0.0.1",
 
   globalParams: [
     {
       name: "traktClientId",
-      title: "Trakt Client ID",
+      title: "Trakt Client ID (required)",
       type: "input",
       description:
-        "Enter your Trakt API Client ID to read your public lists.",
+        "Enter your Trakt API Client ID. Do not enter the Client Secret.",
       value: ""
     }
   ],
@@ -40,60 +38,57 @@ var WidgetMetadata = {
       id: "top20-movies-textless",
       title: "TEST — Top 20 Movies (Textless)",
       functionName: "loadTop20Movies",
-      cacheDuration: 3600,
+      cacheDuration: 300,
       params: []
     },
     {
       id: "top20-shows-textless",
       title: "TEST — Top 20 TV Shows (Textless)",
       functionName: "loadTop20Shows",
-      cacheDuration: 3600,
+      cacheDuration: 300,
       params: []
     }
   ]
 };
 
-/* LIST CONFIGURATION */
-
 var TRAKT_USER = "junior2237";
-
-var MOVIE_LIST = "today-s-top-20-movies";
-var TV_LIST = "today-s-top-20-tv-shows";
+var MOVIES_LIST = "today-s-top-20-movies";
+var SHOWS_LIST = "today-s-top-20-tv-shows";
 
 var MAX_ITEMS = 20;
-var CONCURRENCY = 4;
-var LANGUAGE = "en-US";
+var BATCH_SIZE = 4;
 
-/* RESPONSE HANDLING */
+function toId(value) {
+  var n = Number(value);
 
-function unwrap(response) {
-  if (
-    response &&
-    response.data !== undefined &&
-    response.data !== null
-  ) {
-    return response.data;
+  if (!Number.isSafeInteger(n) || n <= 0) {
+    return null;
   }
 
-  return response;
+  return n;
 }
 
-function numericId(value) {
-  var number = Number(value);
-  return Number.isFinite(number) && number > 0
-    ? Math.floor(number)
-    : null;
+function errorText(error) {
+  return error && error.message
+    ? error.message
+    : String(error);
 }
 
-/* FETCH AN EXISTING TRAKT LIST */
+/*
+ * FETCH TRAKT LIST
+ */
 
-async function getTraktList(slug, type, clientId) {
-  if (!clientId || !String(clientId).trim()) {
+async function getTraktList(slug, mediaType, clientId) {
+  var key = String(clientId || "").trim();
+
+  if (!key) {
     throw new Error(
-      "Trakt Client ID is required. " +
-      "Enter it in the Rex module configuration."
+      "Missing Trakt Client ID. Enter it in the module settings."
     );
   }
+
+  var category =
+    mediaType === "movie" ? "movies" : "shows";
 
   var url =
     "https://api.trakt.tv/users/" +
@@ -101,428 +96,383 @@ async function getTraktList(slug, type, clientId) {
     "/lists/" +
     slug +
     "/items/" +
-    (type === "movie" ? "movies" : "shows") +
+    category +
     "/rank/asc";
 
-  var response = await Widget.http.get(url, {
-    params: {
-      page: 1,
-      limit: 20
-    },
-    headers: {
-      "Accept": "application/json",
-      "trakt-api-version": "2",
-      "trakt-api-key": String(clientId).trim()
-    }
-  });
+  console.log("Loading Trakt list:", slug);
 
-  if (response && response.ok === false) {
+  var response;
+
+  try {
+    response = await Widget.http.get(url, {
+      params: {
+        page: 1,
+        limit: MAX_ITEMS
+      },
+      headers: {
+        Accept: "application/json",
+        "trakt-api-version": "2",
+        "trakt-api-key": key
+      }
+    });
+  } catch (error) {
     throw new Error(
-      "Trakt request failed: HTTP " +
-      String(response.status || "unknown")
+      "Trakt request failed for " +
+      slug +
+      ": " +
+      errorText(error)
     );
   }
 
-  var data = unwrap(response);
+  var data = response.data;
 
   if (!Array.isArray(data)) {
-    if (data && Array.isArray(data.items)) {
-      data = data.items;
-    } else {
-      throw new Error(
-        "Trakt did not return a list of items."
-      );
-    }
+    throw new Error(
+      "Unexpected Trakt response for " + slug
+    );
   }
 
-  /*
-   * Preserve the stored Trakt ranking.
-   * Use explicit rank when available.
-   */
-
   var entries = data.map(function(row, index) {
+    var rank = Number(row.rank);
+
     return {
-      entry: row,
+      row: row,
       rank:
-        Number.isInteger(Number(row.rank)) &&
-        Number(row.rank) > 0
-          ? Number(row.rank)
+        Number.isInteger(rank) && rank > 0
+          ? rank
           : index + 1,
       originalIndex: index
     };
   });
 
   entries.sort(function(a, b) {
-    return a.rank - b.rank ||
-      a.originalIndex - b.originalIndex;
+    return (
+      a.rank - b.rank ||
+      a.originalIndex - b.originalIndex
+    );
   });
 
-  return entries.slice(0, MAX_ITEMS);
-}
+  entries = entries.slice(0, MAX_ITEMS);
 
-/* TMDB DETAILS */
-
-async function getDetails(type, tmdbId) {
-  return unwrap(
-    await Widget.tmdb.get(
-      type + "/" + tmdbId,
-      {
-        params: {
-          language: LANGUAGE
-        }
-      }
-    )
-  );
-}
-
-/* TMDB ALTERNATE POSTERS */
-
-async function getPosterCollection(type, tmdbId) {
-  var result = unwrap(
-    await Widget.tmdb.get(
-      type + "/" + tmdbId + "/images",
-      {
-        params: {
-          include_image_language: "null,en"
-        }
-      }
-    )
+  console.log(
+    "Trakt returned " +
+    entries.length +
+    " items for " +
+    slug
   );
 
-  return result && Array.isArray(result.posters)
-    ? result.posters
-    : [];
+  if (entries.length !== MAX_ITEMS) {
+    throw new Error(
+      "Expected 20 items from " +
+      slug +
+      ", received " +
+      entries.length
+    );
+  }
+
+  return entries;
 }
 
-/* POSTER QUALITY TIERS */
+/*
+ * EXTRACT TMDB ID
+ */
 
-function qualityTier(poster) {
-  var w = Number(poster.width) || 0;
-  var h = Number(poster.height) || 0;
-
-  if (w >= 2000 && h >= 3000) return 4;
-  if (w >= 1600 && h >= 2400) return 3;
-  if (w >= 1200 && h >= 1800) return 2;
-  if (w >= 1000 && h >= 1500) return 1;
-
-  return 0;
-}
-
-function scorePoster(poster) {
-  var tier = qualityTier(poster);
-
-  var w = Number(poster.width) || 0;
-  var h = Number(poster.height) || 0;
-
-  var votes = Number(poster.vote_count) || 0;
-  var rating = Number(poster.vote_average) || 0;
+function getTmdbId(row) {
+  var subject = row.movie || row.show || row;
+  var ids = subject.ids || row.ids || {};
 
   return (
-    tier * 100000 +
-    Math.min((w * h) / 1000, 20000) +
-    Math.min(votes, 100) * 5 +
-    Math.min(rating, 10) * 40
+    toId(ids.tmdb) ||
+    toId(subject.tmdb_id) ||
+    toId(subject.tmdbId)
   );
 }
 
 /*
- * SELECT HIGH-RES TEXTLESS CANDIDATE
- *
- * Language-neutral artwork is preferred.
- * It is not guaranteed to contain no text.
- *
- * Reject:
- * - Images with assigned language
- * - Non-portrait images
- * - Extremely small images
- *
- * Return a TMDB image path, not a full URL.
+ * SELECT HIGH-QUALITY TEXTLESS POSTER
  */
 
-function choosePoster(posters, defaultPath) {
+function posterScore(poster) {
+  var width = Number(poster.width) || 0;
+  var height = Number(poster.height) || 0;
+
+  var votes = Number(poster.vote_count) || 0;
+  var rating = Number(poster.vote_average) || 0;
+
+  var tier = 0;
+
+  if (width >= 2000 && height >= 3000) {
+    tier = 4;
+  } else if (width >= 1600 && height >= 2400) {
+    tier = 3;
+  } else if (width >= 1200 && height >= 1800) {
+    tier = 2;
+  } else if (width >= 780 && height >= 1100) {
+    tier = 1;
+  }
+
+  return (
+    tier * 1000000 +
+    Math.min(width * height / 1000, 30000) +
+    Math.min(votes, 500) * 5 +
+    rating * 40
+  );
+}
+
+function chooseTextlessPoster(posters) {
+  if (!Array.isArray(posters)) {
+    return null;
+  }
+
   var candidates = posters.filter(function(p) {
-    if (!p || !p.file_path) return false;
+    if (!p || !p.file_path) {
+      return false;
+    }
 
-    if (p.iso_639_1 != null) return false;
+    if (p.iso_639_1 != null) {
+      return false;
+    }
 
-    var w = Number(p.width) || 0;
-    var h = Number(p.height) || 0;
+    var width = Number(p.width) || 0;
+    var height = Number(p.height) || 0;
 
-    var ratio = Number(p.aspect_ratio) ||
-      (h > 0 ? w / h : 0);
+    var ratio =
+      height > 0 ? width / height : 0;
 
     return (
-      w >= 780 &&
-      h >= 1100 &&
+      width >= 780 &&
+      height >= 1100 &&
       ratio >= 0.60 &&
       ratio <= 0.75
     );
   });
 
   candidates.sort(function(a, b) {
-    return scorePoster(b) - scorePoster(a);
+    return posterScore(b) - posterScore(a);
   });
 
-  if (candidates.length) {
-    return {
-      path: candidates[0].file_path,
-      qualityTier: qualityTier(candidates[0])
-    };
+  return candidates.length
+    ? candidates[0]
+    : null;
+}
+
+/*
+ * FETCH POSTER COLLECTION
+ */
+
+async function getBestPoster(mediaType, tmdbId, title) {
+  var selected = null;
+
+  try {
+    var images = await Widget.tmdb.get(
+      mediaType + "/" + tmdbId + "/images",
+      {
+        params: {
+          include_image_language: "null,en"
+        }
+      }
+    );
+
+    var posters =
+      images && Array.isArray(images.posters)
+        ? images.posters
+        : [];
+
+    selected = chooseTextlessPoster(posters);
+
+    if (selected) {
+      console.log(
+        "TEXTLESS:",
+        title,
+        selected.width + "x" + selected.height
+      );
+
+      return selected.file_path;
+    }
+  } catch (error) {
+    console.warn(
+      "TMDB images failed:",
+      title,
+      errorText(error)
+    );
   }
 
   /*
-   * Fallback:
-   * Some titles don't have a suitable
-   * language-neutral alternative.
+   * Fallback to default TMDB poster.
+   * Only request details when needed.
+   */
+
+  try {
+    var details = await Widget.tmdb.get(
+      mediaType + "/" + tmdbId,
+      {
+        params: {
+          language: "en-US"
+        }
+      }
+    );
+
+    if (details && details.poster_path) {
+      console.warn(
+        "DEFAULT POSTER FALLBACK:",
+        title
+      );
+
+      return details.poster_path;
+    }
+  } catch (error) {
+    console.warn(
+      "TMDB fallback failed:",
+      title,
+      errorText(error)
+    );
+  }
+
+  console.warn("NO POSTER FOUND:", title);
+
+  return "";
+}
+
+/*
+ * BUILD REX MEDIA ITEM
+ */
+
+async function processTitle(wrapper, mediaType) {
+  var row = wrapper.row;
+  var rank = wrapper.rank;
+
+  var subject =
+    row.movie ||
+    row.show ||
+    row;
+
+  var title =
+    subject.title ||
+    subject.name ||
+    "Untitled";
+
+  var tmdbId = getTmdbId(row);
+
+  if (!tmdbId) {
+    throw new Error(
+      "Missing TMDB ID at rank " +
+      rank +
+      ": " +
+      title
+    );
+  }
+
+  var posterPath = await getBestPoster(
+    mediaType,
+    tmdbId,
+    title
+  );
+
+  /*
+   * Important:
+   * For type "tmdb", Rex requires
+   * the actual numeric TMDB ID.
    */
 
   return {
-    path: defaultPath || "",
-    qualityTier: 0
-  };
-}
-
-/* BUILD REX MEDIA ITEM */
-
-function makeItem(
-  type,
-  tmdbId,
-  details,
-  original,
-  rank,
-  posterPath
-) {
-  var title =
-    details.title ||
-    details.name ||
-    original.title ||
-    "Untitled";
-
-  var genres = Array.isArray(details.genres)
-    ? details.genres.map(function(g) {
-        return {
-          id: String(g.id),
-          title: String(g.name || "")
-        };
-      })
-    : [];
-
-  var networks =
-    Array.isArray(details.networks)
-      ? details.networks
-      : [];
-
-  var firstNetwork =
-    networks.length ? networks[0] : null;
-
-  var date =
-    details.release_date ||
-    details.first_air_date ||
-    "";
-
-  var item = {
-    id: type + "." + tmdbId,
+    id: tmdbId,
     tmdbId: tmdbId,
 
     type: "tmdb",
-    mediaType: type,
+    mediaType: mediaType,
 
     title: title,
 
     rank: rank,
     position: rank,
 
-    posterPath: posterPath,
-
-    backdropPath:
-      details.backdrop_path || "",
-
-    releaseDate: date,
-
-    description:
-      details.overview || "",
-
-    rating:
-      Number(details.vote_average) || 0,
-
-    genreItems: genres,
-
-    genreTitle: genres
-      .map(function(g) {
-        return g.title;
-      })
-      .filter(Boolean)
-      .join(" · ")
+    posterPath: posterPath
   };
-
-  if (firstNetwork) {
-    item.originalNetwork = {
-      name: firstNetwork.name || "",
-      logoPath: firstNetwork.logo_path || ""
-    };
-
-    item.networkLogoPath =
-      firstNetwork.logo_path || "";
-  }
-
-  return item;
 }
 
-/* PROCESS ONE TRAKT TITLE */
+/*
+ * PROCESS EXACTLY 20 ENTRIES
+ */
 
-async function processTitle(wrapper, type) {
-  var entry = wrapper.entry;
-  var rank = wrapper.rank;
-
-  var subject =
-    entry.movie ||
-    entry.show ||
-    entry;
-
-  if (!subject) return null;
-
-  var ids = subject.ids || entry.ids || {};
-
-  var tmdbId =
-    numericId(ids.tmdb) ||
-    numericId(subject.tmdb_id);
-
-  /*
-   * Don't guess an ID based on title text.
-   * That could silently substitute
-   * the wrong movie or TV show.
-   */
-
-  if (!tmdbId) {
-    console.warn(
-      "Missing TMDB ID at Trakt rank " + rank
-    );
-    return null;
-  }
-
-  var details;
-
-  try {
-    details = await getDetails(type, tmdbId);
-  } catch (error) {
-    console.warn(
-      "TMDB details failed at rank " + rank
-    );
-    return null;
-  }
-
-  if (!details || !details.id) return null;
-
-  var defaultPoster =
-    details.poster_path || "";
-
-  var selectedPoster = defaultPoster;
-
-  try {
-    var posters = await getPosterCollection(
-      type,
-      tmdbId
-    );
-
-    var choice = choosePoster(
-      posters,
-      defaultPoster
-    );
-
-    selectedPoster =
-      choice.path || defaultPoster;
-
-  } catch (error) {
-    /*
-     * Don't remove the title if
-     * alternate images are unavailable.
-     */
-    selectedPoster = defaultPoster;
-  }
-
-  return makeItem(
-    type,
-    tmdbId,
-    details,
-    subject,
-    rank,
-    selectedPoster
-  );
-}
-
-/* PROCESS IN SMALL BATCHES */
-
-async function processList(entries, type) {
-  var result = [];
+async function processList(entries, mediaType) {
+  var results = [];
 
   for (
     var start = 0;
     start < entries.length;
-    start += CONCURRENCY
+    start += BATCH_SIZE
   ) {
     var batch = entries.slice(
       start,
-      start + CONCURRENCY
+      start + BATCH_SIZE
     );
 
     var completed = await Promise.all(
       batch.map(function(entry) {
-        return processTitle(entry, type)
-          .catch(function() {
-            return null;
-          });
+        return processTitle(entry, mediaType);
       })
     );
 
-    for (var i = 0; i < completed.length; i++) {
-      if (completed[i]) {
-        result.push(completed[i]);
-      }
-    }
+    results = results.concat(completed);
   }
 
-  /*
-   * Preserve original rank values,
-   * even if an unmatched title was omitted.
-   */
-
-  result.sort(function(a, b) {
+  results.sort(function(a, b) {
     return a.rank - b.rank;
   });
 
-  return result;
+  var missingPosters = results.filter(function(item) {
+    return !item.posterPath;
+  });
+
+  console.log(
+    "FINAL RESULT:",
+    mediaType,
+    results.length + " items"
+  );
+
+  console.log(
+    "Missing posters:",
+    missingPosters.length
+  );
+
+  if (results.length !== MAX_ITEMS) {
+    throw new Error(
+      "Expected 20 processed items, received " +
+      results.length
+    );
+  }
+
+  return results;
 }
 
-/* TEST MODULE — TOP 20 MOVIES */
+/*
+ * TOP 20 MOVIES
+ */
 
 async function loadTop20Movies(params) {
   params = params || {};
 
   var entries = await getTraktList(
-    MOVIE_LIST,
+    MOVIES_LIST,
     "movie",
     params.traktClientId
   );
 
-  return await processList(
-    entries,
-    "movie"
-  );
+  return processList(entries, "movie");
 }
 
-/* TEST MODULE — TOP 20 TV SHOWS */
+/*
+ * TOP 20 TV SHOWS
+ */
 
 async function loadTop20Shows(params) {
   params = params || {};
 
   var entries = await getTraktList(
-    TV_LIST,
+    SHOWS_LIST,
     "tv",
     params.traktClientId
   );
 
-  return await processList(
-    entries,
-    "tv"
-  );
+  return processList(entries, "tv");
 }
