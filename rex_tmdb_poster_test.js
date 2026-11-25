@@ -1,27 +1,25 @@
 
 /*
- * REX — TMDB POSTER QUALITY TEST
+ * REX — TMDB POSTER QUALITY TEST v2.0
  *
- * Two independent data modules:
+ * JavaScript DATA MODULE — not HTML.
  *
- * 1. The Matrix — Standard TMDB Poster
- * 2. The Matrix — Textless Candidate
+ * TEST 1: Original working standard poster
+ * TEST 2: Original working textless poster
+ * TEST 3: Highest-resolution textless candidate, TMDB path
+ * TEST 4: Same image, explicit ORIGINAL-resolution URL
  *
- * Uses Rex's built-in Widget.tmdb connection.
- * No personal TMDB API key required in this script.
- *
- * Does not modify existing Trakt lists.
+ * No modifications to existing Top 20 lists.
  */
 
 var WidgetMetadata = {
   id: "junior.tmdb.poster.quality.test",
   title: "TMDB Poster Quality Test",
   description:
-    "Compare standard and language-neutral TMDB posters in Rex",
+    "Compare standard, textless and original-resolution posters",
   author: "Custom Rex Home",
-  version: "1.0.0",
+  version: "2.0.0",
   requiredVersion: "0.0.1",
-
   modules: [
     {
       id: "matrix-standard-poster",
@@ -36,112 +34,93 @@ var WidgetMetadata = {
       functionName: "loadTextlessPoster",
       cacheDuration: 21600,
       params: []
+    },
+    {
+      id: "matrix-hq-tmdb-path-v2",
+      title: "TEST 3 — HQ Textless (Rex Path)",
+      functionName: "loadHighResPath",
+      cacheDuration: 3600,
+      params: []
+    },
+    {
+      id: "matrix-hq-original-url-v2",
+      title: "TEST 4 — HQ Textless (Original URL)",
+      functionName: "loadHighResOriginalUrl",
+      cacheDuration: 3600,
+      params: []
     }
   ]
 };
 
-/* TEST CONFIGURATION */
-
 var MOVIE_ID = 603;
 var LANGUAGE = "en-US";
 
-/* TMDB RESPONSE HANDLING */
+var TMDB_IMAGE_ORIGINAL =
+  "https://image.tmdb.org/t/p/original";
 
-function unwrapResponse(response) {
-  if (
-    response &&
+/* TMDB CONNECTION */
+
+function unwrap(response) {
+  return response &&
     response.data &&
     typeof response.data === "object"
-  ) {
-    return response.data;
-  }
-
-  return response;
+    ? response.data
+    : response;
 }
 
-/* GET MOVIE DETAILS */
-
 async function getMovie() {
-  var response = await Widget.tmdb.get(
-    "movie/" + MOVIE_ID,
-    {
-      params: {
-        language: LANGUAGE
+  var movie = unwrap(
+    await Widget.tmdb.get(
+      "movie/" + MOVIE_ID,
+      {
+        params: {
+          language: LANGUAGE
+        }
       }
-    }
+    )
   );
 
-  var movie = unwrapResponse(response);
-
   if (!movie || Number(movie.id) !== MOVIE_ID) {
-    throw new Error(
-      "TMDB did not return the requested movie."
-    );
+    throw new Error("TMDB movie details missing");
   }
 
   return movie;
 }
 
-/* GET ALL ALTERNATE POSTERS */
-
-async function getMovieImages() {
-  var response = await Widget.tmdb.get(
-    "movie/" + MOVIE_ID + "/images",
-    {
-      params: {
-        include_image_language: "null,en"
+async function getPosters() {
+  var images = unwrap(
+    await Widget.tmdb.get(
+      "movie/" + MOVIE_ID + "/images",
+      {
+        params: {
+          include_image_language: "null,en"
+        }
       }
-    }
+    )
   );
 
-  var images = unwrapResponse(response);
-
   if (!images || !Array.isArray(images.posters)) {
-    throw new Error(
-      "TMDB did not return a poster collection."
-    );
+    throw new Error("TMDB poster list missing");
   }
 
   return images.posters;
 }
 
-/*
- * SELECT A LANGUAGE-NEUTRAL POSTER
- *
- * Requirements:
- * - No assigned image language
- * - Portrait poster orientation
- * - Useful native image dimensions
- * - Different from the default poster
- *
- * Quality preference:
- * - TMDB community evaluation
- * - Number of evaluations
- * - Image resolution
- *
- * Rex ultimately controls the encoded
- * resolution used inside its HTML cards.
- */
+/* TEXTLESS POSTER CANDIDATES */
 
-function selectTextlessPoster(posters, defaultPath) {
-  var candidates = posters.filter(function(poster) {
-    if (!poster || !poster.file_path) {
-      return false;
-    }
+function cleanCandidates(posters, defaultPath) {
+  return posters.filter(function(p) {
+    if (!p || !p.file_path) return false;
 
-    if (poster.iso_639_1 != null) {
-      return false;
-    }
+    if (p.iso_639_1 != null) return false;
 
-    if (poster.file_path === defaultPath) {
-      return false;
-    }
+    if (p.file_path === defaultPath) return false;
 
-    var width = Number(poster.width) || 0;
-    var height = Number(poster.height) || 0;
-    var ratio =
-      Number(poster.aspect_ratio) ||
-      (height > 0 ? width / height : 0);
+    var width = Number(p.width) || 0;
+    var height = Number(p.height) || 0;
+
+    var ratio = Number(p.aspect_ratio) ||
+      (height ? width / height : 0);
 
     return (
       width >= 780 &&
@@ -150,48 +129,129 @@ function selectTextlessPoster(posters, defaultPath) {
       ratio <= 0.75
     );
   });
+}
+
+/*
+ * HIGH-RESOLUTION TIERS
+ *
+ * Tier 4: 2000 × 3000 or better
+ * Tier 3: 1600 × 2400 or better
+ * Tier 2: 1200 × 1800 or better
+ * Tier 1: 1000 × 1500 or better
+ *
+ * Resolution is prioritized before
+ * TMDB popularity and ratings.
+ */
+
+function qualityTier(p) {
+  var width = Number(p.width) || 0;
+  var height = Number(p.height) || 0;
+
+  if (width >= 2000 && height >= 3000) {
+    return 4;
+  }
+
+  if (width >= 1600 && height >= 2400) {
+    return 3;
+  }
+
+  if (width >= 1200 && height >= 1800) {
+    return 2;
+  }
+
+  if (width >= 1000 && height >= 1500) {
+    return 1;
+  }
+
+  return 0;
+}
+
+/* QUALITY SCORING */
+
+function rankCandidate(p) {
+  var width = Number(p.width) || 0;
+  var height = Number(p.height) || 0;
+
+  var votes = Number(p.vote_count) || 0;
+  var rating = Number(p.vote_average) || 0;
+
+  return (
+    qualityTier(p) * 100000 +
+    Math.min(width * height / 1000, 20000) +
+    Math.min(votes, 80) * 4 +
+    Math.min(rating, 10) * 40
+  );
+}
+
+/* SELECT BEST HIGH-RES IMAGE */
+
+function pickBestHighResolution(posters, defaultPath) {
+  var candidates = cleanCandidates(
+    posters,
+    defaultPath
+  );
 
   candidates.sort(function(a, b) {
-    var votesA = Number(a.vote_count) || 0;
-    var votesB = Number(b.vote_count) || 0;
-
-    var ratingA = Number(a.vote_average) || 0;
-    var ratingB = Number(b.vote_average) || 0;
-
-    var widthA = Number(a.width) || 0;
-    var widthB = Number(b.width) || 0;
-
-    var scoreA =
-      ratingA * 10 +
-      Math.min(votesA, 100) * 0.3 +
-      Math.min(widthA, 3000) / 1000;
-
-    var scoreB =
-      ratingB * 10 +
-      Math.min(votesB, 100) * 0.3 +
-      Math.min(widthB, 3000) / 1000;
-
-    return scoreB - scoreA;
+    return rankCandidate(b) - rankCandidate(a);
   });
 
   if (!candidates.length) {
     throw new Error(
-      "No distinct high-resolution language-neutral poster " +
-      "was found for this test movie."
+      "No eligible language-neutral poster for The Matrix"
     );
   }
 
-  return candidates[0].file_path;
+  return candidates[0];
 }
 
-/* BUILD THE REX MEDIA ITEM */
+/*
+ * ORIGINAL SELECTOR FOR TEST 2
+ *
+ * Preserves the selection rules of
+ * the earlier successful test.
+ */
 
-function makeRexItem(movie, posterPath) {
-  var genreItems = Array.isArray(movie.genres)
-    ? movie.genres.map(function(genre) {
+function pickOriginalTextless(posters, defaultPath) {
+  var candidates = cleanCandidates(
+    posters,
+    defaultPath
+  );
+
+  candidates.sort(function(a, b) {
+    function score(p) {
+      return (
+        (Number(p.vote_average) || 0) * 10 +
+        Math.min(
+          Number(p.vote_count) || 0,
+          100
+        ) * 0.3 +
+        Math.min(
+          Number(p.width) || 0,
+          3000
+        ) / 1000
+      );
+    }
+
+    return score(b) - score(a);
+  });
+
+  if (!candidates.length) {
+    throw new Error(
+      "No language-neutral poster found"
+    );
+  }
+
+  return candidates[0];
+}
+
+/* BUILD REX MEDIA ITEM */
+
+function makeItem(movie, posterPath) {
+  var genres = Array.isArray(movie.genres)
+    ? movie.genres.map(function(g) {
         return {
-          id: String(genre.id),
-          title: String(genre.name || "")
+          id: String(g.id),
+          title: String(g.name || "")
         };
       })
     : [];
@@ -216,54 +276,101 @@ function makeRexItem(movie, posterPath) {
 
     rating: movie.vote_average || 0,
 
-    genreTitle: genreItems
-      .map(function(genre) {
-        return genre.title;
+    genreTitle: genres
+      .map(function(g) {
+        return g.title;
       })
-      .filter(function(title) {
-        return !!title;
-      })
+      .filter(Boolean)
       .join(" · "),
 
-    genreItems: genreItems
+    genreItems: genres
   };
 }
 
-/* TEST 1 — STANDARD TMDB POSTER */
+/* TEST 1 — ORIGINAL STANDARD POSTER */
 
 async function loadStandardPoster(params) {
   var movie = await getMovie();
 
   if (!movie.poster_path) {
-    throw new Error(
-      "TMDB has no standard poster for this movie."
-    );
+    throw new Error("No standard TMDB poster");
   }
 
   return [
-    makeRexItem(
+    makeItem(
       movie,
       movie.poster_path
     )
   ];
 }
 
-/* TEST 2 — TEXTLESS POSTER */
+/* TEST 2 — ORIGINAL TEXTLESS TEST */
 
 async function loadTextlessPoster(params) {
   var movie = await getMovie();
 
-  var posters = await getMovieImages();
-
-  var selectedPath = selectTextlessPoster(
-    posters,
+  var poster = pickOriginalTextless(
+    await getPosters(),
     movie.poster_path || ""
   );
 
   return [
-    makeRexItem(
+    makeItem(
       movie,
-      selectedPath
+      poster.file_path
+    )
+  ];
+}
+
+/*
+ * TEST 3 — HIGH-RESOLUTION TEXTLESS
+ *
+ * The best high-resolution candidate
+ * passed through Rex's normal TMDB path.
+ */
+
+async function loadHighResPath(params) {
+  var movie = await getMovie();
+
+  var poster = pickBestHighResolution(
+    await getPosters(),
+    movie.poster_path || ""
+  );
+
+  return [
+    makeItem(
+      movie,
+      poster.file_path
+    )
+  ];
+}
+
+/*
+ * TEST 4 — ORIGINAL URL
+ *
+ * Uses the exact same poster as Test 3.
+ *
+ * Only the delivery path changes.
+ *
+ * Full URLs inside TMDB-type items
+ * are not yet verified in Rex.
+ */
+
+async function loadHighResOriginalUrl(params) {
+  var movie = await getMovie();
+
+  var poster = pickBestHighResolution(
+    await getPosters(),
+    movie.poster_path || ""
+  );
+
+  var originalUrl =
+    TMDB_IMAGE_ORIGINAL + poster.file_path;
+
+  return [
+    makeItem(
+      movie,
+      originalUrl
     )
   ];
 }
