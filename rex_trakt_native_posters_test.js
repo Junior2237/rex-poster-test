@@ -1,14 +1,16 @@
 
 /*
  * REX — TRAKT TOP 20 / NATIVE POSTERS
- * Version 1.1.0
+ * Version 1.2.0
  *
- * Uses official TMDB poster paths.
- * Rex handles image delivery and rendering.
+ * Preserves the working 30-minute cache,
+ * the Trakt ranking, and the native TMDB
+ * image-loading method.
  *
- * Preserves Trakt order.
- * Caches the completed list for 30 minutes.
- * Does not modify production widgets.
+ * Adds a targeted poster fallback for
+ * The 90s Club (2022).
+ *
+ * Also exposes available genre metadata.
  */
 
 var TRAKT_USER = "junior2237";
@@ -18,6 +20,18 @@ var SHOWS_LIST = "today-s-top-20-tv-shows";
 var MAX_ITEMS = 20;
 var BATCH_SIZE = 4;
 var CACHE_SECONDS = 1800;
+
+/*
+ * Verified external promotional artwork
+ * for The 90s Club (2022).
+ *
+ * Used ONLY when TMDB has no poster.
+ */
+var NINETIES_CLUB_POSTER =
+  "https://images-na.ssl-images-amazon.com/images/" +
+  "S/pv-target-images/" +
+  "bf057acc5c7dfd6e38315a3fc26a8bf6f6e8a01ebca533f4702752c25d4d4013" +
+  "._RI_TTW_.jpg";
 
 var TRAKT_PARAM = {
   name: "traktClientId",
@@ -31,9 +45,9 @@ var WidgetMetadata = {
   id: "junior.trakt.top20.native.test",
   title: "Trakt Top 20 — Rex Native Posters",
   description:
-    "Official TMDB posters with cached Trakt Top 20 rankings",
+    "Native TMDB posters, cached Trakt rankings, and missing-artwork fallback",
   author: "Junior",
-  version: "1.1.0",
+  version: "1.2.0",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -53,10 +67,6 @@ var WidgetMetadata = {
     }
   ]
 };
-
-/*
- * RESPONSE HELPERS
- */
 
 function unwrap(response) {
   var data = response;
@@ -103,20 +113,28 @@ function imageUrl(path) {
     : "";
 }
 
+function isNinetiesClub(title, tmdbId, imdbId, mediaType) {
+  if (mediaType !== "movie") {
+    return false;
+  }
+
+  return (
+    tmdbId === 950237 ||
+    imdbId === "tt18225078" ||
+    String(title || "").trim().toLowerCase() === "the 90s club"
+  );
+}
+
 /*
- * TRAKT — COMPLETE RANKED LIST
+ * TRAKT — PRESERVE RANKING
  */
 
-async function fetchTraktList(
-  slug,
-  mediaType,
-  clientId
-) {
+async function fetchTraktList(slug, mediaType, clientId) {
   var key = String(clientId || "").trim();
 
   if (!key) {
     throw new Error(
-      "Missing Trakt Client ID. Enter it in the module settings."
+      "Missing Trakt Client ID. Enter it in Rex."
     );
   }
 
@@ -136,7 +154,6 @@ async function fetchTraktList(
         "trakt-api-version": "2",
         "trakt-api-key": key
       },
-
       params: {
         page: 1,
         limit: 100
@@ -188,10 +205,7 @@ async function fetchTraktList(
     });
 
   ranked.sort(function(a, b) {
-    return (
-      a.rank - b.rank ||
-      a.index - b.index
-    );
+    return a.rank - b.rank || a.index - b.index;
   });
 
   ranked = ranked.slice(0, MAX_ITEMS);
@@ -202,22 +216,15 @@ async function fetchTraktList(
     );
   }
 
-  console.log(
-    "TRAKT LIST:",
-    slug,
-    ranked.length,
-    "titles"
-  );
-
   return ranked;
 }
 
 /*
- * TMDB — OFFICIAL POSTER METADATA
+ * TMDB — OFFICIAL ARTWORK + GENRES
  *
- * Request the standard TMDB poster_path.
- * No textless image selection.
- * No forced w185 / w500 image size.
+ * No experimental textless selection.
+ * No forced image resolution.
+ * Native TMDB paths remain unchanged.
  */
 
 async function getOfficialArtwork(
@@ -227,6 +234,7 @@ async function getOfficialArtwork(
 ) {
   var poster = "";
   var backdrop = "";
+  var genres = [];
 
   try {
     var response = await Widget.tmdb.get(
@@ -250,6 +258,16 @@ async function getOfficialArtwork(
         details.backdrop_path ||
         details.backdropPath
       );
+
+      if (Array.isArray(details.genres)) {
+        genres = details.genres
+          .map(function(g) {
+            return g && g.name
+              ? String(g.name)
+              : "";
+          })
+          .filter(Boolean);
+      }
     }
   } catch (error) {
     console.warn(
@@ -260,13 +278,11 @@ async function getOfficialArtwork(
   }
 
   /*
-   * Fallback only when TMDB details
-   * did not return a usable poster.
+   * Preserve the existing gallery fallback.
    */
-
   if (!poster) {
     try {
-      var response = await Widget.tmdb.get(
+      var imageResponse = await Widget.tmdb.get(
         mediaType + "/" + tmdbId + "/images",
         {
           params: {
@@ -275,21 +291,18 @@ async function getOfficialArtwork(
         }
       );
 
-      var images = unwrap(response);
+      var images = unwrap(imageResponse);
 
       var candidates =
         images && Array.isArray(images.posters)
           ? images.posters.filter(function(p) {
-              return p &&
-                rawImagePath(p.file_path);
+              return p && rawImagePath(p.file_path);
             })
           : [];
 
       candidates.sort(function(a, b) {
-        var langA =
-          a.iso_639_1 === "en" ? 1 : 0;
-        var langB =
-          b.iso_639_1 === "en" ? 1 : 0;
+        var langA = a.iso_639_1 === "en" ? 1 : 0;
+        var langB = b.iso_639_1 === "en" ? 1 : 0;
 
         if (langA !== langB) {
           return langB - langA;
@@ -311,35 +324,25 @@ async function getOfficialArtwork(
       }
     } catch (error) {
       console.warn(
-        "TMDB poster fallback failed:",
+        "Poster gallery failed:",
         title,
         errorText(error)
       );
     }
   }
 
-  if (!poster) {
-    console.warn(
-      "No official poster found:",
-      title,
-      tmdbId
-    );
-  }
-
   return {
     poster: poster,
-    backdrop: backdrop
+    backdrop: backdrop,
+    genres: genres
   };
 }
 
 /*
- * RESOLVE IMDb-ONLY TITLES
+ * IMDb -> TMDB FALLBACK
  */
 
-async function resolveTmdbId(
-  mediaType,
-  imdbId
-) {
+async function resolveTmdbId(mediaType, imdbId) {
   if (!/^tt\d+$/.test(imdbId || "")) {
     return null;
   }
@@ -379,7 +382,7 @@ async function resolveTmdbId(
 }
 
 /*
- * BUILD ONE COMPLETE REX ITEM
+ * BUILD REX VIDEO ITEM
  */
 
 async function buildItem(entry, mediaType) {
@@ -424,7 +427,6 @@ async function buildItem(entry, mediaType) {
       entry.rank,
       title
     );
-
     return null;
   }
 
@@ -434,11 +436,8 @@ async function buildItem(entry, mediaType) {
       : imdbId,
 
     type: tmdbId ? "tmdb" : "imdb",
-
     mediaType: mediaType,
-
     title: title,
-
     rank: entry.rank,
     position: entry.rank
   };
@@ -452,25 +451,54 @@ async function buildItem(entry, mediaType) {
       title
     );
 
+    /*
+     * Keep the same poster-loading method
+     * already working in v1.1.0.
+     */
     if (artwork.poster) {
-      /*
-       * Raw poster path:
-       * Rex handles image loading and size.
-       */
       result.posterPath = artwork.poster;
       result.detailPoster = artwork.poster;
-
-      /*
-       * Generic fallback for other slots.
-       * Does not override posterPath priority.
-       */
-      result.coverUrl = imageUrl(
-        artwork.poster
-      );
+      result.coverUrl = imageUrl(artwork.poster);
     }
 
     if (artwork.backdrop) {
       result.backdropPath = artwork.backdrop;
+    }
+
+    /*
+     * Genre metadata for the future
+     * Apple TV-style HTML integration.
+     */
+    if (artwork.genres.length) {
+      result.genreTitle = artwork.genres.join(" · ");
+    }
+  }
+
+  /*
+   * Targeted fallback:
+   * The 90s Club documentary.
+   *
+   * Keep its TMDB identity so movie
+   * matching remains unchanged.
+   *
+   * Only use an external promotional
+   * image when TMDB supplies no poster.
+   */
+  if (
+    isNinetiesClub(title, tmdbId, imdbId, mediaType)
+  ) {
+    if (!result.posterPath) {
+      result.coverUrl = NINETIES_CLUB_POSTER;
+      result.detailPoster = NINETIES_CLUB_POSTER;
+
+      console.log(
+        "External poster fallback:",
+        title
+      );
+    }
+
+    if (!result.genreTitle) {
+      result.genreTitle = "Documentary";
     }
   }
 
@@ -478,9 +506,10 @@ async function buildItem(entry, mediaType) {
 }
 
 /*
- * LOAD ALL ITEMS BEFORE RETURNING
+ * BUILD COMPLETE LIST BEFORE RETURN
  *
- * Four concurrent metadata requests per batch.
+ * Four concurrent metadata requests.
+ * Cache duration: 30 minutes.
  */
 
 async function loadNativeList(
@@ -537,7 +566,10 @@ async function loadNativeList(
   });
 
   var withPosters = results.filter(function(item) {
-    return !!item.posterPath;
+    return !!(
+      item.posterPath ||
+      item.coverUrl
+    );
   }).length;
 
   console.log(
@@ -559,7 +591,7 @@ async function loadNativeList(
 }
 
 /*
- * REX MODULE ENTRY POINTS
+ * MODULE ENTRY POINTS
  */
 
 async function loadNativeMovies(params) {
