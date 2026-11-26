@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.3.8 — Movie-only rating consensus guard
+ * Version 3.3.9 — Parallel cold-start metadata loading
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -10,6 +10,8 @@
  * - Two Trakt lists and original title eligibility
  * - 30-minute module cache
  * - Four-item concurrent metadata batches
+ * - Overlapping daily IMDb retrieval with TMDB artwork retrieval
+ * - Reuse complete appended TMDB image galleries
  * - Textless-poster preference
  * - TMDB logo retrieval
  * - Genres and network metadata
@@ -57,7 +59,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.3.8",
+  version: "3.3.9",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -523,7 +525,12 @@ async function getArtwork(
     }
   }
 
-  if (!result.logo || !result.cleanPoster) {
+  // The appended gallery and this language-filtered endpoint request
+  // the same assets. Retry only when a needed array was not returned.
+  var needsFilteredGallery =
+    (!result.logo && (!images || !Array.isArray(images.logos))) ||
+    (!result.cleanPoster && (!images || !Array.isArray(images.posters)));
+  if (needsFilteredGallery) {
     try {
       var gallery = await fetchGallery(
         mediaType,
@@ -1024,6 +1031,22 @@ async function loadNativeList(
     );
   }
 
+  // IMDb IDs are already present in the Trakt list, so retrieve ratings
+  // concurrently with artwork instead of adding a second serial stage.
+  var ratingCandidates = entries.map(function(entry) {
+    var row = entry.row;
+    var subject = row.movie || row.show || row;
+    var ids = subject.ids || row.ids || {};
+    return {
+      _dailyImdbId: String(ids.imdb || subject.imdb_id || subject.imdbId || ""),
+      mediaType: mediaType
+    };
+  });
+  var imdbRatingsPromise = fetchDailyImdbRatings(ratingCandidates).catch(function(error) {
+    console.warn("Daily IMDb ratings unavailable:", errorText(error));
+    return Object.create(null);
+  });
+
   var results = [];
 
   for (
@@ -1062,7 +1085,7 @@ async function loadNativeList(
     );
   }
 
-  var imdbRatings = await fetchDailyImdbRatings(results);
+  var imdbRatings = await imdbRatingsPromise;
   if (mediaType === "movie") {
     imdbRatings = await completeDailyMovieRatings(results, imdbRatings);
     return rankDailyMovies(results, imdbRatings);
