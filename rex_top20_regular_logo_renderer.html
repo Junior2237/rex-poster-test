@@ -83,33 +83,45 @@ var selected=null,lastOpenAt=0;
 if(!api){el('status').textContent='Preview in Rex Widget Workshop';return}
 function imageURL(v){
  if(v&&typeof v==='object')return imageURL(v.url||v.src||v.path||v.file_path||v.imageUrl||v.backdropPath||'');
- var s=str(v).trim();
- if(/^\/[^/]+\.(png|jpe?g|webp|svg)(?:\?.*)?$/i.test(s))return 'https://image.tmdb.org/t/p/original'+s;
- return s;
+ return str(v).trim();
 }
 function setImage(node,value){var src=imageURL(value);node.hidden=!src;if(src){if(node.getAttribute('src')!==src)node.setAttribute('src',src)}else node.removeAttribute('src')}
 function findTitleLogo(item){
- if(!item)return '';
- var direct=imageURL(item.titleLogoPath||item.titleLogoUrl||item.logoUrl||item.logoPath||'');
- if(direct)return direct;
+ if(!item)return [];
+ var candidates=[];
+ function add(value){var p=imageURL(value);if(p&&candidates.indexOf(p)<0)candidates.push(p)}
+ add(item.titleLogoPath);add(item.titleLogoUrl);add(item.logoUrl);add(item.logoPath);
  var paths=Array.isArray(item.backdropPaths)?item.backdropPaths.map(imageURL).filter(Boolean):[];
  var backdrop=imageURL(item.backdropPath);
  for(var i=paths.length-1;i>=0;i--){
   var p=paths[i];try{p=decodeURIComponent(p)}catch(e){}
-  if(paths[i]!==backdrop&&/\.png(?:$|[?&#/])/i.test(p))return paths[i];
+  if(paths[i]!==backdrop&&/\.png(?:$|[?&#/])/i.test(p))add(paths[i]);
  }
- return '';
+ // The custom module places its logo after the primary backdrop.
+ // Rex may rewrite image URLs without preserving their extension.
+ if(paths.length===2&&paths[0]===backdrop&&paths[1]!==backdrop)add(paths[1]);
+ return candidates;
 }
-function renderTitleLogo(src,name){
+var logoRequest=0,logoKey='';
+function renderTitleLogo(sources,name){
  var logo=el('logo'),title=el('title');
  title.textContent=name;logo.alt='';
- if(!src){logo.hidden=true;title.hidden=false;logo.removeAttribute('src');return}
- function ready(){if(logo.getAttribute('src')===src){logo.hidden=false;title.hidden=true}}
- function failed(){if(logo.getAttribute('src')===src){logo.hidden=true;title.hidden=false}}
- logo.onload=ready;logo.onerror=failed;
- if(logo.getAttribute('src')!==src){logo.hidden=true;title.hidden=false;logo.setAttribute('src',src)}
- if(logo.complete&&logo.naturalWidth>0)ready();
- else failed();
+ var key=JSON.stringify([selected&&selected.id,sources]);
+ if(key===logoKey)return;
+ logoKey=key;
+ var request=++logoRequest,index=0;
+ logo.hidden=true;title.hidden=false;
+ logo.onload=null;logo.onerror=null;logo.removeAttribute('src');
+ function next(){
+  if(request!==logoRequest)return;
+  if(index>=sources.length){logo.hidden=true;title.hidden=false;logo.removeAttribute('src');return}
+  var src=sources[index++];
+  logo.onload=function(){if(request===logoRequest&&logo.getAttribute('src')===src){logo.hidden=false;title.hidden=true}};
+  logo.onerror=function(){if(request===logoRequest&&logo.getAttribute('src')===src)next()};
+  logo.setAttribute('src',src);
+  if(logo.complete&&logo.naturalWidth>0){logo.hidden=false;title.hidden=true}
+ }
+ next();
 }
 function validRank(v){
   if(v==null||v==='')return null;
