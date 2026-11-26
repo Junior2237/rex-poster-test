@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.4.2 — Separate native and custom rail artwork
+ * Version 3.4.3 — Reliable daily movie textless backdrop transport
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -37,7 +37,7 @@ var BATCH_SIZE = 4;
 var CACHE_SECONDS = 1800;
 var ARTWORK_CACHE_SECONDS = 14400;
 var DAILY_WORKERS = 6;
-var STARTUP_CACHE_PREFIX = "rex-v342:";
+var STARTUP_CACHE_PREFIX = "rex-v343:";
 
 var TMDB_BASE =
   "https://image.tmdb.org/t/p/original";
@@ -62,7 +62,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.4.2",
+  version: "3.4.3",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -513,6 +513,18 @@ async function getArtworkUncached(
     releaseDate: ""
   };
 
+  // The regular daily movie renderer requires distinct artwork entries.
+  // A clean backdrop identical to the primary backdrop is not transportable
+  // in the three-image bundle. Prefer a different clean backdrop instead.
+  function selectRailBackdrop(backdrops) {
+    if (mediaType !== "movie" || premiumPortrait) return chooseCleanBackdrop(backdrops);
+    if (!Array.isArray(backdrops)) return "";
+    return chooseCleanBackdrop(backdrops.filter(function(p) {
+      return p && tmdbPath(p.file_path) !== result.backdrop &&
+        tmdbPath(p.file_path) !== result.standardPoster;
+    }));
+  }
+
   var images = null;
 
   try {
@@ -582,7 +594,7 @@ async function getArtworkUncached(
   if (images) {
     result.cleanPoster =
       selectCleanPoster(images.posters);
-    result.cleanBackdrop = chooseCleanBackdrop(images.backdrops);
+    result.cleanBackdrop = selectRailBackdrop(images.backdrops);
 
     result.logo =
       chooseLogo(images.logos);
@@ -607,7 +619,7 @@ async function getArtworkUncached(
       );
 
       if (gallery) {
-        if (!result.cleanBackdrop) result.cleanBackdrop = chooseCleanBackdrop(gallery.backdrops);
+        if (!result.cleanBackdrop) result.cleanBackdrop = selectRailBackdrop(gallery.backdrops);
         if (!result.logo) {
           result.logo = chooseLogo(
             gallery.logos
@@ -644,7 +656,7 @@ async function getArtworkUncached(
       );
 
       if (allImages) {
-        if (!result.cleanBackdrop) result.cleanBackdrop = chooseCleanBackdrop(allImages.backdrops);
+        if (!result.cleanBackdrop) result.cleanBackdrop = selectRailBackdrop(allImages.backdrops);
         if (!result.logo) {
           result.logo = chooseLogo(allImages.logos);
         }
