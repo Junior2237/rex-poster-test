@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.3.4 — Daily Top 20 quality-weighted ranking
+ * Version 3.3.5 — Daily Top 20 IMDb-weighted quality ranking
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -15,7 +15,8 @@
  * - Genres and network metadata
  * - Poster fallbacks
  *
- * Daily Top 20 only: 80% vote-adjusted quality / 20% source popularity.
+ * Daily Top 20 only: 95% vote-adjusted quality / 5% source popularity.
+ * Optional IMDb data supplies 60% of quality when available.
  * All five other chart modules retain their existing ranking.
  */
 
@@ -53,7 +54,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.3.4",
+  version: "3.3.5",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -695,7 +696,10 @@ async function buildItem(
     position: entry.rank
   };
 
-  if (dailyRanking) item._dailyQuality = dailyQualityScore(subject, null);
+  if (dailyRanking) {
+    item._dailyQuality = dailyQualityScore(subject, null);
+    item._dailyImdbId = imdbId;
+  }
 
   if (tmdbId) {
     item.tmdbId = tmdbId;
@@ -789,7 +793,6 @@ function dailyAdjustedRating(rating, votes) {
   var r = Number(rating), v = Number(votes);
   if (!Number.isFinite(r) || r <= 0 || r > 10 ||
       !Number.isFinite(v) || v <= 0) return null;
-  // Bayesian shrinkage: 50 prior votes at 6.5.
   return (v * r + 50 * 6.5) / (v + 50);
 }
 
@@ -797,23 +800,63 @@ function dailyQualityScore(subject, artwork) {
   var trakt = dailyAdjustedRating(subject && subject.rating, subject && subject.votes);
   var tmdb = dailyAdjustedRating(artwork && artwork.rating, artwork && artwork.votes);
   var scores = [trakt, tmdb].filter(function(value) { return value !== null; });
-  return scores.length ? scores.reduce(function(a,b) { return a+b; }, 0) / scores.length : 6.5;
+  return scores.length ? scores.reduce(function(a,b) { return a+b; }, 0) / scores.length : null;
 }
 
-function rankDailyItems(items) {
-  // Every candidate is already trending. Reserve the lower half of the
-  // popularity scale for titles outside this shortlist.
+async function fetchDailyImdbRatings(items) {
+  // Optional, keyless third-party IMDb-data provider. Only public title IDs
+  // are sent; Trakt credentials are never passed to this host.
+  var ids = [];
+  items.forEach(function(item) {
+    var id = item._dailyImdbId;
+    if (/^tt\d+$/.test(id || "") && ids.indexOf(id) < 0) ids.push(id);
+  });
+  var groups = [];
+  for (var i = 0; i < ids.length; i += 5) groups.push(ids.slice(i, i + 5));
+  var ratings = Object.create(null);
+  await Promise.all(groups.map(async function(group) {
+    try {
+      var query = group.map(function(id) {
+        return "titleIds=" + encodeURIComponent(id);
+      }).join("&");
+      var response = await Widget.http.get(
+        "https://api.imdbapi.dev/titles:batchGet?" + query,
+        { headers: { Accept: "application/json" } }
+      );
+      var data = unwrap(response);
+      var rows = Array.isArray(data) ? data : data && data.titles;
+      if (!Array.isArray(rows)) return;
+      rows.forEach(function(row) {
+        if (!row || group.indexOf(row.id) < 0 || !row.rating) return;
+        var score = dailyAdjustedRating(row.rating.aggregateRating, row.rating.voteCount);
+        if (score !== null) ratings[row.id] = score;
+      });
+    } catch (error) {
+      console.warn("Optional IMDb rating batch unavailable:", errorText(error));
+    }
+  }));
+  return ratings;
+}
+
+function rankDailyItems(items, imdbRatings) {
+  imdbRatings = imdbRatings || {};
   function score(item) {
     var sourceRank = Math.max(1, Math.min(MAX_ITEMS, Number(item.rank) || MAX_ITEMS));
     var popularity = 10 - 5 * (sourceRank - 1) / Math.max(1, MAX_ITEMS - 1);
-    var quality = Number.isFinite(item._dailyQuality) ? item._dailyQuality : 6.5;
-    return 0.8 * quality + 0.2 * popularity;
+    var community = item._dailyQuality;
+    var imdb = imdbRatings[item._dailyImdbId];
+    var hasCommunity = Number.isFinite(community);
+    var hasImdb = Number.isFinite(imdb);
+    var quality = hasCommunity && hasImdb ? 0.6 * imdb + 0.4 * community :
+      hasImdb ? imdb : hasCommunity ? community : 6.5;
+    return 0.95 * quality + 0.05 * popularity;
   }
   items.sort(function(a,b) { return score(b) - score(a) || a.rank - b.rank; });
   return items.map(function(item, index) {
     item.rank = index + 1;
     item.position = index + 1;
     delete item._dailyQuality;
+    delete item._dailyImdbId;
     return item;
   });
 }
@@ -873,7 +916,8 @@ async function loadNativeList(
     );
   }
 
-  return rankDailyItems(results);
+  var imdbRatings = await fetchDailyImdbRatings(results);
+  return rankDailyItems(results, imdbRatings);
 }
 
 async function loadNativeMovies(params) {
