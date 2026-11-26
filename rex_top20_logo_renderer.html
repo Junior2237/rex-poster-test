@@ -227,30 +227,58 @@ function fallbackPoster(item){
  return '';
 }
 function railLogoCandidates(item,art){
- var fixed=fixedRailRule(item);
- if(fixed){
-  var list=fixedRailSources(item,fixed.logo);
-  (fixed.logoAlternates||[]).forEach(function(path){fixedRailSources(item,path).forEach(function(src){if(list.indexOf(src)<0)list.push(src);});});
-  return list;
- }
- var bundle=railArtworkBundle(item);
- var list=[art&&art.logo,item&&item.titleLogoPath,item&&item.titleLogoUrl,item&&item.logoUrl,bundle&&bundle.logo,item&&item.logoPath,item&&item.titleLogoRawPath];
- if(item&&Array.isArray(item.titleLogoAlternates))list=list.concat(item.titleLogoAlternates);
+ var fixed=fixedRailRule(item),bundle=railArtworkBundle(item);
  var result=[];
- list.forEach(function(value){
-  var src=artworkValue(value);
-  if(!src)return;
-  if(src.charAt(0)==='/'){
-   var resolved=fixedRailSource(item,src);
-   if(resolved&&resolved!==src&&result.indexOf(resolved)<0)result.push(resolved);
-  }
-  if(result.indexOf(src)<0)result.push(src);
+ function append(v){
+  var src=artworkValue(v);
+  if(src&&result.indexOf(src)<0)result.push(src);
+ }
+ function appendPath(path){fixedRailSources(item,path).forEach(append);}
+ if(fixed){
+  appendPath(fixed.logo);
+  (fixed.logoAlternates||[]).forEach(appendPath);
+ }
+ // Native title-logo fields may be opaque resource tokens rather than URLs.
+ // They are still valid image sources and must not be rejected by filename.
+ [art&&art.logo,item&&item.titleLogoPath,item&&item.titleLogoUrl,item&&item.logoUrl,item&&item.logoPath,item&&item.titleLogoRawPath,bundle&&bundle.logo].forEach(function(v){
+  var src=artworkValue(v);
+  if(src.charAt(0)==='/')appendPath(src);
+  append(src);
  });
+ if(item&&Array.isArray(item.titleLogoAlternates))item.titleLogoAlternates.forEach(append);
+ if(fixed&&item&&Array.isArray(item.backdropPaths)){
+  // The source module sends the title logo last in its three-entry bundle.
+  var paths=item.backdropPaths.map(artworkValue).filter(Boolean);
+  if(paths.length===3)append(paths[2]);
+ }
  return result;
 }
+function nativeFixedPosterIsUsable(item,art){
+ if(!fixedRailRule(item)||!displayedPoster)return false;
+ // Explicitly reject known original printed posters, when Rex retains the filename.
+ var printed=['/2K7CFH0AIHnGrA4yQjPCoIB5CmQ.jpg','/3zqlKdOttWyExzopVxglz50Vjxq.jpg','/iKL02GmejLCGBJr7XHU82vvqA1C.jpg'];
+ var actual=imageIdentity(displayedPoster);
+ for(var i=0;i<printed.length;i++){if(actual===imageIdentity(printed[i]))return false;}
+ // v3.5.4 assigns the selected clean image to the native poster fields.
+ // Rex may serve it as an opaque token, so the filename is not required.
+ var native=[item.posterPath,item.coverUrl,item.detailPoster,item.backdropPath].map(artworkValue);
+ return displayedClean||native.some(function(v){return v&&imageIdentity(v)===actual;});
+}
 function syncPosterBrand(item,art){
- if((displayedPoster&&!displayedClean)||(fixedRailRule(item)&&!displayedClean)){
-  // Native fallback artwork may already have a printed title.
+ var fixed=fixedRailRule(item);
+ if(fixed){
+  if(nativeFixedPosterIsUsable(item,art)){
+   renderTitleLogo(railLogoCandidates(item,art),nameOf(item));
+   return;
+  }
+  // Do not show a duplicate logo on a known printed poster or before loading.
+  logoRequest++;logoKey='';
+  var pinnedLogo=el('logo');
+  pinnedLogo.onload=null;pinnedLogo.onerror=null;
+  setImage(pinnedLogo,'');el('title').hidden=true;
+  return;
+ }
+ if(displayedPoster&&!displayedClean){
   logoRequest++;logoKey='';
   var logo=el('logo');
   logo.onload=null;logo.onerror=null;
