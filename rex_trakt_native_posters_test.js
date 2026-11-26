@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.4.5 — Fixed Hunting Wives episode artwork across TV lists
+ * Version 3.5.0 — Central artwork registry independent of ranking
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -37,7 +37,7 @@ var BATCH_SIZE = 4;
 var CACHE_SECONDS = 1800;
 var ARTWORK_CACHE_SECONDS = 14400;
 var DAILY_WORKERS = 6;
-var STARTUP_CACHE_PREFIX = "rex-v343:";
+var STARTUP_CACHE_PREFIX = "rex-v350:";
 
 var TMDB_BASE =
   "https://image.tmdb.org/t/p/original";
@@ -62,7 +62,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.4.5",
+  version: "3.5.0",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -498,7 +498,7 @@ async function getArtworkUncached(
   title,
   premiumPortrait
 ) {
-  var selectCleanPoster = premiumPortrait ? choosePremiumCleanPoster : chooseCleanPoster;
+  var selectCleanPoster = chooseCleanPoster;
   var result = {
     standardPoster: "",
     cleanPoster: "",
@@ -742,8 +742,7 @@ function assignPosterFields(item, artwork, premiumPortrait) {
   // Native Rex grid uses the normal TMDB poster. Custom rails explicitly
   // prefer cleanPosterPath, and the detail-page poster stays as before.
   var clean = artwork.cleanPoster || artwork.cleanBackdrop;
-  var selected = premiumPortrait ? artwork.cleanPoster :
-    clean || artwork.standardPoster;
+  var selected = clean || artwork.standardPoster;
   var standard = artwork.standardPoster || selected;
   if (standard) {
     item.posterPath = standard;
@@ -759,7 +758,7 @@ function nativeArtworkBundle(artwork){
   var clean=artwork.cleanPoster||artwork.cleanBackdrop;
   var logo=artwork.logo;
   var paths=backdrop?[backdrop]:[];
-  if(backdrop&&clean&&logo&&clean!==backdrop&&clean!==logo&&logo!==backdrop) paths.push(clean);
+  if(backdrop&&clean&&clean!==backdrop&&clean!==logo) paths.push(clean);
   if(logo&&paths.indexOf(logo)<0)paths.push(logo);
   return paths;
 }
@@ -779,31 +778,52 @@ function selectHuntingWivesStill(episode, excluded){
   return primary&&excluded.indexOf(primary)<0?primary:"";
 }
 
-async function huntingWivesArtwork(artwork,tmdbId){
-  // Use a fixed episode still rather than another potentially mislabelled
-  // series poster. Keep the title, native poster and original logo unchanged.
+var artworkRegistryPromise=null;
+async function artworkRegistry(){
+  var cached=startupCacheRead("registry",300);
+  if(cached&&cached.schemaVersion===1&&cached.overrides)return cached.overrides;
+  if(artworkRegistryPromise)return artworkRegistryPromise;
+  artworkRegistryPromise=(async function(){
+    try{
+      var data=unwrap(await Widget.http.get("https://raw.githubusercontent.com/Junior2237/rex-poster-test/refs/heads/main/artwork_overrides.json",{headers:{Accept:"application/json"}}));
+      if(data&&data.schemaVersion===1&&data.overrides&&typeof data.overrides==="object"){
+        startupCacheWrite("registry",data);return data.overrides;
+      }
+    }catch(e){}
+    return cached&&cached.overrides||{"tv:244447":{strategy:"episodeStill",episodes:[[1,1],[1,2]],revision:1}};
+  })();
+  try{return await artworkRegistryPromise;}finally{artworkRegistryPromise=null;}
+}
+async function applyArtworkOverride(artwork,mediaType,tmdbId){
+  var registry=await artworkRegistry(),id=mediaType+":"+tmdbId,rule=registry[id];
+  if(!rule||typeof rule!=="object")return artwork;
   var excluded=[artwork.standardPoster,artwork.backdrop,artwork.cleanPoster,artwork.logo];
-  var key="override:hunting-wives:episode-still-v345";
-  var alternate=startupCacheRead(key,ARTWORK_CACHE_SECONDS);
-  if(!tmdbPath(alternate)||excluded.indexOf(alternate)>=0){
-    alternate="";
-    var episodes=[[1,1],[1,2]];
+  function safePath(v){return typeof v==="string"&&/^\/[A-Za-z0-9_-]+\.(jpg|jpeg|png|webp)$/i.test(v)?v:"";}
+  var manual=safePath(rule.posterPath),alternate=manual;
+  var key="override:"+id+":"+String(rule.revision||1);
+  if(!alternate)alternate=safePath(startupCacheRead(key,ARTWORK_CACHE_SECONDS));
+  if(!alternate&&rule.strategy==="episodeStill"&&mediaType==="tv"){
+    var episodes=Array.isArray(rule.episodes)?rule.episodes.slice(0,3):[[1,1]];
     for(var i=0;i<episodes.length&&!alternate;i++){
+      var season=Number(episodes[i][0]),episode=Number(episodes[i][1]);
+      if(!Number.isInteger(season)||season<0||!Number.isInteger(episode)||episode<1)continue;
       try{
-        var data=unwrap(await Widget.tmdb.get("tv/"+tmdbId+"/season/"+episodes[i][0]+"/episode/"+episodes[i][1],{
-          params:{language:"en-US",append_to_response:"images",include_image_language:"null"}
-        }));
+        var data=unwrap(await Widget.tmdb.get("tv/"+tmdbId+"/season/"+season+"/episode/"+episode,{params:{language:"en-US",append_to_response:"images",include_image_language:"null"}}));
         alternate=selectHuntingWivesStill(data,excluded);
       }catch(e){}
     }
-    if(!alternate&&artwork.cleanBackdrop&&excluded.indexOf(artwork.cleanBackdrop)<0){
-      alternate=artwork.cleanBackdrop;
-    }
-    if(alternate)startupCacheWrite(key,alternate);
   }
-  // Never exclude a series solely because the replacement request failed.
-  if(!alternate)return artwork;
-  return Object.assign({},artwork,{cleanPoster:alternate});
+  if(!alternate&&(rule.strategy==="alternateBackdrop"||rule.strategy==="episodeStill")){
+    try{
+      var gallery=await fetchGallery(mediaType,tmdbId,null);
+      alternate=chooseCleanBackdrop((gallery&&gallery.backdrops||[]).filter(function(x){return x&&excluded.indexOf(x.file_path)<0;}));
+    }catch(e){}
+    if(!alternate&&artwork.cleanBackdrop&&excluded.indexOf(artwork.cleanBackdrop)<0)alternate=artwork.cleanBackdrop;
+  }
+  var logo=safePath(rule.logoPath);
+  if(alternate)startupCacheWrite(key,alternate);
+  if(!alternate&&!logo)return artwork;
+  return Object.assign({},artwork,alternate?{cleanPoster:alternate}:{},logo?{logo:logo}:{});
 }
 
 async function buildItem(
@@ -886,13 +906,12 @@ async function buildItem(
       if (mediaType === "movie") item._dailyTmdbRaw = artwork.rating;
     }
 
-    if (mediaType === "tv" && Number(tmdbId) === 244447) {
-      artwork = await huntingWivesArtwork(artwork, tmdbId);
-    }
+    try { artwork = await applyArtworkOverride(artwork, mediaType, tmdbId); } catch(e) {}
 
     // Do not stretch or crop inferior artwork in the oversized Trending row,
     // except for a targeted artwork substitution above.
-    if (premiumPortrait && !artwork.cleanPoster) return null;
+    // Artwork availability must never determine list membership.
+    if (!artwork.standardPoster) artwork.standardPoster = tmdbPath(subject.poster_path || row.poster_path);
     assignPosterFields(item, artwork, premiumPortrait);
     if (artwork.releaseDate) item.releaseDate = artwork.releaseDate;
 
@@ -929,7 +948,7 @@ async function buildItem(
     }
   }
 
-  if (premiumPortrait && !tmdbId) return null;
+
 
   if (
     isNinetiesClub(
@@ -1293,10 +1312,6 @@ async function loadArtworkChart(mediaType, chart, params) {
         entries.slice(start, start + BATCH_SIZE).map(async function(entry) {
           try {
             var item = await buildItem(entry, mediaType, true);
-            // Require a confirmed PNG title logo and usable artwork on these editorial rows.
-            if (!item || !item.titleLogoRawPath ||
-                !/\.png$/i.test(item.titleLogoRawPath) ||
-                !(item.posterPath || item.coverUrl)) return null;
             return item;
           } catch (error) {
             console.warn("Chart item failed:", entry.rank, errorText(error));
@@ -1378,7 +1393,7 @@ async function loadCombinedTrendingUncached(params) {
         rank: sourceRank,
         row: {
           title: row.title || row.name || "Untitled",
-          ids: { tmdb: id }
+          ids: { tmdb: id }, poster_path: row.poster_path
         }
       });
     }
@@ -1406,9 +1421,7 @@ async function loadCombinedTrendingUncached(params) {
             rank: candidate.rank,
             index: candidate.rank - 1
           }, candidate.mediaType, true, false, true);
-          if (!item || !item.titleLogoRawPath ||
-              !/\.png$/i.test(item.titleLogoRawPath) ||
-              !(item.posterPath || item.coverUrl)) return null;
+          if (!item) return null;
           return { item: item, mediaType: candidate.mediaType };
         } catch (error) {
           console.warn("TMDB trending item failed:", candidate.rank, errorText(error));
