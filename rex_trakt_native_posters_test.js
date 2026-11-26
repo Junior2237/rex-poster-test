@@ -1,10 +1,10 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 2.2.0 — Visible Logo Diagnostic
+ * Version 3.0.1 — Production logo transport
  *
- * Temporarily adds a diagnostic label to the
- * first poster of each list.
+ * Carries title logos through the documented backdropPaths array.
+ * Preserves the real primary backdrop and original title.
  *
  * Retains the existing:
  * - Two Trakt lists and ranking order
@@ -47,9 +47,9 @@ var WidgetMetadata = {
   id: "junior.trakt.top20.native.test",
   title: "Today's Top 20 — Fast Posters + Title Logos",
   description:
-    "Fast Top 20 with visible TMDB logo diagnostic",
+    "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "2.2.0",
+  version: "3.0.1",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -281,7 +281,8 @@ function chooseLogo(logos) {
   var candidates = logos.filter(function(logo) {
     return (
       logo &&
-      tmdbPath(logo.file_path)
+      tmdbPath(logo.file_path) &&
+      /\.png$/i.test(logo.file_path)
     );
   });
 
@@ -599,9 +600,6 @@ async function buildItem(
     position: entry.rank
   };
 
-  var logoDiagnostic =
-    tmdbId ? "MISSING" : "NO TMDB ID";
-
   if (tmdbId) {
     item.tmdbId = tmdbId;
 
@@ -629,10 +627,12 @@ async function buildItem(
     if (artwork.backdrop) {
       item.backdropPath =
         artwork.backdrop;
+      item.backdropPaths = [artwork.backdrop];
     }
 
     if (artwork.logo) {
-      logoDiagnostic = "FOUND";
+      // Keep the genuine backdrop first; the logo is always last.
+      item.backdropPaths = (item.backdropPaths || []).concat([artwork.logo]);
 
       var logoUrl = tmdbUrl(artwork.logo);
 
@@ -677,26 +677,6 @@ async function buildItem(
     if (!item.genreTitle) {
       item.genreTitle = "Documentary";
     }
-  }
-
-  /*
-   * VISIBLE DIAGNOSTIC
-   *
-   * Only the first-ranked item is changed.
-   *
-   * Hide its logo deliberately so Rex
-   * displays the diagnostic in the title.
-   *
-   * All other titles remain untouched.
-   */
-  if (entry.rank === 1) {
-    item.title =
-      title +
-      " [TMDB LOGO " +
-      logoDiagnostic +
-      "]";
-
-    delete item.titleLogoPath;
   }
 
   return item;
