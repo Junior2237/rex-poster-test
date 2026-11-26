@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.4.3 — Reliable daily movie textless backdrop transport
+ * Version 3.4.4 — Targeted Hunting Wives artwork alternative in Trending Mix
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -62,7 +62,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.4.3",
+  version: "3.4.4",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -764,11 +764,44 @@ function nativeArtworkBundle(artwork){
   return paths;
 }
 
+async function huntingWivesMixArtwork(artwork, tmdbId) {
+  // The current series artwork appears to contain printed lettering despite
+  // its neutral-language tag. Exclude it from the alternative candidates.
+  var excluded = [artwork.cleanPoster, artwork.standardPoster, artwork.backdrop];
+  function eligible(images) {
+    return (Array.isArray(images) ? images : []).filter(function(p) {
+      return p && tmdbPath(p.file_path) && excluded.indexOf(p.file_path) < 0;
+    });
+  }
+  var galleries = await Promise.all([
+    fetchGallery("tv", tmdbId, null).catch(function() { return null; }),
+    Widget.tmdb.get("tv/" + tmdbId + "/season/2/images", {params:{include_image_language:"en,null"}}).then(unwrap).catch(function(){return null;}),
+    Widget.tmdb.get("tv/" + tmdbId + "/season/1/images", {params:{include_image_language:"en,null"}}).then(unwrap).catch(function(){return null;})
+  ]);
+  var posters = [], backdrops = [];
+  galleries.forEach(function(g) {
+    if (!g) return;
+    posters = posters.concat(eligible(g.posters));
+    backdrops = backdrops.concat(eligible(g.backdrops));
+  });
+  var alternative = choosePremiumCleanPoster(posters) || chooseCleanPoster(posters) ||
+    chooseCleanBackdrop(backdrops);
+  if (!alternative && artwork.cleanBackdrop && excluded.indexOf(artwork.cleanBackdrop) < 0) {
+    alternative = artwork.cleanBackdrop;
+  }
+  if (!alternative) return artwork;
+  // Copy rather than mutating shared artwork cached for other modules.
+  var result = Object.assign({}, artwork);
+  result.cleanPoster = alternative;
+  return result;
+}
+
 async function buildItem(
   entry,
   mediaType,
   premiumPortrait,
-  dailyRanking
+  dailyRanking,
+  combinedTrending
 ) {
   var row = entry.row;
   var subject =
@@ -843,7 +876,12 @@ async function buildItem(
       if (mediaType === "movie") item._dailyTmdbRaw = artwork.rating;
     }
 
-    // Do not stretch or crop inferior artwork in the oversized Trending row.
+    if (combinedTrending && mediaType === "tv" && Number(tmdbId) === 244447) {
+      artwork = await huntingWivesMixArtwork(artwork, tmdbId);
+    }
+
+    // Do not stretch or crop inferior artwork in the oversized Trending row,
+    // except for a targeted artwork substitution above.
     if (premiumPortrait && !artwork.cleanPoster) return null;
     assignPosterFields(item, artwork, premiumPortrait);
     if (artwork.releaseDate) item.releaseDate = artwork.releaseDate;
@@ -1293,7 +1331,7 @@ async function loadPopularShows(params) {
  * Unlike active Trakt watcher counts, upcoming titles can qualify.
  */
 async function loadCombinedTrending(params) {
-  return loadCachedRow("combined-trending", CHART_TARGET, function() {
+  return loadCachedRow("combined-trending-v344", CHART_TARGET, function() {
     return loadCombinedTrendingUncached(params);
   });
 }
@@ -1357,7 +1395,7 @@ async function loadCombinedTrendingUncached(params) {
             row: candidate.row,
             rank: candidate.rank,
             index: candidate.rank - 1
-          }, candidate.mediaType, true);
+          }, candidate.mediaType, true, false, true);
           if (!item || !item.titleLogoRawPath ||
               !/\.png$/i.test(item.titleLogoRawPath) ||
               !(item.posterPath || item.coverUrl)) return null;
