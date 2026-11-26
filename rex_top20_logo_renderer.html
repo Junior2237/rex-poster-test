@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="rex-widget" content="type=rail; height=480; item-ratio=5:6">
+<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description">
+<title>Rex — Numbered Top 20 Editorial</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;width:100%;height:100%;background:transparent;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif}
+.card{position:relative;width:100%;height:480px;overflow:hidden;border-radius:20px;background:#171922;isolation:isolate}
+.poster{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover}
+.shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(to bottom,rgba(0,0,0,.09) 0%,transparent 35%,transparent 48%,rgba(0,0,0,.22) 65%,rgba(0,0,0,.86) 100%)}
+.details{position:absolute;z-index:2;left:22px;right:22px;bottom:22px;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;text-align:left;pointer-events:none}
+.logo{display:block;width:100%;height:78px;margin:0 0 10px;object-fit:contain;object-position:left bottom;filter:drop-shadow(0 2px 7px rgba(0,0,0,.63))}
+.title{display:block;width:100%;margin:0 0 10px;max-height:2.2em;overflow:hidden;font-size:30px;font-weight:850;line-height:1.07;text-align:left;text-shadow:0 2px 7px rgba(0,0,0,.75)}
+.meta{display:flex;align-items:center;gap:8px;max-width:100%;min-height:19px;white-space:nowrap}
+.platform-logo{display:block;max-width:45px;height:20px;object-fit:contain;flex-shrink:0;filter:drop-shadow(0 1px 2px rgba(0,0,0,.55))}
+.platform-name{display:block;max-width:76px;overflow:hidden;text-overflow:ellipsis;border-radius:5px;padding:3px 5px;background:rgba(0,0,0,.5);font-size:11px;font-weight:750;flex-shrink:0}
+.meta-text{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;font-size:16px;font-weight:500;line-height:1.2;color:rgba(255,255,255,.84);text-shadow:0 1px 3px rgba(0,0,0,.5)}
+.open{position:absolute;inset:0;z-index:3;display:block;width:100%;height:100%;border:0;border-radius:20px;outline:none;background:transparent;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.card:focus-within::after,.card.focused::after{content:"";position:absolute;z-index:4;inset:3px;border:4px solid #fff;border-radius:17px;box-shadow:0 0 0 2px rgba(0,0,0,.4),0 0 18px rgba(255,255,255,.4);pointer-events:none}
+.card:focus-within .poster,.card.focused .poster{filter:brightness(1.07)}
+.status{position:absolute;z-index:2;left:20px;right:20px;bottom:22px;font-size:14px}
+/* Apple TV ranking gradient. */
+.rank{position:absolute;z-index:2;top:8px;left:8px;display:block;width:max-content;pointer-events:none;user-select:none;overflow:visible}
+.rank::before,.rank::after{content:attr(data-digit);display:block;width:max-content;padding:.10em .20em .16em .12em;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;font-size:var(--rank-size,64px);font-weight:700;line-height:1.18;letter-spacing:-.045em;font-variant-numeric:lining-nums tabular-nums;white-space:nowrap}
+.rank::before{position:absolute;inset:0 auto auto 0;color:transparent;-webkit-text-fill-color:transparent;text-shadow:0 1px 1px rgba(0,0,0,.06);mix-blend-mode:multiply}
+.rank::after{position:relative;background-image:linear-gradient(to bottom,rgba(255,255,255,.98) 0%,rgba(255,255,255,.98) 50%,rgba(255,255,255,.60) 67%,rgba(255,255,255,.05) 86%,rgba(255,255,255,.05) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;-webkit-text-stroke:0;background-repeat:no-repeat;filter:drop-shadow(0 1px 1px rgba(0,0,0,.04));text-shadow:none}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="card" id="card">
+  <img class="poster" id="poster" alt="" hidden>
+  <div class="shade"></div>
+  <span class="rank" id="rank" data-digit="" aria-hidden="true" hidden></span>
+  <div class="details" id="details" hidden>
+    <img class="logo" id="logo" alt="" hidden>
+    <div class="title" id="title" hidden></div>
+    <div class="meta" id="meta" hidden>
+      <img class="platform-logo" id="platformLogo" alt="" hidden>
+      <span class="platform-name" id="platformName" hidden></span>
+      <span class="meta-text" id="metaText" hidden></span>
+    </div>
+  </div>
+  <span class="status" id="status">Waiting for titles</span>
+  <a class="open" id="open" href="#" role="button" tabindex="0" aria-label="Open title"></a>
+</div>
+<script>
+(function(){
+'use strict';
+/* Numbered Top 20 edition. */
+var api=window.RexWidget;
+function el(id){return document.getElementById(id)}
+function str(v){return v==null?'':String(v)}
+function norm(v){
+  var s=str(v).toLowerCase().replace(/[\u2018\u2019'`]/g,'');
+  if(typeof s.normalize==='function')s=s.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  return s.replace(/[^a-z0-9]+/g,' ').trim();
+}
+var card=el('card'),link=el('open'),selected=null,lastOpen=0;
+if(!api){el('status').textContent='Preview in Rex Widget Workshop';return}
+function imageURL(v){
+ if(v&&typeof v==='object')return imageURL(v.url||v.src||v.path||v.file_path||v.imageUrl||v.backdropPath||'');
+ var s=str(v).trim();
+ if(/^\/[^/]+\.(png|jpe?g|webp|svg)(?:\?.*)?$/i.test(s))return 'https://image.tmdb.org/t/p/original'+s;
+ return s;
+}
+function setImage(node,v){var src=imageURL(v);node.hidden=!src;if(src){if(node.getAttribute('src')!==src)node.setAttribute('src',src)}else node.removeAttribute('src')}
+function findTitleLogo(item){
+ if(!item)return '';
+ var direct=imageURL(item.titleLogoPath||item.titleLogoUrl||item.logoUrl||item.logoPath||'');
+ if(direct)return direct;
+ var paths=Array.isArray(item.backdropPaths)?item.backdropPaths.map(imageURL).filter(Boolean):[];
+ var backdrop=imageURL(item.backdropPath);
+ for(var i=paths.length-1;i>=0;i--){
+  var p=paths[i];try{p=decodeURIComponent(p)}catch(e){}
+  if(paths[i]!==backdrop&&/\.png(?:$|[?&#/])/i.test(p))return paths[i];
+ }
+ return '';
+}
+function renderTitleLogo(src,name){
+ var logo=el('logo'),title=el('title');
+ title.textContent=name;logo.alt='';
+ if(!src){logo.hidden=true;title.hidden=false;logo.removeAttribute('src');return}
+ function ready(){if(logo.getAttribute('src')===src){logo.hidden=false;title.hidden=true}}
+ function failed(){if(logo.getAttribute('src')===src){logo.hidden=true;title.hidden=false}}
+ logo.onload=ready;logo.onerror=failed;
+ if(logo.getAttribute('src')!==src){logo.hidden=true;title.hidden=false;logo.setAttribute('src',src)}
+ if(logo.complete&&logo.naturalWidth>0)ready();
+ else failed();
+}
+function nameOf(item){return str(item&&(item.title||item.name)||'Untitled').replace(/^\s*#?\s*(?:20|1[0-9]|[1-9])\s*[.\-:)]+\s+/,'')}
+function titleKey(item){return norm(nameOf(item)).replace(/\s+(?:19|20)\d{2}$/,'').trim()}
+function mediaType(item){return norm(item&&(item.mediaType||item.type||item.contentType||item.kind)||'')}
+function yearOf(item){var fields=[item.year,item.releaseYear,item.releaseDate,item.firstAirDate,item.premiered,nameOf(item)];for(var i=0;i<fields.length;i++){var m=str(fields[i]).match(/\b(19\d{2}|20\d{2})\b/);if(m)return +m[1]}return null}
+
+/* Curated titles are a fallback when a Rex module supplies NO genre.
+   Apple TV's editorial categories may vary by region. */
+var CURATED={
+ 'frieren beyond journeys end':['Anime','Fantasy'],
+ 'frieren':['Anime','Fantasy'],
+ 'the good bad mother':['Drama'],
+ 'the chosen':['Drama','History'],
+ 'among us':['Animation','Comedy'],
+ 'teach you a lesson':['Drama','Action'],
+ 'when life gives you tangerines':['Romance','Drama'],
+ 'widows bay':['Mystery','Thriller'],
+ 'lanterns':['Sci-Fi','Action'],
+ 'black doves':['Action','Thriller'],
+ 'yellowjackets':['Thriller','Drama'],
+ 'steps':['Animation','Fantasy'],
+ 'percy jackson and the olympians':['Adventure','Fantasy'],
+ 'the lord of the rings the rings of power':['Fantasy'],
+ 'the rings of power':['Fantasy'],
+ 'slow horses':['Thriller','Drama'],
+ 'ted lasso':['Comedy'],
+ 'breaking bad':['Crime','Drama'],
+ 'better call saul':['Crime','Drama'],
+ 'stranger things':['Sci-Fi','Mystery'],
+ 'the last of us':['Drama','Sci-Fi'],
+ 'severance':['Thriller','Sci-Fi'],
+ 'game of thrones':['Fantasy','Drama'],
+ 'house of the dragon':['Fantasy','Drama'],
+ 'the mandalorian':['Sci-Fi','Action'],
+ 'andor':['Sci-Fi','Drama'],
+ 'silo':['Sci-Fi','Thriller'],
+ 'fallout':['Sci-Fi','Action'],
+ 'the bear':['Drama','Comedy'],
+ 'the white lotus':['Drama','Comedy'],
+ 'the boys':['Action','Sci-Fi'],
+ 'the office':['Comedy'],
+ 'friends':['Comedy'],
+ 'brooklyn nine nine':['Comedy'],
+ 'only murders in the building':['Mystery','Comedy'],
+ 'the night agent':['Thriller','Action'],
+ 'reacher':['Action','Thriller'],
+ 'squid game':['Thriller','Drama'],
+ 'black mirror':['Sci-Fi','Drama'],
+ 'the walking dead':['Horror','Drama'],
+ 'yellowstone':['Western','Drama'],
+ 'the crown':['Drama','History'],
+ 'bridgerton':['Romance','Drama'],
+ 'the penguin':['Crime','Drama'],
+ 'peaky blinders':['Crime','Drama'],
+ 'shogun':['Drama','History'],
+ 'the witcher':['Fantasy','Action'],
+ 'the umbrella academy':['Sci-Fi','Action'],
+ 'the good place':['Comedy','Fantasy'],
+ 'the last kingdom':['Drama','History'],
+ 'dune':['Sci-Fi','Adventure'],
+ 'dune part two':['Sci-Fi','Adventure'],
+ 'interstellar':['Sci-Fi','Drama'],
+ 'inception':['Sci-Fi','Action'],
+ 'john wick':['Action','Thriller'],
+ 'top gun maverick':['Action','Drama'],
+ 'barbie':['Comedy','Fantasy'],
+ 'oppenheimer':['Drama','History'],
+ 'arcane':['Animation','Action'],
+ 'invincible':['Animation','Action'],
+ 'bojack horseman':['Animation','Comedy'],
+ 'blue eye samurai':['Animation','Action'],
+ 'inside out 2':['Animation','Comedy'],
+ 'kpop demon hunters':['Animation','Fantasy'],
+ 'the wild robot':['Animation','Adventure'],
+ 'the mentalist':['Crime','Drama'],
+ 'one piece':['Anime','Adventure'],
+ 'attack on titan':['Anime','Action'],
+ 'demon slayer':['Anime','Action'],
+ 'jujutsu kaisen':['Anime','Action'],
+ 'solo leveling':['Anime','Fantasy'],
+ 'the last of us season 2':['Drama','Sci-Fi']
+};
+var HUNGER_GAMES=[
+ /^(?:the )?hunger games$/,
+ /^(?:the )?hunger games catching fire$/,
+ /^(?:the )?hunger games mockingjay part (?:1|2|one|two|i|ii)$/,
+ /^(?:the )?hunger games the ballad of songbirds and snakes$/,
+ /^(?:the )?ballad of songbirds and snakes$/
+];
+function knownGenres(item){
+ var key=titleKey(item);
+ if(key==='nocturne'){
+   var type=mediaType(item);
+   return yearOf(item)===2020||type==='movie'||type==='film'?[]:['Crime','Thriller'];
+ }
+ for(var i=0;i<HUNGER_GAMES.length;i++)if(HUNGER_GAMES[i].test(key))return ['Action','Sci-Fi'];
+ return Object.prototype.hasOwnProperty.call(CURATED,key)?CURATED[key].slice():[];
+}
+var ALIASES={
+ 'action':'Action','adventure':'Adventure','fantasy':'Fantasy',
+ 'science fiction':'Sci-Fi','sci fi':'Sci-Fi','scifi':'Sci-Fi','sci fi fantasy':'Sci-Fi',
+ 'comedy':'Comedy','drama':'Drama','crime':'Crime','thriller':'Thriller',
+ 'suspense':'Thriller','psychological thriller':'Thriller',
+ 'mystery':'Mystery','horror':'Horror','romance':'Romance','romantic':'Romance',
+ 'documentary':'Documentary','docuseries':'Documentary',
+ 'animation':'Animation','animated':'Animation','anime':'Anime','japanese anime':'Anime',
+ 'family':'Family','kids':'Family','children':'Family',
+ 'western':'Western','war':'War','history':'History','historical':'History',
+ 'reality':'Reality','reality tv':'Reality',
+ 'music':'Music','musical':'Musical','sports':'Sports','sport':'Sports',
+ 'biography':'Biography','soap':'Soap','talk':'Talk',
+ 'action adventure':'Action','action and adventure':'Action'
+};
+function canonical(v){return ALIASES[norm(v)]||''}
+function label(v){
+ if(typeof v==='string')return v;
+ if(!v||typeof v!=='object')return '';
+ return str(v.title||v.name||v.label||v.genreTitle||'');
+}
+function splitGenres(value){
+ var raw=label(value),out=[];if(!raw)return out;
+ function add(v){var g=canonical(v);if(g&&out.indexOf(g)<0)out.push(g)}
+ var parts=raw.split(/[·•|,\/;]+/);
+ for(var i=0;i<parts.length;i++){
+   var s=norm(parts[i]);
+   if(!s||/^(?:global rank|streaming trend rank)\s*\d+$/.test(s)||s==='trending worldwide')continue;
+   if(s==='sci fi and fantasy'||s==='science fiction and fantasy'){add('Sci-Fi');add('Fantasy');continue}
+   if(s==='mystery and thriller'){add('Mystery');add('Thriller');continue}
+   if(s==='kids and family'){add('Family');continue}
+   var pair=s.split(/\s+and\s+/);
+   if(pair.length===2&&canonical(pair[0])&&canonical(pair[1])){add(pair[0]);add(pair[1]);continue}
+   add(s);
+ }
+ return out;
+}
+function collectGenres(item){
+ var out=[];
+ function add(v){var list=splitGenres(v);for(var i=0;i<list.length;i++)if(out.indexOf(list[i])<0)out.push(list[i])}
+ var arrays=[item.genreItems,item.genres,item.genreList,item.categories,item.tags];
+ for(var a=0;a<arrays.length;a++){
+   if(Array.isArray(arrays[a]))for(var b=0;b<arrays[a].length;b++)add(arrays[a][b]);
+   else add(arrays[a]);
+ }
+ add(item.genreTitle);add(item.genreName);add(item.genre);add(item.category);
+ if(item.metadata&&typeof item.metadata==='object'){
+   add(item.metadata.genreTitle);add(item.metadata.genre);
+   if(Array.isArray(item.metadata.genres))for(var m=0;m<item.metadata.genres.length;m++)add(item.metadata.genres[m]);
+ }
+ return out;
+}
+function explicitPrimary(item){
+ var fields=[item.primaryGenre,item.mainGenre,item.dominantGenre];
+ for(var i=0;i<fields.length;i++){var x=splitGenres(fields[i]);if(x.length===1)return x[0]}
+ if(Array.isArray(item.genreItems))for(var j=0;j<item.genreItems.length;j++){
+   var g=item.genreItems[j];if(g&&(g.isPrimary===true||g.primary===true)){
+     var y=splitGenres(g);if(y.length===1)return y[0];
+   }
+ }
+ return '';
+}
+function synopsis(item){
+ var fields=[item.description,item.overview,item.summary,item.synopsis,item.plot,item.tagline],out=[];
+ for(var i=0;i<fields.length;i++)if(typeof fields[i]==='string'){
+   var s=fields[i].trim();if(s&&out.indexOf(s)<0)out.push(s);
+ }
+ return out.join(' ');
+}
+/* Only use synopsis patterns if Rex provides usable text. */
+var EVIDENCE={
+ 'Animation':[/\b(?:animated film|animated series|animated movie|animated feature|cartoon series)\b/gi,/\b(?:animated|animation|cartoon)\b/gi],
+ 'Anime':[/\b(?:anime series|japanese anime|anime adaptation)\b/gi,/\b(?:anime|manga)\b/gi],
+ 'Crime':[/\b(?:organized crime|murder investigation|criminal empire|crime syndicate|homicide detective|serial murders)\b/gi,/\b(?:detective|criminal|police|homicide|heist|gangster)\b/gi],
+ 'Thriller':[/\b(?:psychological thriller|survival thriller|spy thriller|espionage|deadly conspiracy|political conspiracy)\b/gi,/\b(?:thriller|suspense|hostage|paranoia)\b/gi],
+ 'Mystery':[/\b(?:unsolved case|missing person|mysterious disappearance|unexplained deaths)\b/gi,/\b(?:mystery|clues|investigation|secrets)\b/gi],
+ 'Fantasy':[/\b(?:magical world|ancient prophecy|wizard|sorcery|dragons|mythical realm)\b/gi,/\b(?:magic|mythology|demigod|spell)\b/gi],
+ 'Sci-Fi':[/\b(?:science fiction|time travel|alien invasion|artificial intelligence|parallel universe|space exploration)\b/gi,/\b(?:dystopia|spaceship|extraterrestrial|robots|futuristic)\b/gi],
+ 'Romance':[/\b(?:love story|falling in love|romantic relationship|love triangle)\b/gi,/\b(?:romantic|lovers|courtship|first love)\b/gi],
+ 'Action':[/\b(?:martial arts|action packed|gunfight|deadly combat)\b/gi,/\b(?:vigilante|combat|fighter|battle)\b/gi],
+ 'Adventure':[/\b(?:epic quest|treasure hunt|dangerous expedition|epic adventure)\b/gi,/\b(?:quest|exploration|voyage|journey)\b/gi],
+ 'Comedy':[/\b(?:sitcom|romantic comedy|dark comedy|workplace comedy)\b/gi,/\b(?:comedic|hilarious|witty|humor)\b/gi],
+ 'Drama':[/\b(?:family drama|historical drama|character driven|complex relationships)\b/gi,/\b(?:grief|family conflict|emotional struggle)\b/gi],
+ 'Horror':[/\b(?:haunted house|demonic possession|slasher|zombie apocalypse)\b/gi,/\b(?:horror|haunted|zombie|nightmare)\b/gi],
+ 'Documentary':[/\b(?:documentary|docuseries|archival footage|nonfiction series)\b/gi,/\b(?:real life|interviews|true events)\b/gi],
+ 'Western':[/\b(?:wild west|western drama|frontier town)\b/gi,/\b(?:cowboy|rancher|sheriff|rodeo)\b/gi],
+ 'Sports':[/\b(?:sports team|professional athlete|championship season)\b/gi,/\b(?:soccer|football|basketball|athlete)\b/gi]
+};
+function evidence(g,story){var p=EVIDENCE[g];if(!p||!story)return 0;var strong=story.match(p[0])||[],weak=story.match(p[1])||[];return Math.min(strong.length,2)*4+Math.min(weak.length,2)*1.5}
+function classifyGenres(item){
+ if(!item)return [];
+ var known=knownGenres(item);
+ if(known.length)return known;
+ var source=collectGenres(item),primary=explicitPrimary(item),story=synopsis(item);
+ if(primary){source=source.filter(function(v){return v!==primary});source.unshift(primary)}
+ if(source.indexOf('Anime')>=0)return ['Anime'].concat(source.filter(function(v){return v!=='Anime'}));
+ if(source.indexOf('Animation')>=0)return ['Animation'].concat(source.filter(function(v){return v!=='Animation'}));
+ if(/\b(?:animated film|animated movie|animated series|anime series)\b/i.test(story)){
+   return [/\banime\b/i.test(story)?'Anime':'Animation'].concat(source);
+ }
+ if(!source.length){
+   var evidenceList=[];
+   for(var k in EVIDENCE)if(Object.prototype.hasOwnProperty.call(EVIDENCE,k)){
+     var n=evidence(k,story);if(n>=4)evidenceList.push({genre:k,score:n});
+   }
+   evidenceList.sort(function(a,b){return b.score-a.score});
+   if(evidenceList.length===0)return [];
+   if(evidenceList.length>1&&evidenceList[0].score-evidenceList[1].score<1.5)return [];
+   return [evidenceList[0].genre];
+ }
+ if(primary||source.length===1)return source;
+ var scores=source.map(function(g){return {genre:g,score:evidence(g,story)}});
+ scores.sort(function(a,b){return b.score-a.score});
+ if(scores[0].score>=4&&scores[0].score-scores[1].score>=1.5){
+   var winner=scores[0].genre;return [winner].concat(source.filter(function(v){return v!==winner}));
+ }
+ for(var i=0;i<source.length;i++){
+   if(source[i]!=='Drama'&&source[i]!=='Family'){
+     var preferred=source[i];return [preferred].concat(source.filter(function(v){return v!==preferred}));
+   }
+ }
+ return source;
+}
+function typeLabel(item){
+ var type=mediaType(item);
+ if(/^(?:movie|film|cinema)$/.test(type))return 'Movie';
+ if(/^(?:tv|show|series|tv show|tv series|television)$/.test(type))return 'TV Show';
+ return '';
+}
+function infoLabel(item){
+ var parts=[],type=typeLabel(item),genres=classifyGenres(item);
+ if(type)parts.push(type);
+ for(var i=0;i<genres.length&&i<2;i++)if(genres[i]&&parts.indexOf(genres[i])<0)parts.push(genres[i]);
+ return parts.join(' · ');
+}
+function firstNetwork(item){
+ if(!item)return null;
+ var n=item.originalNetwork||item.originalNetworkName||item.originalNetworks||item.networks||item.network||item.productionNetwork||item.originNetwork;
+ if(Array.isArray(n))n=n[0];if(!n)return null;
+ if(typeof n==='string')return {name:n,logo:''};
+ if(typeof n!=='object')return null;
+ return {name:n.name||n.title||n.networkName||'',logo:n.logoPath||n.logoUrl||n.logo||n.image||''};
+}
+function showNetwork(item){
+ var n=firstNetwork(item),name=n&&n.name||'',logo=n&&n.logo||item&&(item.originalNetworkLogoPath||item.originalNetworkLogo||item.networkLogoPath||item.networkLogoUrl)||'';
+ setImage(el('platformLogo'),logo);el('platformLogo').alt=name;
+ el('platformName').hidden=!!logo||!name;el('platformName').textContent=name;
+ return !!(logo||name);
+}
+function validRank(v){
+ if(v==null||v==='')return null;
+ var s=str(v).trim().toLowerCase(),words=['one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen','twenty'];
+ var i=words.indexOf(s);if(i>=0)return i+1;
+ return /^(?:[1-9]|1[0-9]|20)$/.test(s)?+s:null;
+}
+function getRank(item,layout){
+ if(!item)return null;
+ var fields=[item.rank,item.chartRank,item.trendingRank,item.rankNumber,item.position];
+ for(var i=0;i<fields.length;i++){var r=validRank(fields[i]);if(r!==null)return r}
+ var m=str(item.title).match(/^\s*#?\s*(20|1[0-9]|[1-9])\s*[.\-:)]+\s+/);if(m)return validRank(m[1]);
+ m=(str(item.genreTitle)+' '+str(item.description)).match(/(?:GLOBAL\s+RANK|streaming\s+trend\s+rank|\brank)\s*[#:]*\s*(20|1[0-9]|[1-9])\b/i);
+ if(m)return validRank(m[1]);
+ if(layout&&layout.index!=null){var n=Number(layout.index);if(Number.isInteger(n)&&n>=0&&n<20)return n+1}
+ return null;
+}
+function updateRank(){
+ var node=el('rank');if(!selected){node.hidden=true;return}
+ var rank=getRank(selected,api.layout);
+ if(rank===null){node.hidden=true;node.setAttribute('data-digit','');return}
+ node.hidden=false;node.setAttribute('data-digit',String(rank));
+ var width=card.getBoundingClientRect().width||card.clientWidth||400;
+ node.style.setProperty('--rank-size',Math.max(36,Math.min(90,width*.23)).toFixed(2)+'px');
+}
+function updateLayout(){
+ var layout=api.layout||{},height=Number(layout.height);
+ if(Number.isFinite(height)&&height>0)card.style.height=height+'px';
+ var width=card.getBoundingClientRect().width||card.clientWidth||400;
+ el('title').style.fontSize=Math.max(21,Math.min(34,width*.075))+'px';
+ updateRank();
+}
+function render(){
+ var snapshot=api.content,items=snapshot&&snapshot.items||[];
+ selected=items[0]||null;var name=nameOf(selected);
+ var artwork=selected&&(selected.cleanPosterPath||selected.posterPath||selected.detailPoster||selected.coverUrl||selected.backdropPath)||'';
+ setImage(el('poster'),artwork);
+ renderTitleLogo(findTitleLogo(selected),name);
+ var info=selected?infoLabel(selected):'';
+ el('metaText').textContent=info;el('metaText').hidden=!info;
+ var network=showNetwork(selected);
+ el('meta').hidden=!selected||!(network||info);el('details').hidden=!selected;
+ el('status').hidden=!!selected;el('status').textContent=snapshot?'No titles available':'Waiting for titles';
+ link.tabIndex=selected?0:-1;link.setAttribute('aria-label',selected?'Open '+name:'Open title');
+ updateLayout();
+}
+function openSelected(){
+ if(!selected)return;var now=Date.now();if(now-lastOpen<350)return;
+ var id=selected.id;if(id==null||id==='')return;
+ if(typeof api.canOpen==='function'&&!api.canOpen('item',id))return;
+ lastOpen=now;
+ try{var result=api.open('item',id);if(result&&typeof result.catch==='function')result.catch(function(){})}catch(e){}
+}
+link.addEventListener('click',function(e){e.preventDefault();openSelected()});
+link.addEventListener('focus',function(){card.classList.add('focused')});
+link.addEventListener('blur',function(){card.classList.remove('focused')});
+link.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key==='Select'||e.key===' '||e.keyCode===13||e.keyCode===23){e.preventDefault();openSelected()}});
+if(typeof ResizeObserver!=='undefined')new ResizeObserver(updateLayout).observe(card);
+window.addEventListener('resize',updateLayout);
+api.onContentChanged(render);api.onLayoutChanged(updateLayout);render();
+})();
+</script>
+</body>
+</html>
