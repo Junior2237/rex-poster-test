@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.3.0 — TMDB mixed Trending + existing charts
+ * Version 3.3.1 — High-resolution mixed Trending artwork
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -52,7 +52,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.3.0",
+  version: "3.3.1",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -264,6 +264,23 @@ function chooseCleanPoster(posters) {
   return candidates.length ? candidates[0].file_path : "";
 }
 
+// Oversized Trending: native portrait artwork only, with a resolution floor.
+function choosePremiumCleanPoster(posters) {
+  if (!Array.isArray(posters)) return "";
+  var candidates = posters.filter(function(p) {
+    if (!p || p.iso_639_1 !== null || !tmdbPath(p.file_path)) return false;
+    var w = Number(p.width), h = Number(p.height);
+    return w >= 1000 && h >= 1500 && w / h >= 0.63 && w / h <= 0.71;
+  });
+  candidates.sort(function(a,b) {
+    return (Number(b.width) * Number(b.height)) -
+      (Number(a.width) * Number(a.height)) ||
+      (Number(b.vote_average) || 0) - (Number(a.vote_average) || 0) ||
+      (Number(b.vote_count) || 0) - (Number(a.vote_count) || 0);
+  });
+  return candidates.length ? candidates[0].file_path : "";
+}
+
 function chooseCleanBackdrop(backdrops) {
   if (!Array.isArray(backdrops)) return "";
   var candidates = backdrops.filter(function(p) {
@@ -383,8 +400,10 @@ async function fetchGallery(
 async function getArtwork(
   mediaType,
   tmdbId,
-  title
+  title,
+  premiumPortrait
 ) {
+  var selectCleanPoster = premiumPortrait ? choosePremiumCleanPoster : chooseCleanPoster;
   var result = {
     standardPoster: "",
     cleanPoster: "",
@@ -461,7 +480,7 @@ async function getArtwork(
 
   if (images) {
     result.cleanPoster =
-      chooseCleanPoster(images.posters);
+      selectCleanPoster(images.posters);
     result.cleanBackdrop = chooseCleanBackdrop(images.backdrops);
 
     result.logo =
@@ -491,7 +510,7 @@ async function getArtwork(
 
         if (!result.cleanPoster) {
           result.cleanPoster =
-            chooseCleanPoster(gallery.posters);
+            selectCleanPoster(gallery.posters);
         }
 
         if (!result.standardPoster) {
@@ -524,7 +543,7 @@ async function getArtwork(
           result.logo = chooseLogo(allImages.logos);
         }
         if (!result.cleanPoster) {
-          result.cleanPoster = chooseCleanPoster(allImages.posters);
+          result.cleanPoster = selectCleanPoster(allImages.posters);
         }
         if (!result.standardPoster) {
           result.standardPoster = chooseStandardPoster(allImages.posters);
@@ -596,7 +615,8 @@ function isNinetiesClub(
 
 async function buildItem(
   entry,
-  mediaType
+  mediaType,
+  premiumPortrait
 ) {
   var row = entry.row;
   var subject =
@@ -653,13 +673,15 @@ async function buildItem(
     var artwork = await getArtwork(
       mediaType,
       tmdbId,
-      title
+      title,
+      premiumPortrait
     );
 
-    var poster =
-      artwork.cleanPoster ||
-      artwork.cleanBackdrop ||
-      artwork.standardPoster;
+    // Do not stretch or crop inferior artwork in the oversized Trending row.
+    if (premiumPortrait && !artwork.cleanPoster) return null;
+    var poster = premiumPortrait
+      ? artwork.cleanPoster
+      : artwork.cleanPoster || artwork.cleanBackdrop || artwork.standardPoster;
 
     if (poster) {
       item.posterPath = poster;
@@ -706,6 +728,8 @@ async function buildItem(
         artwork.networkLogo;
     }
   }
+
+  if (premiumPortrait && !tmdbId) return null;
 
   if (
     isNinetiesClub(
@@ -953,7 +977,7 @@ async function loadCombinedTrending(params) {
             row: candidate.row,
             rank: candidate.rank,
             index: candidate.rank - 1
-          }, candidate.mediaType);
+          }, candidate.mediaType, true);
           if (!item || !item.titleLogoRawPath ||
               !/\.png$/i.test(item.titleLogoRawPath) ||
               !(item.posterPath || item.coverUrl)) return null;
