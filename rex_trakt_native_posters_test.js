@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.3.9 — Parallel cold-start metadata loading
+ * Version 3.4.0 — Persistent startup cache
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -35,6 +35,9 @@ var CHART_PAGE_SIZE = 40;
 var CHART_MAX_PAGES = 2;
 var BATCH_SIZE = 4;
 var CACHE_SECONDS = 1800;
+var ARTWORK_CACHE_SECONDS = 14400;
+var DAILY_WORKERS = 6;
+var STARTUP_CACHE_PREFIX = "rex-v340:";
 
 var TMDB_BASE =
   "https://image.tmdb.org/t/p/original";
@@ -59,7 +62,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.3.9",
+  version: "3.4.0",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -426,7 +429,70 @@ async function fetchGallery(
   return unwrap(response);
 }
 
-async function getArtwork(
+function startupCacheRead(key, maxAge) {
+  try {
+    if (!Widget.storage || typeof Widget.storage.get !== "function") return null;
+    var raw = Widget.storage.get(STARTUP_CACHE_PREFIX + key);
+    var entry = typeof raw === "string" ? JSON.parse(raw) : raw;
+    if (!entry || typeof entry.at !== "number" || Date.now() - entry.at < 0 ||
+        Date.now() - entry.at >= maxAge * 1000) return null;
+    return entry.value == null ? null : entry.value;
+  } catch (e) { return null; }
+}
+
+function startupCacheWrite(key, value) {
+  try {
+    if (!Widget.storage || typeof Widget.storage.set !== "function") return;
+    Widget.storage.set(STARTUP_CACHE_PREFIX + key, JSON.stringify({ at: Date.now(), value: value }));
+  } catch (e) { /* Cache failure must never block normal loading. */ }
+}
+
+function startupCachePrune() {
+  try {
+    if (!Widget.storage || typeof Widget.storage.keys !== "function" ||
+        typeof Widget.storage.remove !== "function") return;
+    var keys = Widget.storage.keys();
+    if (!Array.isArray(keys)) return;
+    var own = keys.filter(function(key) { return String(key).indexOf(STARTUP_CACHE_PREFIX + "art:") === 0; });
+    if (own.length <= 400) return;
+    var entries = own.map(function(key) {
+      try {
+        var raw = Widget.storage.get(key);
+        var entry = typeof raw === "string" ? JSON.parse(raw) : raw;
+        return {key:key, at:entry && Number(entry.at) || 0};
+      } catch(e) { return {key:key, at:0}; }
+    }).sort(function(a,b) { return a.at-b.at; });
+    entries.slice(0, entries.length - 300).forEach(function(entry) { Widget.storage.remove(entry.key); });
+  } catch (e) { /* Optional maintenance only. */ }
+}
+
+async function loadCachedRow(key, target, loader) {
+  var cached = startupCacheRead("row:" + key, CACHE_SECONDS);
+  if (Array.isArray(cached) && cached.length === target) return cached;
+  var started = Date.now();
+  var rows = await loader();
+  if (Array.isArray(rows) && rows.length === target) {
+    startupCacheWrite("row:" + key, rows);
+    startupCachePrune();
+  }
+  if (typeof console !== "undefined" && typeof console.log === "function") {
+    console.log("Rex load " + key + ": " + (Date.now() - started) + "ms");
+  }
+  return rows;
+}
+
+async function getArtwork(mediaType, tmdbId, title, premiumPortrait) {
+  var key = "art:" + mediaType + ":" + tmdbId + ":" + (premiumPortrait ? "premium" : "standard");
+  var cached = startupCacheRead(key, ARTWORK_CACHE_SECONDS);
+  if (cached && cached.logo && cached.cleanPoster && Array.isArray(cached.genres)) return cached;
+  var artwork = await getArtworkUncached(mediaType, tmdbId, title, premiumPortrait);
+  if (artwork && artwork.logo && artwork.cleanPoster && Array.isArray(artwork.genres)) {
+    startupCacheWrite(key, artwork);
+  }
+  return artwork;
+}
+
+async function getArtworkUncached(
   mediaType,
   tmdbId,
   title,
@@ -1047,43 +1113,25 @@ async function loadNativeList(
     return Object.create(null);
   });
 
-  var results = [];
-
-  for (
-    var start = 0;
-    start < entries.length;
-    start += BATCH_SIZE
-  ) {
-    var batch = entries.slice(
-      start,
-      start + BATCH_SIZE
-    );
-
-    var completed = await Promise.all(
-      batch.map(async function(entry) {
-        try {
-          return await buildItem(
-            entry,
-            mediaType,
-            false,
-            true
-          );
-        } catch (error) {
-          console.warn(
-            "Item failed:",
-            entry.rank,
-            errorText(error)
-          );
-
-          return null;
-        }
-      })
-    );
-
-    results = results.concat(
-      completed.filter(Boolean)
-    );
+  // Rolling bounded worker pool: no waiting for a slow item at each batch boundary.
+  var results = new Array(entries.length);
+  var next = 0;
+  async function worker() {
+    while (next < entries.length) {
+      var index = next++;
+      var entry = entries[index];
+      try {
+        results[index] = await buildItem(entry, mediaType, false, true);
+      } catch (error) {
+        console.warn("Item failed:", entry.rank, errorText(error));
+        results[index] = null;
+      }
+    }
   }
+  var workers = [];
+  for (var w = 0; w < Math.min(DAILY_WORKERS, entries.length); w++) workers.push(worker());
+  await Promise.all(workers);
+  results = results.filter(Boolean);
 
   var imdbRatings = await imdbRatingsPromise;
   if (mediaType === "movie") {
@@ -1094,19 +1142,17 @@ async function loadNativeList(
 }
 
 async function loadNativeMovies(params) {
-  return loadNativeList(
-    "movie",
-    MOVIES_LIST,
-    params
-  );
+  if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
+  return loadCachedRow("daily-movies", MAX_ITEMS, function() {
+    return loadNativeList("movie", MOVIES_LIST, params);
+  });
 }
 
 async function loadNativeShows(params) {
-  return loadNativeList(
-    "tv",
-    TV_LIST,
-    params
-  );
+  if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
+  return loadCachedRow("daily-shows", MAX_ITEMS, function() {
+    return loadNativeList("tv", TV_LIST, params);
+  });
 }
 
 /*
@@ -1181,16 +1227,28 @@ async function loadArtworkChart(mediaType, chart, params) {
 }
 
 async function loadTrendingMovies(params) {
-  return loadArtworkChart("movie", "trending", params);
+  if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
+  return loadCachedRow("trending-movies", CHART_TARGET, function() {
+    return loadArtworkChart("movie", "trending", params);
+  });
 }
 async function loadTrendingShows(params) {
-  return loadArtworkChart("tv", "trending", params);
+  if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
+  return loadCachedRow("trending-shows", CHART_TARGET, function() {
+    return loadArtworkChart("tv", "trending", params);
+  });
 }
 async function loadPopularMovies(params) {
-  return loadArtworkChart("movie", "popular", params);
+  if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
+  return loadCachedRow("popular-movies", CHART_TARGET, function() {
+    return loadArtworkChart("movie", "popular", params);
+  });
 }
 async function loadPopularShows(params) {
-  return loadArtworkChart("tv", "popular", params);
+  if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
+  return loadCachedRow("popular-shows", CHART_TARGET, function() {
+    return loadArtworkChart("tv", "popular", params);
+  });
 }
 
 /*
@@ -1199,6 +1257,12 @@ async function loadPopularShows(params) {
  * Unlike active Trakt watcher counts, upcoming titles can qualify.
  */
 async function loadCombinedTrending(params) {
+  return loadCachedRow("combined-trending", CHART_TARGET, function() {
+    return loadCombinedTrendingUncached(params);
+  });
+}
+
+async function loadCombinedTrendingUncached(params) {
   var results = [];
   var seen = Object.create(null);
   var tvCount = 0;
