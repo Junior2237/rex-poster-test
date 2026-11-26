@@ -34,7 +34,7 @@ var WidgetMetadata = {
   title: "Movie Rating Audit — Temporary",
   description: "Displays actual ranking inputs for the movie Top 20. Does not change the production module.",
   author: "Junior",
-  version: "1.0.0",
+  version: "1.0.1",
   requiredVersion: "0.0.1",
   modules: [{
     id: "movie-rating-audit",
@@ -907,7 +907,7 @@ function rankDailyMovies(items, imdbRatings) {
       return v === null || v === undefined || v === "" || !Number.isFinite(Number(v)) ? "N/A" : String(v);
     }
     var audit = [
-      "AUDIT v1.0 | Rank " + item.rank + " | Source #" + row.originalRank,
+       "AUDIT v1.0.1 | Rank " + item.rank + " | Source #" + row.originalRank,
       "Title: " + item.title,
       "IMDb ID: " + (item._dailyImdbId || "N/A"),
       "TMDB ID: " + (item.tmdbId || "N/A"),
@@ -922,7 +922,13 @@ function rankDailyMovies(items, imdbRatings) {
     ].join("\n");
     item.description = audit;
     item.genreTitle = "AUDIT " + row.score.toFixed(3) + " | IMDb " + show(record && record.rawRating) + " | " + row.source;
-    item.title = item.title + " | AUDIT " + row.score.toFixed(3);
+    function compact(v) {
+      return show(v) === "N/A" ? "-" : Number(v).toFixed(1);
+    }
+    var provider = !record ? "F" : record.source === "Cinemeta IMDb" ? "C" : "I";
+    // Put all essential diagnostic values BEFORE the name: Rex truncates long titles.
+    item.title = row.score.toFixed(2) + " " + provider + compact(record && record.rawRating) +
+      " M" + compact(item._auditTmdbRating) + " T" + compact(item._auditTraktRating) + " | " + item.title;
     delete item._dailyQuality;
     delete item._dailyImdbId;
     delete item._auditTraktRating;
