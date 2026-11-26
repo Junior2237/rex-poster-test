@@ -80,6 +80,7 @@ function normalize(v){
 }
 var card=el('card'),rankNode=el('rank'),link=el('open');
 var selected=null,lastOpenAt=0;
+var currentArtworkKey='',imageGeneration=0,displayedPoster='',pendingPoster='',lockedArtwork=null;
 if(!api){el('status').textContent='Preview in Rex Widget Workshop';return}
 function artworkValue(v){
  if(v&&typeof v==='object')return artworkValue(v.url||v.src||v.path||v.file_path||v.imageUrl||v.backdropPath||'');
@@ -95,64 +96,104 @@ function railArtworkBundle(item){
     (!backdrop||paths[0]===backdrop))return {poster:paths[1],logo:paths[2]};
  return null;
 }
-var railArtMemory=Object.create(null);
-var railArtTTL=4*60*60*1000;
-function railArtKey(item){
- if(!item||item.id==null||item.id==='')return '';
- return 'rex.clean.342.'+String(item.mediaType||item.contentType||'')+':'+String(item.id)+':'+String(item.title||'').trim().toLowerCase();
+var railArtMemory=Object.create(null),railArtTTL=4*60*60*1000;
+function railArtKeys(item){
+ if(!item||item.id==null||item.id==='')return [];
+ var id=String(item.id).trim(),title=String(item.title||'').trim().toLowerCase().replace(/\s+/g,' ');
+ // Title and id together avoid collisions between movies and series while
+ // allowing the native mediaType field to disappear or change on navigation.
+ var type=String(item.mediaType||item.contentType||'').toLowerCase();
+ if(type==='show'||type==='series'||type==='television')type='tv';
+ var base='rex.regular384.clean.345:';
+ var keys=[];
+ if(type)keys.push(base+type+':'+id);
+ if(title)keys.push(base+'idtitle:'+id+':'+title);
+ return keys;
 }
+function railArtKey(item){return railArtKeys(item)[0]||''}
 function railArtRead(key){
  if(!key)return null;
  var data=railArtMemory[key];
- if(!data){
-  try{data=JSON.parse(localStorage.getItem(key)||'null')}catch(e){}
- }
+ if(!data){try{data=JSON.parse(localStorage.getItem(key)||'null')}catch(e){}}
  if(!data||typeof data.at!=='number'||Date.now()-data.at<0||Date.now()-data.at>=railArtTTL||!data.poster)return null;
- railArtMemory[key]=data;
- return data;
+ railArtMemory[key]=data;return data;
 }
-function railArtRemember(key,poster,logo){
- if(!key||!poster)return;
+function railArtFor(item){
+ var keys=railArtKeys(item);
+ for(var i=0;i<keys.length;i++){var data=railArtRead(keys[i]);if(data)return data}
+ return null;
+}
+function railArtRemember(item,poster,logo){
+ if(!poster)return;
  var data={poster:poster,logo:logo||'',at:Date.now()};
- railArtMemory[key]=data;
- try{localStorage.setItem(key,JSON.stringify(data))}catch(e){}
+ railArtKeys(item).forEach(function(key){railArtMemory[key]=data;try{localStorage.setItem(key,JSON.stringify(data))}catch(e){}});
 }
-function railPoster(item){
- if(!item)return '';
- var key=railArtKey(item),cached=railArtRead(key);
- // The native See All grid may hydrate the same item and replace its artwork.
- // Retain the last known clean artwork, not the replacement default poster.
- if(cached)return cached.poster;
+function imageIdentity(value){
+ var src=artworkValue(value);
+ try{src=decodeURIComponent(src)}catch(e){}
+ // Compare the source filename rather than the proxy's size or URL wrapper.
+ var matches=src.match(/\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)(?=$|[?#&/])/ig);
+ return matches&&matches.length?matches[matches.length-1].toLowerCase():src;
+}
+function confirmedArtwork(item){
+ if(!item)return null;
+ var cached=railArtFor(item);
+ if(cached)return cached;
  var bundle=railArtworkBundle(item),clean=artworkValue(item.cleanPosterPath);
- var defaultPoster=artworkValue(item.posterPath);
- var poster=(bundle&&bundle.poster)||(clean&&clean!==defaultPoster?clean:'');
- if(poster){
-  railArtRemember(key,poster,(bundle&&bundle.logo)||artworkValue(item.titleLogoPath)||artworkValue(item.titleLogoUrl)||artworkValue(item.logoPath));
-  return poster;
- }
- // Never cache a generic native fallback as a textless poster.
- return artworkValue(item.detailPoster)||defaultPoster||artworkValue(item.coverUrl)||artworkValue(item.backdropPath);
+ var nativePoster=artworkValue(item.posterPath)||artworkValue(item.coverUrl);
+ // Do not treat changing native detail art as verified textless artwork.
+ var poster=(bundle&&bundle.poster)||(clean&&imageIdentity(clean)!==imageIdentity(nativePoster)?clean:'');
+ if(!poster)return null;
+ return {poster:poster,logo:(bundle&&bundle.logo)||artworkValue(item.titleLogoPath)||
+  artworkValue(item.titleLogoUrl)||artworkValue(item.logoPath)};
 }
-function findTitleLogo(item){
- if(!item)return [];
- var candidates=[];
- function add(value){var p=artworkValue(value);if(p&&candidates.indexOf(p)<0)candidates.push(p)}
- var cachedArt=railArtRead(railArtKey(item));
- if(cachedArt)add(cachedArt.logo);
- add(item.titleLogoPath);add(item.titleLogoUrl);add(item.logoUrl);add(item.logoPath);
- var paths=Array.isArray(item.backdropPaths)?item.backdropPaths.map(artworkValue).filter(Boolean):[];
- var backdrop=artworkValue(item.backdropPath);
- var bundle=railArtworkBundle(item);
- if(bundle)add(bundle.logo);
- for(var i=paths.length-1;i>=0;i--){
-  if(bundle&&paths[i]===bundle.poster)continue;
-  var p=paths[i];try{p=decodeURIComponent(p)}catch(e){}
-  if(paths[i]!==backdrop&&/\.png(?:$|[?&#/])/i.test(p))add(paths[i]);
- }
- // The custom module places its logo after the primary backdrop.
- // Rex may rewrite image URLs without preserving their extension.
- if(paths.length===2&&paths[0]===backdrop&&paths[1]!==backdrop)add(paths[1]);
- return candidates;
+
+function lockArtwork(item){
+ if(lockedArtwork)return lockedArtwork;
+ var art=confirmedArtwork(item);
+ if(!art)return null;
+ // Lock the source for the entire assignment of this rail cell.
+ lockedArtwork={poster:art.poster,logo:art.logo||''};
+ railArtRemember(item,lockedArtwork.poster,lockedArtwork.logo);
+ return lockedArtwork;
+}
+
+function artworkKey(item){
+ if(!item)return '';
+ return String(item.id==null?'':item.id)+'|'+nameOf(item).trim().toLowerCase();
+}
+function resetArtwork(){
+ imageGeneration++;
+ displayedPoster='';
+ pendingPoster='';
+ lockedArtwork=null;
+ setImage(el('poster'),'');
+ logoRequest++;
+ logoKey='';
+ var logo=el('logo');
+ logo.onload=null;logo.onerror=null;
+ setImage(logo,'');
+ el('title').hidden=true;
+}
+function updatePoster(item,art){
+ // A confirmed source is immutable until a genuinely different title is assigned.
+ // Avoid native poster fallbacks: they may be replaced after See All hydration.
+ var src=art&&art.poster||'',key=artworkKey(item);
+ if(!src||displayedPoster||src===pendingPoster)return;
+ pendingPoster=src;
+ var generation=++imageGeneration;
+ var image=new Image();
+ image.onload=function(){
+  if(generation!==imageGeneration||key!==currentArtworkKey||!selected||artworkKey(selected)!==key)return;
+  pendingPoster='';
+  displayedPoster=src;
+  setImage(el('poster'),src);
+ };
+ image.onerror=function(){
+  if(generation===imageGeneration)pendingPoster='';
+ };
+ image.src=src;
+ if(image.complete&&image.naturalWidth>0&&pendingPoster===src)image.onload();
 }
 var logoRequest=0,logoKey='';
 function renderTitleLogo(sources,name){
@@ -393,18 +434,35 @@ function updateLayout(){
   updateRank();
 }
 function render(){
-  var content=api.content,items=content&&content.items||[];
-  selected=items[0]||null;
-  var name=nameOf(selected);
-  var poster=railPoster(selected);
-  setImage(el('poster'),poster);
-  renderTitleLogo(findTitleLogo(selected),name);
+  var content=api.content;
+  if(!content)return;
+  var items=content.items||[],item=items[0]||null;
+  if(!item){
+    if(selected||displayedPoster||pendingPoster){
+      if(pendingPoster){imageGeneration++;pendingPoster='';}
+      selected=null;link.tabIndex=-1;
+      return;
+    }
+    currentArtworkKey='';resetArtwork();
+    el('details').hidden=true;el('status').hidden=false;
+    el('status').textContent='No titles available';link.tabIndex=-1;
+    updateLayout();return;
+  }
+  var key=artworkKey(item);
+  if(key!==currentArtworkKey){currentArtworkKey=key;resetArtwork();}
+  selected=item;
+  var name=nameOf(selected),art=lockArtwork(selected);
+  updatePoster(selected,art);
+  if(art&&!art.logo){
+    art.logo=artworkValue(item.titleLogoPath)||artworkValue(item.titleLogoUrl)||artworkValue(item.logoPath);
+    if(art.logo)railArtRemember(item,art.poster,art.logo);
+  }
+  renderTitleLogo(art&&art.logo?[art.logo]:[],name);
   var genre=classifyGenre(selected);
   el('genre').textContent=genre;el('genre').hidden=!genre;el('details').hidden=!selected;
   showNetwork(selected);
-  el('status').hidden=!!selected;
-  el('status').textContent=content?'No titles available':'Waiting for titles';
-  link.tabIndex=selected?0:-1;link.setAttribute('aria-label',selected?'Open '+name:'Open title');
+  el('status').hidden=true;
+  link.tabIndex=0;link.setAttribute('aria-label','Open '+name);
   updateLayout();
 }
 function openSelected(){
