@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.3.7 — Movie-only rating normalization
+ * Version 3.3.8 — Movie-only rating consensus guard
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -16,7 +16,8 @@
  * - Poster fallbacks
  *
  * Daily TV Top 20: 85% IMDb / 15% community quality when available.
- * Daily movie Top 20: 90% normalized IMDb / 10% community quality.
+ * Daily movie Top 20: 90% normalized IMDb / 10% community quality,
+ * with outlier verification and community fallback.
  * Source popularity determines membership and breaks exact score ties.
  * Optional Cinemeta IMDb fallback and per-title diagnostic logging.
  * All five other chart modules retain their existing ranking.
@@ -56,7 +57,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.3.7",
+  version: "3.3.8",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -701,6 +702,7 @@ async function buildItem(
   if (dailyRanking) {
     item._dailyQuality = dailyQualityScore(subject, null);
     item._dailyImdbId = imdbId;
+    if (mediaType === "movie") item._dailyTraktRaw = subject.rating;
   }
 
   if (tmdbId) {
@@ -713,7 +715,10 @@ async function buildItem(
       premiumPortrait
     );
 
-    if (dailyRanking) item._dailyQuality = dailyQualityScore(subject, artwork);
+    if (dailyRanking) {
+      item._dailyQuality = dailyQualityScore(subject, artwork);
+      if (mediaType === "movie") item._dailyTmdbRaw = artwork.rating;
+    }
 
     // Do not stretch or crop inferior artwork in the oversized Trending row.
     if (premiumPortrait && !artwork.cleanPoster) return null;
@@ -904,11 +909,49 @@ function dailyMovieImdbScore(record) {
   return rating;
 }
 
+function movieRawRating(value) {
+  var n = Number(value);
+  return Number.isFinite(n) && n > 0 && n <= 10 ? n : null;
+}
+
+function movieRatingDisagrees(item, record) {
+  var imdb = movieRawRating(record && record.rawRating);
+  if (imdb === null) return false;
+  var community = [movieRawRating(item._dailyTmdbRaw), movieRawRating(item._dailyTraktRaw)]
+    .filter(function(n) { return n !== null; });
+  if (!community.length) return false;
+  // A single third-party IMDb value cannot dominate when it lies well
+  // outside the range of the independent community sources.
+  return imdb > Math.max.apply(null, community) + 0.75 ||
+    imdb < Math.min.apply(null, community) - 0.75;
+}
+
+function dailyMovieScore(item, record) {
+  var imdb = dailyMovieImdbScore(record);
+  var disagrees = movieRatingDisagrees(item, record);
+  var community = item._dailyQuality;
+  var raw = [movieRawRating(item._dailyTmdbRaw), movieRawRating(item._dailyTraktRaw)]
+    .filter(function(n) { return n !== null; });
+  if (!Number.isFinite(community) && raw.length) {
+    // Without votes, retain the observed score with conservative shrinkage.
+    community = 0.8 * raw.reduce(function(a,b) { return a+b; },0) / raw.length + 0.2 * 6.5;
+  }
+  var hasCommunity = Number.isFinite(community);
+  var hasImdb = Number.isFinite(imdb) && !disagrees;
+  return {
+    score: hasImdb && hasCommunity ? 0.9 * imdb + 0.1 * community :
+      hasImdb ? imdb : hasCommunity ? community - 0.25 : 6.25,
+    imdb: hasImdb ? imdb : null,
+    community: community,
+    source: hasImdb ? record.source : disagrees ? "Community fallback: IMDb outlier rejected" : "TMDB/Trakt fallback"
+  };
+}
+
 async function completeDailyMovieRatings(items, ratings) {
   var missing = [];
   items.forEach(function(item) {
     var id = item._dailyImdbId;
-    if (/^tt\d+$/.test(id || "") && !ratings[id] && missing.indexOf(id) < 0) missing.push(id);
+    if (/^tt\d+$/.test(id || "") && (!ratings[id] || movieRatingDisagrees(item, ratings[id])) && missing.indexOf(id) < 0) missing.push(id);
   });
   for (var i = 0; i < missing.length; i += BATCH_SIZE) {
     await Promise.all(missing.slice(i, i+BATCH_SIZE).map(async function(id) {
@@ -936,16 +979,9 @@ async function completeDailyMovieRatings(items, ratings) {
 function rankDailyMovies(items, imdbRatings) {
   var scored = items.map(function(item) {
     var record = imdbRatings[item._dailyImdbId];
-    var imdb = dailyMovieImdbScore(record);
-    var community = item._dailyQuality;
-    var hasImdb = Number.isFinite(imdb);
-    var hasCommunity = Number.isFinite(community);
-    // A missing IMDb result is not a high-quality signal. Conservative
-    // community fallback avoids rewarding unavailable IMDb information.
-    var score = hasImdb && hasCommunity ? 0.9 * imdb + 0.1 * community :
-      hasImdb ? imdb : hasCommunity ? community - 0.25 : 6.25;
-    return { item: item, score: score, imdb: imdb, community: community,
-      source: hasImdb ? record.source : "TMDB/Trakt fallback",
+    var quality = dailyMovieScore(item, record);
+    return { item: item, score: quality.score, imdb: quality.imdb, community: quality.community,
+      source: quality.source,
       originalRank: item.rank };
   });
   scored.sort(function(a,b) {
@@ -965,6 +1001,8 @@ function rankDailyMovies(items, imdbRatings) {
       " | score=" + row.score.toFixed(3) + " | original rank=" + row.originalRank);
     delete item._dailyQuality;
     delete item._dailyImdbId;
+    delete item._dailyTmdbRaw;
+    delete item._dailyTraktRaw;
     return item;
   });
 }
