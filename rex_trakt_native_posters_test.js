@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.5.4 — Targeted native backdrop delivery for two unresolved cards
+ * Version 3.5.5 — Hunting Wives combined Trending portrait override
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -62,7 +62,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.5.4",
+  version: "3.5.5",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -879,6 +879,16 @@ async function buildItem(
 
     try { artwork = await applyArtworkOverride(artwork, mediaType, tmdbId, premiumPortrait); } catch(e) {}
 
+    // Scope this manual portrait to the combined oversized Trending rail.
+    // Preserve the registry-selected Top 20 and other chart artwork.
+    if (combinedTrending === true && premiumPortrait === true &&
+        mediaType === "tv" && Number(tmdbId) === 244447) {
+      artwork = Object.assign({}, artwork, {
+        cleanPoster: "/rnu5OUtv5X865QEmrdqYEmzZiT2.jpg",
+        fixedRailPoster: true
+      });
+    }
+
     // Do not stretch or crop inferior artwork in the oversized Trending row,
     // except for a targeted artwork substitution above.
     // Artwork availability must never determine list membership.
@@ -1336,7 +1346,7 @@ async function loadPopularShows(params) {
  * Unlike active Trakt watcher counts, upcoming titles can qualify.
  */
 async function loadCombinedTrending(params) {
-  return loadCachedRow("combined-trending-v354", CHART_TARGET, function() {
+  return loadCachedRow("combined-trending-v355", CHART_TARGET, function() {
     return loadCombinedTrendingUncached(params);
   });
 }
