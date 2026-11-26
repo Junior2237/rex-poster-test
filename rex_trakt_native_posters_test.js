@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.4.1 — Native grid posters and release dates
+ * Version 3.4.2 — Separate native and custom rail artwork
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -37,7 +37,7 @@ var BATCH_SIZE = 4;
 var CACHE_SECONDS = 1800;
 var ARTWORK_CACHE_SECONDS = 14400;
 var DAILY_WORKERS = 6;
-var STARTUP_CACHE_PREFIX = "rex-v341:";
+var STARTUP_CACHE_PREFIX = "rex-v342:";
 
 var TMDB_BASE =
   "https://image.tmdb.org/t/p/original";
@@ -62,7 +62,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.4.1",
+  version: "3.4.2",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -742,6 +742,16 @@ function assignPosterFields(item, artwork, premiumPortrait) {
   if (clean) item.cleanPosterPath = tmdbUrl(clean);
 }
 
+function nativeArtworkBundle(artwork){
+  var backdrop=artwork.backdrop;
+  var clean=artwork.cleanPoster||artwork.cleanBackdrop;
+  var logo=artwork.logo;
+  var paths=backdrop?[backdrop]:[];
+  if(backdrop&&clean&&logo&&clean!==backdrop&&clean!==logo&&logo!==backdrop) paths.push(clean);
+  if(logo&&paths.indexOf(logo)<0)paths.push(logo);
+  return paths;
+}
+
 async function buildItem(
   entry,
   mediaType,
@@ -826,16 +836,13 @@ async function buildItem(
     assignPosterFields(item, artwork, premiumPortrait);
     if (artwork.releaseDate) item.releaseDate = artwork.releaseDate;
 
-    if (artwork.backdrop) {
-      item.backdropPath =
-        artwork.backdrop;
-      item.backdropPaths = [artwork.backdrop];
-    }
+    if (artwork.backdrop) item.backdropPath = artwork.backdrop;
+    // Rex may strip custom fields from native item payloads. The recognized
+    // backdropPaths array carries the original backdrop, clean poster and logo.
+    var nativePaths = nativeArtworkBundle(artwork);
+    if (nativePaths.length) item.backdropPaths = nativePaths;
 
     if (artwork.logo) {
-      // Keep the genuine backdrop first; the logo is always last.
-      item.backdropPaths = (item.backdropPaths || []).concat([artwork.logo]);
-
       var logoUrl = tmdbUrl(artwork.logo);
 
       item.titleLogoPath = logoUrl;
