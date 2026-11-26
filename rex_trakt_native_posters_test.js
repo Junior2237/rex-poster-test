@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.3.2 — Premium portrait resolution tiers
+ * Version 3.3.3 — Premium poster priority across all modules
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -52,7 +52,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.3.2",
+  version: "3.3.3",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -236,6 +236,11 @@ async function fetchTraktList(
 function chooseCleanPoster(posters) {
   if (!Array.isArray(posters)) return "";
 
+  // Daily Top 20: prefer the same premium artwork as the editorial charts,
+  // but retain the original fallback tiers so ranking membership is unchanged.
+  var premium = choosePremiumCleanPoster(posters);
+  if (premium) return premium;
+
   function quality(p) {
     var width = Number(p.width) || 0;
     var height = Number(p.height) || 0;
@@ -264,7 +269,8 @@ function chooseCleanPoster(posters) {
   return candidates.length ? candidates[0].file_path : "";
 }
 
-// Oversized Trending: native portrait artwork only, with a resolution floor.
+// Editorial charts: native portrait artwork only, with a resolution floor.
+// Also used as the first-choice selector by the Daily Top 20.
 function choosePremiumCleanPoster(posters) {
   if (!Array.isArray(posters)) return "";
 
@@ -897,7 +903,7 @@ async function loadArtworkChart(mediaType, chart, params) {
       var completed = await Promise.all(
         entries.slice(start, start + BATCH_SIZE).map(async function(entry) {
           try {
-            var item = await buildItem(entry, mediaType);
+            var item = await buildItem(entry, mediaType, true);
             // Require a confirmed PNG title logo and usable artwork on these editorial rows.
             if (!item || !item.titleLogoRawPath ||
                 !/\.png$/i.test(item.titleLogoRawPath) ||
