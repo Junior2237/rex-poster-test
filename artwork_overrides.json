@@ -1,13 +1,17 @@
 {
   "schemaVersion": 1,
-  "revision": 2,
+  "revision": 3,
   "overrides": {
     "tv:244447": {
       "title": "The Hunting Wives",
       "strategy": "fixed",
       "posterPath": "/hsEcXCnzoalH3i0HowKbOpJRqD0.jpg",
       "logoPath": "/dT0HdklknEGQYkn1dNACIs4IeAt.png",
-      "revision": 2
+      "revision": 3,
+      "posterPaths": {
+        "top20": "/kg09RkDPfvz44TX7K3rmUv1dI02.jpg",
+        "trending": "/yzfW8fZvPQOZKAIRaPlf8WlU9yT.jpg"
+      }
     },
     "movie:13963": {
       "title": "The Last Waltz",
