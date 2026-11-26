@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.0.2 — Correct native TMDB item identity
+ * Version 3.0.3 — Textless-first poster selection
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -49,7 +49,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.0.2",
+  version: "3.0.3",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -196,48 +196,34 @@ async function fetchTraktList(
 }
 
 function chooseCleanPoster(posters) {
-  if (!Array.isArray(posters)) {
-    return "";
+  if (!Array.isArray(posters)) return "";
+
+  function quality(p) {
+    var width = Number(p.width) || 0;
+    var height = Number(p.height) || 0;
+    var ratio = height ? width / height : 0;
+    if (width >= 600 && height >= 900 &&
+        ratio >= 0.60 && ratio <= 0.75) return 3;
+    if (ratio >= 0.60 && ratio <= 0.75) return 2;
+    if (width > 0 && height > width) return 1;
+    return 0;
   }
 
+  // Every language-neutral portrait outranks a standard poster.
+  // Keep high-resolution, native poster proportions as the first choice.
   var candidates = posters.filter(function(p) {
-    var width = Number(p && p.width) || 0;
-    var height = Number(p && p.height) || 0;
-    var ratio = height ? width / height : 0;
-
-    return (
-      p &&
-      p.iso_639_1 == null &&
-      tmdbPath(p.file_path) &&
-      width >= 600 &&
-      height >= 900 &&
-      ratio >= 0.60 &&
-      ratio <= 0.75
-    );
+    return p && p.iso_639_1 === null &&
+      tmdbPath(p.file_path) && quality(p) > 0;
   });
 
   candidates.sort(function(a, b) {
-    var voteA = Number(a.vote_average) || 0;
-    var voteB = Number(b.vote_average) || 0;
-
-    if (voteA !== voteB) {
-      return voteB - voteA;
-    }
-
-    var areaA =
-      (Number(a.width) || 0) *
-      (Number(a.height) || 0);
-
-    var areaB =
-      (Number(b.width) || 0) *
-      (Number(b.height) || 0);
-
-    return areaB - areaA;
+    return quality(b) - quality(a) ||
+      (Number(b.vote_average) || 0) - (Number(a.vote_average) || 0) ||
+      ((Number(b.width) || 0) * (Number(b.height) || 0)) -
+      ((Number(a.width) || 0) * (Number(a.height) || 0));
   });
 
-  return candidates.length
-    ? candidates[0].file_path
-    : "";
+  return candidates.length ? candidates[0].file_path : "";
 }
 
 function chooseStandardPoster(posters) {
@@ -469,7 +455,7 @@ async function getArtwork(
     }
   }
 
-  if (!result.logo) {
+  if (!result.logo || !result.cleanPoster) {
     try {
       var allImages = await fetchGallery(
         mediaType,
@@ -478,9 +464,15 @@ async function getArtwork(
       );
 
       if (allImages) {
-        result.logo = chooseLogo(
-          allImages.logos
-        );
+        if (!result.logo) {
+          result.logo = chooseLogo(allImages.logos);
+        }
+        if (!result.cleanPoster) {
+          result.cleanPoster = chooseCleanPoster(allImages.posters);
+        }
+        if (!result.standardPoster) {
+          result.standardPoster = chooseStandardPoster(allImages.posters);
+        }
       }
     } catch (error) {
       console.warn(
