@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.0.3 — Textless-first poster selection
+ * Version 3.0.4 — Textless backdrop fallback
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -49,7 +49,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.0.3",
+  version: "3.0.4",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -226,6 +226,20 @@ function chooseCleanPoster(posters) {
   return candidates.length ? candidates[0].file_path : "";
 }
 
+function chooseCleanBackdrop(backdrops) {
+  if (!Array.isArray(backdrops)) return "";
+  var candidates = backdrops.filter(function(p) {
+    return p && p.iso_639_1 === null && tmdbPath(p.file_path) &&
+      Number(p.width) > 0 && Number(p.height) > 0;
+  });
+  candidates.sort(function(a,b) {
+    return (Number(b.height)||0) - (Number(a.height)||0) ||
+      (Number(b.vote_average)||0) - (Number(a.vote_average)||0) ||
+      (Number(b.width)||0) - (Number(a.width)||0);
+  });
+  return candidates.length ? candidates[0].file_path : "";
+}
+
 function chooseStandardPoster(posters) {
   if (!Array.isArray(posters)) {
     return "";
@@ -336,6 +350,7 @@ async function getArtwork(
   var result = {
     standardPoster: "",
     cleanPoster: "",
+    cleanBackdrop: "",
     logo: "",
     backdrop: "",
     genres: [],
@@ -409,6 +424,7 @@ async function getArtwork(
   if (images) {
     result.cleanPoster =
       chooseCleanPoster(images.posters);
+    result.cleanBackdrop = chooseCleanBackdrop(images.backdrops);
 
     result.logo =
       chooseLogo(images.logos);
@@ -428,6 +444,7 @@ async function getArtwork(
       );
 
       if (gallery) {
+        if (!result.cleanBackdrop) result.cleanBackdrop = chooseCleanBackdrop(gallery.backdrops);
         if (!result.logo) {
           result.logo = chooseLogo(
             gallery.logos
@@ -464,6 +481,7 @@ async function getArtwork(
       );
 
       if (allImages) {
+        if (!result.cleanBackdrop) result.cleanBackdrop = chooseCleanBackdrop(allImages.backdrops);
         if (!result.logo) {
           result.logo = chooseLogo(allImages.logos);
         }
@@ -602,6 +620,7 @@ async function buildItem(
 
     var poster =
       artwork.cleanPoster ||
+      artwork.cleanBackdrop ||
       artwork.standardPoster;
 
     if (poster) {
@@ -610,9 +629,8 @@ async function buildItem(
       item.coverUrl = tmdbUrl(poster);
     }
 
-    if (artwork.cleanPoster) {
-      item.cleanPosterPath =
-        artwork.cleanPoster;
+    if (artwork.cleanPoster || artwork.cleanBackdrop) {
+      item.cleanPosterPath = artwork.cleanPoster || artwork.cleanBackdrop;
     }
 
     if (artwork.backdrop) {
