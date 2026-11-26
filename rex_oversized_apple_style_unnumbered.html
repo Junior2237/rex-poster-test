@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="rex-widget" content="type=rail; height=480; item-ratio=5:6">
-<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description">
+<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster">
 <title>Rex — Apple TV Editorial Oversized</title>
 <style>
 *{box-sizing:border-box}
@@ -62,6 +62,21 @@ function artworkValue(v){
  return str(v).trim();
 }
 function setImage(node,value){var src=artworkValue(value);node.hidden=!src;if(src){if(node.getAttribute('src')!==src)node.setAttribute('src',src)}else node.removeAttribute('src')}
+function railArtworkBundle(item){
+ if(!item)return null;
+ var paths=Array.isArray(item.backdropPaths)?item.backdropPaths.map(artworkValue).filter(Boolean):[];
+ var backdrop=artworkValue(item.backdropPath);
+ // Our module sends [genuine backdrop, textless artwork, title logo].
+ if(paths.length===3&&paths[0]!==paths[1]&&paths[1]!==paths[2]&&paths[0]!==paths[2]&&
+    (!backdrop||paths[0]===backdrop))return {poster:paths[1],logo:paths[2]};
+ return null;
+}
+function railPoster(item){
+ if(!item)return "";
+ var bundle=railArtworkBundle(item);
+ return (bundle&&bundle.poster)||artworkValue(item.cleanPosterPath)||
+   artworkValue(item.detailPoster)||artworkValue(item.posterPath)||artworkValue(item.coverUrl)||artworkValue(item.backdropPath);
+}
 function findTitleLogo(item){
  if(!item)return [];
  var candidates=[];
@@ -69,7 +84,10 @@ function findTitleLogo(item){
  add(item.titleLogoPath);add(item.titleLogoUrl);add(item.logoUrl);add(item.logoPath);
  var paths=Array.isArray(item.backdropPaths)?item.backdropPaths.map(artworkValue).filter(Boolean):[];
  var backdrop=artworkValue(item.backdropPath);
+ var bundle=railArtworkBundle(item);
+ if(bundle)add(bundle.logo);
  for(var i=paths.length-1;i>=0;i--){
+  if(bundle&&paths[i]===bundle.poster)continue;
   var p=paths[i];try{p=decodeURIComponent(p)}catch(e){}
   if(paths[i]!==backdrop&&/\.png(?:$|[?&#/])/i.test(p))add(paths[i]);
  }
@@ -274,7 +292,7 @@ function render(){
   var snapshot=api.content,items=snapshot&&snapshot.items||[];
   selected=items[0]||null;var name=nameOf(selected);
   /* Prefer clean portrait artwork. Use backdrop only as fallback. */
-  var artwork=selected&&(selected.cleanPosterPath||selected.posterPath||selected.detailPoster||selected.coverUrl||selected.backdropPath)||'';
+  var artwork=railPoster(selected);
   setImage(el('poster'),artwork);
   renderTitleLogo(findTitleLogo(selected),name);
   var info=selected?infoLabel(selected):'';
