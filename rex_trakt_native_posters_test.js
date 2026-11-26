@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.0.4 — Textless backdrop fallback
+ * Version 3.1.0 — Daily Top 20 + Trending and Popular
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -15,7 +15,7 @@
  * - Genres and network metadata
  * - Poster fallbacks
  *
- * No additional repositories or modules.
+ * Adds four independent Trakt chart modules. Daily Top 20 unchanged.
  */
 
 var TRAKT_USER = "junior2237";
@@ -23,6 +23,9 @@ var MOVIES_LIST = "today-s-top-20-movies";
 var TV_LIST = "today-s-top-20-tv-shows";
 
 var MAX_ITEMS = 20;
+var CHART_TARGET = 30;
+var CHART_PAGE_SIZE = 40;
+var CHART_MAX_PAGES = 2;
 var BATCH_SIZE = 4;
 var CACHE_SECONDS = 1800;
 
@@ -49,7 +52,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.0.4",
+  version: "3.1.0",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -64,6 +67,34 @@ var WidgetMetadata = {
       id: "native-top20-shows-with-posters",
       title: "Today's Top 20 TV Shows — Fast",
       functionName: "loadNativeShows",
+      cacheDuration: CACHE_SECONDS,
+      params: [TRAKT_PARAM]
+    },
+    {
+      id: "trending-movies-with-posters",
+      title: "Trending Movies — Apple Style",
+      functionName: "loadTrendingMovies",
+      cacheDuration: CACHE_SECONDS,
+      params: [TRAKT_PARAM]
+    },
+    {
+      id: "trending-shows-with-posters",
+      title: "Trending TV Shows — Apple Style",
+      functionName: "loadTrendingShows",
+      cacheDuration: CACHE_SECONDS,
+      params: [TRAKT_PARAM]
+    },
+    {
+      id: "popular-movies-with-posters",
+      title: "Popular Movies — Apple Style",
+      functionName: "loadPopularMovies",
+      cacheDuration: CACHE_SECONDS,
+      params: [TRAKT_PARAM]
+    },
+    {
+      id: "popular-shows-with-posters",
+      title: "Popular TV Shows — Apple Style",
+      functionName: "loadPopularShows",
       cacheDuration: CACHE_SECONDS,
       params: [TRAKT_PARAM]
     }
@@ -765,4 +796,88 @@ async function loadNativeShows(params) {
     TV_LIST,
     params
   );
+}
+
+/*
+ * Independent Trakt charts. Unlike the personal daily lists,
+ * these are not limited to 20 titles. Preserve API ordering.
+ */
+async function fetchTraktChart(mediaType, chart, params, page) {
+  var key = String((params || {}).traktClientId || "").trim();
+  if (!key) throw new Error("Missing Trakt Client ID.");
+  var plural = mediaType === "movie" ? "movies" : "shows";
+  var response = await Widget.http.get(
+    "https://api.trakt.tv/" + plural + "/" + chart,
+    {
+      headers: {
+        Accept: "application/json",
+        "trakt-api-version": "2",
+        "trakt-api-key": key
+      },
+      params: { page: page, limit: CHART_PAGE_SIZE }
+    }
+  );
+  var data = unwrap(response);
+  if (data && !Array.isArray(data)) data = data.items || data.results;
+  if (!Array.isArray(data)) throw new Error("Invalid Trakt chart response.");
+  return data;
+}
+
+async function loadArtworkChart(mediaType, chart, params) {
+  var results = [];
+  var seen = Object.create(null);
+  var sourceRank = 0;
+  var subjectKey = mediaType === "movie" ? "movie" : "show";
+  for (var page = 1; page <= CHART_MAX_PAGES && results.length < CHART_TARGET; page++) {
+    var rows = await fetchTraktChart(mediaType, chart, params, page);
+    if (!rows.length) break;
+    var entries = [];
+    for (var i = 0; i < rows.length; i++) {
+      sourceRank++;
+      var row = rows[i];
+      if (!row || typeof row !== "object") continue;
+      var subject = row[subjectKey] || row;
+      var ids = subject.ids || row.ids || {};
+      var identity = positiveId(ids.tmdb || subject.tmdb_id || subject.tmdbId) ||
+        String(ids.imdb || subject.imdb_id || subject.imdbId || "") ||
+        ("trakt:" + String(ids.trakt || subject.trakt_id || ""));
+      if (!identity || identity === "trakt:") continue;
+      if (seen[identity]) continue;
+      seen[identity] = true;
+      entries.push({ row: row, rank: sourceRank, index: sourceRank - 1 });
+    }
+    if (!entries.length) break;
+    for (var start = 0; start < entries.length && results.length < CHART_TARGET; start += BATCH_SIZE) {
+      var completed = await Promise.all(
+        entries.slice(start, start + BATCH_SIZE).map(async function(entry) {
+          try {
+            var item = await buildItem(entry, mediaType);
+            // Require a confirmed PNG title logo and usable artwork on these editorial rows.
+            if (!item || !item.titleLogoRawPath ||
+                !/\.png$/i.test(item.titleLogoRawPath) ||
+                !(item.posterPath || item.coverUrl)) return null;
+            return item;
+          } catch (error) {
+            console.warn("Chart item failed:", entry.rank, errorText(error));
+            return null;
+          }
+        })
+      );
+      results = results.concat(completed.filter(Boolean));
+    }
+  }
+  return results.slice(0, CHART_TARGET);
+}
+
+async function loadTrendingMovies(params) {
+  return loadArtworkChart("movie", "trending", params);
+}
+async function loadTrendingShows(params) {
+  return loadArtworkChart("tv", "trending", params);
+}
+async function loadPopularMovies(params) {
+  return loadArtworkChart("movie", "popular", params);
+}
+async function loadPopularShows(params) {
+  return loadArtworkChart("tv", "popular", params);
 }
