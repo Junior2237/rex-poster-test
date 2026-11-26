@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "revision": 1,
+  "overrides": {
+    "tv:244447": {
+      "title": "The Hunting Wives",
+      "strategy": "episodeStill",
+      "episodes": [
+        [
+          1,
+          1
+        ],
+        [
+          1,
+          2
+        ]
+      ],
+      "revision": 1
+    },
+    "movie:13963": {
+      "title": "The Last Waltz",
+      "strategy": "alternateBackdrop",
+      "revision": 1
+    },
+    "movie:9089": {
+      "title": "Home for the Holidays",
+      "strategy": "alternateBackdrop",
+      "revision": 1
+    }
+  }
+}
