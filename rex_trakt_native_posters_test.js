@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.5.0 — Central artwork registry independent of ranking
+ * Version 3.5.1 — Layout-specific central artwork overrides
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -62,7 +62,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.5.0",
+  version: "3.5.1",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -780,27 +780,28 @@ function selectHuntingWivesStill(episode, excluded){
 
 var artworkRegistryPromise=null;
 async function artworkRegistry(){
-  var cached=startupCacheRead("registry",300);
+  var cached=startupCacheRead("registry-v351",300);
   if(cached&&cached.schemaVersion===1&&cached.overrides)return cached.overrides;
   if(artworkRegistryPromise)return artworkRegistryPromise;
   artworkRegistryPromise=(async function(){
     try{
       var data=unwrap(await Widget.http.get("https://raw.githubusercontent.com/Junior2237/rex-poster-test/refs/heads/main/artwork_overrides.json",{headers:{Accept:"application/json"}}));
       if(data&&data.schemaVersion===1&&data.overrides&&typeof data.overrides==="object"){
-        startupCacheWrite("registry",data);return data.overrides;
+        startupCacheWrite("registry-v351",data);return data.overrides;
       }
     }catch(e){}
-    return cached&&cached.overrides||{"tv:244447":{strategy:"episodeStill",episodes:[[1,1],[1,2]],revision:1}};
+    return cached&&cached.overrides||{"tv:244447":{"title":"The Hunting Wives","strategy":"fixed","posterPath":"/hsEcXCnzoalH3i0HowKbOpJRqD0.jpg","logoPath":"/dT0HdklknEGQYkn1dNACIs4IeAt.png","revision":3,"posterPaths":{"top20":"/kg09RkDPfvz44TX7K3rmUv1dI02.jpg","trending":"/yzfW8fZvPQOZKAIRaPlf8WlU9yT.jpg"}},"movie:13963":{"title":"The Last Waltz","strategy":"fixed","posterPath":"/iXFOL9hCoCHFGACjJSIrY8eLlSY.jpg","logoPath":"/dI3b6DHMYGZDyZMfSqq8hHNrFBi.png","revision":2},"movie:9089":{"title":"Home for the Holidays","strategy":"fixed","posterPath":"/s6ol3yUC7qTPwWoCM7b7rnSaeJl.jpg","logoPath":"/AtMN8tMKMQ8PDo760zKoLkRl4LA.png","revision":2}};
   })();
   try{return await artworkRegistryPromise;}finally{artworkRegistryPromise=null;}
 }
-async function applyArtworkOverride(artwork,mediaType,tmdbId){
+async function applyArtworkOverride(artwork,mediaType,tmdbId,premiumPortrait){
   var registry=await artworkRegistry(),id=mediaType+":"+tmdbId,rule=registry[id];
   if(!rule||typeof rule!=="object")return artwork;
   var excluded=[artwork.standardPoster,artwork.backdrop,artwork.cleanPoster,artwork.logo];
   function safePath(v){return typeof v==="string"&&/^\/[A-Za-z0-9_-]+\.(jpg|jpeg|png|webp)$/i.test(v)?v:"";}
-  var manual=safePath(rule.posterPath),alternate=manual;
-  var key="override:"+id+":"+String(rule.revision||1);
+  var layout=premiumPortrait?"trending":"top20";
+  var manual=safePath(rule.posterPaths&&rule.posterPaths[layout])||safePath(rule.posterPath),alternate=manual;
+  var key="override:"+id+":"+layout+":"+String(rule.revision||1);
   if(!alternate)alternate=safePath(startupCacheRead(key,ARTWORK_CACHE_SECONDS));
   if(!alternate&&rule.strategy==="episodeStill"&&mediaType==="tv"){
     var episodes=Array.isArray(rule.episodes)?rule.episodes.slice(0,3):[[1,1]];
@@ -906,7 +907,7 @@ async function buildItem(
       if (mediaType === "movie") item._dailyTmdbRaw = artwork.rating;
     }
 
-    try { artwork = await applyArtworkOverride(artwork, mediaType, tmdbId); } catch(e) {}
+    try { artwork = await applyArtworkOverride(artwork, mediaType, tmdbId, premiumPortrait); } catch(e) {}
 
     // Do not stretch or crop inferior artwork in the oversized Trending row,
     // except for a targeted artwork substitution above.
@@ -1253,7 +1254,7 @@ async function loadNativeMovies(params) {
 
 async function loadNativeShows(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("daily-shows-v345", MAX_ITEMS, function() {
+  return loadCachedRow("daily-shows-v351", MAX_ITEMS, function() {
     return loadNativeList("tv", TV_LIST, params);
   });
 }
@@ -1333,7 +1334,7 @@ async function loadTrendingMovies(params) {
 }
 async function loadTrendingShows(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("trending-shows-v345", CHART_TARGET, function() {
+  return loadCachedRow("trending-shows-v351", CHART_TARGET, function() {
     return loadArtworkChart("tv", "trending", params);
   });
 }
@@ -1345,7 +1346,7 @@ async function loadPopularMovies(params) {
 }
 async function loadPopularShows(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("popular-shows-v345", CHART_TARGET, function() {
+  return loadCachedRow("popular-shows-v351", CHART_TARGET, function() {
     return loadArtworkChart("tv", "popular", params);
   });
 }
@@ -1356,7 +1357,7 @@ async function loadPopularShows(params) {
  * Unlike active Trakt watcher counts, upcoming titles can qualify.
  */
 async function loadCombinedTrending(params) {
-  return loadCachedRow("combined-trending-v345", CHART_TARGET, function() {
+  return loadCachedRow("combined-trending-v351", CHART_TARGET, function() {
     return loadCombinedTrendingUncached(params);
   });
 }
