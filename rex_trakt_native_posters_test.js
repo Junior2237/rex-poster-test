@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.4.0 — Persistent startup cache
+ * Version 3.4.1 — Native grid posters and release dates
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -37,7 +37,7 @@ var BATCH_SIZE = 4;
 var CACHE_SECONDS = 1800;
 var ARTWORK_CACHE_SECONDS = 14400;
 var DAILY_WORKERS = 6;
-var STARTUP_CACHE_PREFIX = "rex-v340:";
+var STARTUP_CACHE_PREFIX = "rex-v341:";
 
 var TMDB_BASE =
   "https://image.tmdb.org/t/p/original";
@@ -62,7 +62,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.4.0",
+  version: "3.4.1",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -509,7 +509,8 @@ async function getArtworkUncached(
     network: "",
     networkLogo: "",
     rating: null,
-    votes: null
+    votes: null,
+    releaseDate: ""
   };
 
   var images = null;
@@ -531,6 +532,7 @@ async function getArtworkUncached(
     if (details) {
       result.rating = details.vote_average;
       result.votes = details.vote_count;
+      result.releaseDate = nativeReleaseDate(mediaType === "movie" ? details.release_date : details.first_air_date);
       result.standardPoster = tmdbPath(
         details.poster_path ||
         details.posterPath
@@ -717,6 +719,29 @@ function isNinetiesClub(
   );
 }
 
+function nativeReleaseDate(value) {
+  var match = String(value || "").trim().match(/^(\d{4}-\d{2}-\d{2})(?:$|T|\s)/);
+  if (!match || match[1] === "0000-00-00") return "";
+  var d = new Date(match[1] + "T00:00:00Z");
+  return Number.isFinite(d.getTime()) && d.toISOString().slice(0,10) === match[1] ? match[1] : "";
+}
+
+function assignPosterFields(item, artwork, premiumPortrait) {
+  // Native Rex grid uses the normal TMDB poster. Custom rails explicitly
+  // prefer cleanPosterPath, and the detail-page poster stays as before.
+  var clean = artwork.cleanPoster || artwork.cleanBackdrop;
+  var selected = premiumPortrait ? artwork.cleanPoster :
+    clean || artwork.standardPoster;
+  var standard = artwork.standardPoster || selected;
+  if (standard) {
+    item.posterPath = standard;
+    item.coverUrl = tmdbUrl(standard);
+  }
+  if (selected) item.detailPoster = selected;
+  // Absolute source URL is usable by HTML img elements without translation.
+  if (clean) item.cleanPosterPath = tmdbUrl(clean);
+}
+
 async function buildItem(
   entry,
   mediaType,
@@ -772,6 +797,9 @@ async function buildItem(
     position: entry.rank
   };
 
+  var sourceDate = nativeReleaseDate(mediaType === "movie" ? (subject.released || subject.release_date || subject.releaseDate) : (subject.first_aired || subject.first_air_date || subject.releaseDate));
+  if (sourceDate) item.releaseDate = sourceDate;
+
   if (dailyRanking) {
     item._dailyQuality = dailyQualityScore(subject, null);
     item._dailyImdbId = imdbId;
@@ -795,19 +823,8 @@ async function buildItem(
 
     // Do not stretch or crop inferior artwork in the oversized Trending row.
     if (premiumPortrait && !artwork.cleanPoster) return null;
-    var poster = premiumPortrait
-      ? artwork.cleanPoster
-      : artwork.cleanPoster || artwork.cleanBackdrop || artwork.standardPoster;
-
-    if (poster) {
-      item.posterPath = poster;
-      item.detailPoster = poster;
-      item.coverUrl = tmdbUrl(poster);
-    }
-
-    if (artwork.cleanPoster || artwork.cleanBackdrop) {
-      item.cleanPosterPath = artwork.cleanPoster || artwork.cleanBackdrop;
-    }
+    assignPosterFields(item, artwork, premiumPortrait);
+    if (artwork.releaseDate) item.releaseDate = artwork.releaseDate;
 
     if (artwork.backdrop) {
       item.backdropPath =
