@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.0.1 — Production logo transport
+ * Version 3.0.2 — Correct native TMDB item identity
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -49,7 +49,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.0.1",
+  version: "3.0.2",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -589,9 +589,8 @@ async function buildItem(
   }
 
   var item = {
-    id: tmdbId
-      ? mediaType + "." + tmdbId
-      : imdbId,
+    // Rex requires the numeric TMDB ID, with mediaType supplied separately.
+    id: tmdbId ? tmdbId : imdbId,
 
     type: tmdbId ? "tmdb" : "imdb",
     mediaType: mediaType,
