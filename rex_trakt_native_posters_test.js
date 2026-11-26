@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.4.4 — Targeted Hunting Wives artwork alternative in Trending Mix
+ * Version 3.4.5 — Fixed Hunting Wives episode artwork across TV lists
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -62,7 +62,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.4.4",
+  version: "3.4.5",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -764,36 +764,46 @@ function nativeArtworkBundle(artwork){
   return paths;
 }
 
-async function huntingWivesMixArtwork(artwork, tmdbId) {
-  // The current series artwork appears to contain printed lettering despite
-  // its neutral-language tag. Exclude it from the alternative candidates.
-  var excluded = [artwork.cleanPoster, artwork.standardPoster, artwork.backdrop];
-  function eligible(images) {
-    return (Array.isArray(images) ? images : []).filter(function(p) {
-      return p && tmdbPath(p.file_path) && excluded.indexOf(p.file_path) < 0;
-    });
-  }
-  var galleries = await Promise.all([
-    fetchGallery("tv", tmdbId, null).catch(function() { return null; }),
-    Widget.tmdb.get("tv/" + tmdbId + "/season/2/images", {params:{include_image_language:"en,null"}}).then(unwrap).catch(function(){return null;}),
-    Widget.tmdb.get("tv/" + tmdbId + "/season/1/images", {params:{include_image_language:"en,null"}}).then(unwrap).catch(function(){return null;})
-  ]);
-  var posters = [], backdrops = [];
-  galleries.forEach(function(g) {
-    if (!g) return;
-    posters = posters.concat(eligible(g.posters));
-    backdrops = backdrops.concat(eligible(g.backdrops));
+function selectHuntingWivesStill(episode, excluded){
+  var stills=episode&&episode.images&&episode.images.stills;
+  var candidates=(Array.isArray(stills)?stills:[]).filter(function(p){
+    return p&&tmdbPath(p.file_path)&&p.iso_639_1==null&&
+      Number(p.width)>0&&Number(p.height)>0&&excluded.indexOf(p.file_path)<0;
   });
-  var alternative = choosePremiumCleanPoster(posters) || chooseCleanPoster(posters) ||
-    chooseCleanBackdrop(backdrops);
-  if (!alternative && artwork.cleanBackdrop && excluded.indexOf(artwork.cleanBackdrop) < 0) {
-    alternative = artwork.cleanBackdrop;
+  candidates.sort(function(a,b){
+    return Number(b.height)-Number(a.height)||Number(b.width)-Number(a.width)||
+      (Number(b.vote_average)||0)-(Number(a.vote_average)||0);
+  });
+  if(candidates.length)return candidates[0].file_path;
+  var primary=tmdbPath(episode&&episode.still_path);
+  return primary&&excluded.indexOf(primary)<0?primary:"";
+}
+
+async function huntingWivesArtwork(artwork,tmdbId){
+  // Use a fixed episode still rather than another potentially mislabelled
+  // series poster. Keep the title, native poster and original logo unchanged.
+  var excluded=[artwork.standardPoster,artwork.backdrop,artwork.cleanPoster,artwork.logo];
+  var key="override:hunting-wives:episode-still-v345";
+  var alternate=startupCacheRead(key,ARTWORK_CACHE_SECONDS);
+  if(!tmdbPath(alternate)||excluded.indexOf(alternate)>=0){
+    alternate="";
+    var episodes=[[1,1],[1,2]];
+    for(var i=0;i<episodes.length&&!alternate;i++){
+      try{
+        var data=unwrap(await Widget.tmdb.get("tv/"+tmdbId+"/season/"+episodes[i][0]+"/episode/"+episodes[i][1],{
+          params:{language:"en-US",append_to_response:"images",include_image_language:"null"}
+        }));
+        alternate=selectHuntingWivesStill(data,excluded);
+      }catch(e){}
+    }
+    if(!alternate&&artwork.cleanBackdrop&&excluded.indexOf(artwork.cleanBackdrop)<0){
+      alternate=artwork.cleanBackdrop;
+    }
+    if(alternate)startupCacheWrite(key,alternate);
   }
-  if (!alternative) return artwork;
-  // Copy rather than mutating shared artwork cached for other modules.
-  var result = Object.assign({}, artwork);
-  result.cleanPoster = alternative;
-  return result;
+  // Never exclude a series solely because the replacement request failed.
+  if(!alternate)return artwork;
+  return Object.assign({},artwork,{cleanPoster:alternate});
 }
 
 async function buildItem(
@@ -876,8 +886,8 @@ async function buildItem(
       if (mediaType === "movie") item._dailyTmdbRaw = artwork.rating;
     }
 
-    if (combinedTrending && mediaType === "tv" && Number(tmdbId) === 244447) {
-      artwork = await huntingWivesMixArtwork(artwork, tmdbId);
+    if (mediaType === "tv" && Number(tmdbId) === 244447) {
+      artwork = await huntingWivesArtwork(artwork, tmdbId);
     }
 
     // Do not stretch or crop inferior artwork in the oversized Trending row,
@@ -1224,7 +1234,7 @@ async function loadNativeMovies(params) {
 
 async function loadNativeShows(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("daily-shows", MAX_ITEMS, function() {
+  return loadCachedRow("daily-shows-v345", MAX_ITEMS, function() {
     return loadNativeList("tv", TV_LIST, params);
   });
 }
@@ -1308,7 +1318,7 @@ async function loadTrendingMovies(params) {
 }
 async function loadTrendingShows(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("trending-shows", CHART_TARGET, function() {
+  return loadCachedRow("trending-shows-v345", CHART_TARGET, function() {
     return loadArtworkChart("tv", "trending", params);
   });
 }
@@ -1320,7 +1330,7 @@ async function loadPopularMovies(params) {
 }
 async function loadPopularShows(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("popular-shows", CHART_TARGET, function() {
+  return loadCachedRow("popular-shows-v345", CHART_TARGET, function() {
     return loadArtworkChart("tv", "popular", params);
   });
 }
@@ -1331,7 +1341,7 @@ async function loadPopularShows(params) {
  * Unlike active Trakt watcher counts, upcoming titles can qualify.
  */
 async function loadCombinedTrending(params) {
-  return loadCachedRow("combined-trending-v344", CHART_TARGET, function() {
+  return loadCachedRow("combined-trending-v345", CHART_TARGET, function() {
     return loadCombinedTrendingUncached(params);
   });
 }
