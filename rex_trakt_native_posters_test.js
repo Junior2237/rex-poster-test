@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.1.0 — Daily Top 20 + Trending and Popular
+ * Version 3.2.0 — Combined Trending + existing charts
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -52,7 +52,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.1.0",
+  version: "3.2.0",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -67,6 +67,13 @@ var WidgetMetadata = {
       id: "native-top20-shows-with-posters",
       title: "Today's Top 20 TV Shows — Fast",
       functionName: "loadNativeShows",
+      cacheDuration: CACHE_SECONDS,
+      params: [TRAKT_PARAM]
+    },
+    {
+      id: "combined-trending-with-posters",
+      title: "Trending Movies & TV Shows — Apple Style",
+      functionName: "loadCombinedTrending",
       cacheDuration: CACHE_SECONDS,
       params: [TRAKT_PARAM]
     },
@@ -880,4 +887,73 @@ async function loadPopularMovies(params) {
 }
 async function loadPopularShows(params) {
   return loadArtworkChart("tv", "popular", params);
+}
+
+/*
+ * A single mixed trending rail, ordered by Trakt's current watcher count.
+ * Media type is part of deduplication because movie and TV TMDB IDs
+ * belong to different namespaces.
+ */
+async function loadCombinedTrending(params) {
+  var requests = [];
+  var types = ["movie", "tv"];
+  for (var t = 0; t < types.length; t++) {
+    for (var p = 1; p <= CHART_MAX_PAGES; p++) {
+      requests.push({ mediaType: types[t], page: p });
+    }
+  }
+  var pages = await Promise.all(requests.map(async function(request) {
+    var rows = await fetchTraktChart(request.mediaType, "trending", params, request.page);
+    return { mediaType: request.mediaType, page: request.page, rows: rows };
+  }));
+  var candidates = [];
+  var seen = Object.create(null);
+  pages.forEach(function(page) {
+    var subjectKey = page.mediaType === "movie" ? "movie" : "show";
+    page.rows.forEach(function(row, index) {
+      if (!row || !row[subjectKey]) return;
+      var subject = row[subjectKey], ids = subject.ids || {};
+      var tmdb = positiveId(ids.tmdb);
+      var imdb = String(ids.imdb || "");
+      var trakt = positiveId(ids.trakt);
+      var identifier = tmdb ? "tmdb:" + tmdb : imdb ? "imdb:" + imdb : trakt ? "trakt:" + trakt : "";
+      if (!identifier) return;
+      var key = page.mediaType + ":" + identifier;
+      if (seen[key]) return;
+      seen[key] = true;
+      var watchers = Number(row.watchers);
+      candidates.push({
+        row: row,
+        mediaType: page.mediaType,
+        watchers: Number.isFinite(watchers) && watchers >= 0 ? watchers : 0,
+        sourceRank: (page.page - 1) * CHART_PAGE_SIZE + index + 1
+      });
+    });
+  });
+  candidates.sort(function(a, b) {
+    return b.watchers - a.watchers ||
+      a.sourceRank - b.sourceRank ||
+      (a.mediaType < b.mediaType ? -1 : a.mediaType > b.mediaType ? 1 : 0);
+  });
+  var results = [];
+  for (var start = 0; start < candidates.length && results.length < CHART_TARGET; start += BATCH_SIZE) {
+    var completed = await Promise.all(candidates.slice(start, start + BATCH_SIZE).map(async function(candidate, offset) {
+      try {
+        var item = await buildItem({
+          row: candidate.row,
+          rank: start + offset + 1,
+          index: start + offset
+        }, candidate.mediaType);
+        if (!item || !item.titleLogoRawPath ||
+            !/\.png$/i.test(item.titleLogoRawPath) ||
+            !(item.posterPath || item.coverUrl)) return null;
+        return item;
+      } catch (error) {
+        console.warn("Combined trending item failed:", candidate.sourceRank, errorText(error));
+        return null;
+      }
+    }));
+    results = results.concat(completed.filter(Boolean));
+  }
+  return results.slice(0, CHART_TARGET);
 }
