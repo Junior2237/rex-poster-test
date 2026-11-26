@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.5.3 — Deliver pinned artwork through Rex native poster fields
+ * Version 3.5.4 — Targeted native backdrop delivery for two unresolved cards
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -62,7 +62,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.5.3",
+  version: "3.5.4",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -887,9 +887,17 @@ async function buildItem(
     if (artwork.releaseDate) item.releaseDate = artwork.releaseDate;
 
     if (artwork.backdrop) item.backdropPath = artwork.backdrop;
-    // Rex may strip custom fields from native item payloads. The recognized
-    // backdropPaths array carries the original backdrop, clean poster and logo.
+    // Only these two unresolved cards require the alternate artwork in the
+    // native primary backdrop slot as well as the native poster slot.
     var nativePaths = nativeArtworkBundle(artwork);
+    if (artwork.fixedRailPoster && artwork.cleanPoster &&
+        ((mediaType === "movie" && Number(tmdbId) === 13963) ||
+         (mediaType === "tv" && Number(tmdbId) === 244447 && premiumPortrait))) {
+      item.backdropPath = artwork.cleanPoster;
+      nativePaths = [artwork.cleanPoster];
+      if (artwork.backdrop && nativePaths.indexOf(artwork.backdrop) < 0) nativePaths.push(artwork.backdrop);
+      if (artwork.logo && nativePaths.indexOf(artwork.logo) < 0) nativePaths.push(artwork.logo);
+    }
     if (nativePaths.length) item.backdropPaths = nativePaths;
 
     if (artwork.logo) {
@@ -1218,7 +1226,7 @@ async function loadNativeList(
 
 async function loadNativeMovies(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("daily-movies", MAX_ITEMS, function() {
+  return loadCachedRow("daily-movies-v354", MAX_ITEMS, function() {
     return loadNativeList("movie", MOVIES_LIST, params);
   });
 }
@@ -1299,25 +1307,25 @@ async function loadArtworkChart(mediaType, chart, params) {
 
 async function loadTrendingMovies(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("trending-movies", CHART_TARGET, function() {
+  return loadCachedRow("trending-movies-v354", CHART_TARGET, function() {
     return loadArtworkChart("movie", "trending", params);
   });
 }
 async function loadTrendingShows(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("trending-shows-v351", CHART_TARGET, function() {
+  return loadCachedRow("trending-shows-v354", CHART_TARGET, function() {
     return loadArtworkChart("tv", "trending", params);
   });
 }
 async function loadPopularMovies(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("popular-movies", CHART_TARGET, function() {
+  return loadCachedRow("popular-movies-v354", CHART_TARGET, function() {
     return loadArtworkChart("movie", "popular", params);
   });
 }
 async function loadPopularShows(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("popular-shows-v351", CHART_TARGET, function() {
+  return loadCachedRow("popular-shows-v354", CHART_TARGET, function() {
     return loadArtworkChart("tv", "popular", params);
   });
 }
@@ -1328,7 +1336,7 @@ async function loadPopularShows(params) {
  * Unlike active Trakt watcher counts, upcoming titles can qualify.
  */
 async function loadCombinedTrending(params) {
-  return loadCachedRow("combined-trending-v351", CHART_TARGET, function() {
+  return loadCachedRow("combined-trending-v354", CHART_TARGET, function() {
     return loadCombinedTrendingUncached(params);
   });
 }
