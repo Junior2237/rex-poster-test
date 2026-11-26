@@ -1,31 +1,27 @@
 {
   "schemaVersion": 1,
-  "revision": 1,
+  "revision": 2,
   "overrides": {
     "tv:244447": {
       "title": "The Hunting Wives",
-      "strategy": "episodeStill",
-      "episodes": [
-        [
-          1,
-          1
-        ],
-        [
-          1,
-          2
-        ]
-      ],
-      "revision": 1
+      "strategy": "fixed",
+      "posterPath": "/hsEcXCnzoalH3i0HowKbOpJRqD0.jpg",
+      "logoPath": "/dT0HdklknEGQYkn1dNACIs4IeAt.png",
+      "revision": 2
     },
     "movie:13963": {
       "title": "The Last Waltz",
-      "strategy": "alternateBackdrop",
-      "revision": 1
+      "strategy": "fixed",
+      "posterPath": "/iXFOL9hCoCHFGACjJSIrY8eLlSY.jpg",
+      "logoPath": "/dI3b6DHMYGZDyZMfSqq8hHNrFBi.png",
+      "revision": 2
     },
     "movie:9089": {
       "title": "Home for the Holidays",
-      "strategy": "alternateBackdrop",
-      "revision": 1
+      "strategy": "fixed",
+      "posterPath": "/s6ol3yUC7qTPwWoCM7b7rnSaeJl.jpg",
+      "logoPath": "/AtMN8tMKMQ8PDo760zKoLkRl4LA.png",
+      "revision": 2
     }
   }
 }
