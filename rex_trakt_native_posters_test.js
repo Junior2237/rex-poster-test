@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.5.1 — Layout-specific central artwork overrides
+ * Version 3.5.2 — Multiple title logo candidates and reliable fallback
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -37,7 +37,7 @@ var BATCH_SIZE = 4;
 var CACHE_SECONDS = 1800;
 var ARTWORK_CACHE_SECONDS = 14400;
 var DAILY_WORKERS = 6;
-var STARTUP_CACHE_PREFIX = "rex-v350:";
+var STARTUP_CACHE_PREFIX = "rex-v352:";
 
 var TMDB_BASE =
   "https://image.tmdb.org/t/p/original";
@@ -62,7 +62,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.5.1",
+  version: "3.5.2",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -360,54 +360,22 @@ function chooseStandardPoster(posters) {
     : "";
 }
 
-function chooseLogo(logos) {
-  if (!Array.isArray(logos)) {
-    return "";
-  }
-
-  var candidates = logos.filter(function(logo) {
-    return (
-      logo &&
-      tmdbPath(logo.file_path) &&
-      /\.png$/i.test(logo.file_path)
-    );
-  });
-
-  function score(logo) {
-    var languageScore =
-      logo.iso_639_1 === "en" ? 3 :
-      logo.iso_639_1 == null ? 2 : 1;
-
-    var raster =
-      /\.(png|webp|jpg|jpeg)$/i.test(
-        String(logo.file_path || "")
-      ) ? 1 : 0;
-
-    return languageScore * 10 + raster;
-  }
-
-  candidates.sort(function(a, b) {
-    var difference = score(b) - score(a);
-
-    if (difference) {
-      return difference;
-    }
-
-    var areaA =
-      (Number(a.width) || 0) *
-      (Number(a.height) || 0);
-
-    var areaB =
-      (Number(b.width) || 0) *
-      (Number(b.height) || 0);
-
-    return areaB - areaA;
-  });
-
-  return candidates.length
-    ? candidates[0].file_path
-    : "";
+function chooseLogoCandidates(logos){
+ if(!Array.isArray(logos))return [];
+ var candidates=logos.filter(function(logo){
+  return logo&&tmdbPath(logo.file_path)&&/\.png$/i.test(logo.file_path);
+ });
+ function languageScore(logo){return logo.iso_639_1==="en"?3:logo.iso_639_1==null?2:1;}
+ candidates.sort(function(a,b){
+  return languageScore(b)-languageScore(a)||
+    ((Number(b.width)||0)*(Number(b.height)||0))-((Number(a.width)||0)*(Number(a.height)||0));
+ });
+ var paths=[];
+ candidates.forEach(function(logo){if(paths.indexOf(logo.file_path)<0&&paths.length<5)paths.push(logo.file_path);});
+ return paths;
 }
+
+function chooseLogo(logos){return chooseLogoCandidates(logos)[0]||"";}
 
 async function fetchGallery(
   mediaType,
@@ -504,6 +472,7 @@ async function getArtworkUncached(
     cleanPoster: "",
     cleanBackdrop: "",
     logo: "",
+    logos: [],
     backdrop: "",
     genres: [],
     network: "",
@@ -526,6 +495,12 @@ async function getArtworkUncached(
   }
 
   var images = null;
+  var allLogoRecords = [];
+  function collectLogos(list){
+    if(Array.isArray(list))allLogoRecords=allLogoRecords.concat(list);
+    result.logos=chooseLogoCandidates(allLogoRecords);
+    result.logo=result.logos[0]||"";
+  }
 
   try {
     var response = await Widget.tmdb.get(
@@ -596,8 +571,7 @@ async function getArtworkUncached(
       selectCleanPoster(images.posters);
     result.cleanBackdrop = selectRailBackdrop(images.backdrops);
 
-    result.logo =
-      chooseLogo(images.logos);
+    collectLogos(images.logos);
 
     if (!result.standardPoster) {
       result.standardPoster =
@@ -620,11 +594,7 @@ async function getArtworkUncached(
 
       if (gallery) {
         if (!result.cleanBackdrop) result.cleanBackdrop = selectRailBackdrop(gallery.backdrops);
-        if (!result.logo) {
-          result.logo = chooseLogo(
-            gallery.logos
-          );
-        }
+        collectLogos(gallery.logos);
 
         if (!result.cleanPoster) {
           result.cleanPoster =
@@ -657,9 +627,7 @@ async function getArtworkUncached(
 
       if (allImages) {
         if (!result.cleanBackdrop) result.cleanBackdrop = selectRailBackdrop(allImages.backdrops);
-        if (!result.logo) {
-          result.logo = chooseLogo(allImages.logos);
-        }
+        collectLogos(allImages.logos);
         if (!result.cleanPoster) {
           result.cleanPoster = selectCleanPoster(allImages.posters);
         }
@@ -824,7 +792,7 @@ async function applyArtworkOverride(artwork,mediaType,tmdbId,premiumPortrait){
   var logo=safePath(rule.logoPath);
   if(alternate)startupCacheWrite(key,alternate);
   if(!alternate&&!logo)return artwork;
-  return Object.assign({},artwork,alternate?{cleanPoster:alternate}:{},logo?{logo:logo}:{});
+  return Object.assign({},artwork,alternate?{cleanPoster:alternate}:{},logo?{logo:logo,logos:[logo]}:{});
 }
 
 async function buildItem(
@@ -931,6 +899,7 @@ async function buildItem(
       item.logoPath = artwork.logo;
       item.titleLogoRawPath =
         artwork.logo;
+      item.titleLogoAlternates = (artwork.logos || []).filter(function(path){return path!==artwork.logo;}).map(tmdbUrl);
     }
 
     if (artwork.genres.length) {
