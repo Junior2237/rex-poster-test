@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.5.2 — Multiple title logo candidates and reliable fallback
+ * Version 3.5.3 — Deliver pinned artwork through Rex native poster fields
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -37,7 +37,7 @@ var BATCH_SIZE = 4;
 var CACHE_SECONDS = 1800;
 var ARTWORK_CACHE_SECONDS = 14400;
 var DAILY_WORKERS = 6;
-var STARTUP_CACHE_PREFIX = "rex-v352:";
+var STARTUP_CACHE_PREFIX = "rex-v353:";
 
 var TMDB_BASE =
   "https://image.tmdb.org/t/p/original";
@@ -62,7 +62,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.5.2",
+  version: "3.5.3",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -711,7 +711,9 @@ function assignPosterFields(item, artwork, premiumPortrait) {
   // prefer cleanPosterPath, and the detail-page poster stays as before.
   var clean = artwork.cleanPoster || artwork.cleanBackdrop;
   var selected = clean || artwork.standardPoster;
-  var standard = artwork.standardPoster || selected;
+  // A deliberate override must survive Rex dropping custom fields.
+  // For pinned titles only, the native grid receives the same replacement.
+  var standard = artwork.fixedRailPoster && clean ? clean : artwork.standardPoster || selected;
   if (standard) {
     item.posterPath = standard;
     item.coverUrl = tmdbUrl(standard);
@@ -726,7 +728,7 @@ function nativeArtworkBundle(artwork){
   var clean=artwork.cleanPoster||artwork.cleanBackdrop;
   var logo=artwork.logo;
   var paths=backdrop?[backdrop]:[];
-  if(backdrop&&clean&&clean!==backdrop&&clean!==logo) paths.push(clean);
+  if(clean&&clean!==backdrop&&clean!==logo) paths.push(clean);
   if(logo&&paths.indexOf(logo)<0)paths.push(logo);
   return paths;
 }
@@ -792,7 +794,7 @@ async function applyArtworkOverride(artwork,mediaType,tmdbId,premiumPortrait){
   var logo=safePath(rule.logoPath);
   if(alternate)startupCacheWrite(key,alternate);
   if(!alternate&&!logo)return artwork;
-  return Object.assign({},artwork,alternate?{cleanPoster:alternate}:{},logo?{logo:logo,logos:[logo]}:{});
+  return Object.assign({},artwork,alternate?{cleanPoster:alternate,fixedRailPoster:true}:{},logo?{logo:logo,logos:[logo]}:{});
 }
 
 async function buildItem(
