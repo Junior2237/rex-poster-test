@@ -81,6 +81,7 @@ function normalize(v){
 var card=el('card'),rankNode=el('rank'),link=el('open');
 var selected=null,lastOpenAt=0;
 var currentArtworkKey='',imageGeneration=0,displayedPoster='',pendingPoster='',lockedArtwork=null;
+var displayedClean=false,failedCleanPoster='',fallbackArtwork='',failedFallbacks=Object.create(null);
 if(!api){el('status').textContent='Preview in Rex Widget Workshop';return}
 function artworkValue(v){
  if(v&&typeof v==='object')return artworkValue(v.url||v.src||v.path||v.file_path||v.imageUrl||v.backdropPath||'');
@@ -167,6 +168,7 @@ function resetArtwork(){
  displayedPoster='';
  pendingPoster='';
  lockedArtwork=null;
+ displayedClean=false;failedCleanPoster='';fallbackArtwork='';failedFallbacks=Object.create(null);
  setImage(el('poster'),'');
  logoRequest++;
  logoKey='';
@@ -175,22 +177,56 @@ function resetArtwork(){
  setImage(logo,'');
  el('title').hidden=true;
 }
+function fallbackPoster(item){
+ if(fallbackArtwork&&!failedFallbacks[fallbackArtwork])return fallbackArtwork;
+ var candidates=[item.posterPath,item.coverUrl,item.detailPoster,item.backdropPath];
+ for(var i=0;i<candidates.length;i++){
+  var src=artworkValue(candidates[i]);
+  if(src&&!failedFallbacks[src]&&src!==failedCleanPoster){
+   fallbackArtwork=src;return src;
+  }
+ }
+ return '';
+}
+function syncPosterBrand(item,art){
+ if(displayedPoster&&!displayedClean){
+  // Native fallback artwork may already have a printed title.
+  logoRequest++;logoKey='';
+  var logo=el('logo');
+  logo.onload=null;logo.onerror=null;
+  setImage(logo,'');el('title').hidden=true;
+  return;
+ }
+ renderTitleLogo(art&&art.logo?[art.logo]:[],nameOf(item));
+}
 function updatePoster(item,art){
- // A confirmed source is immutable until a genuinely different title is assigned.
- // Avoid native poster fallbacks: they may be replaced after See All hydration.
- var src=art&&art.poster||'',key=artworkKey(item);
- if(!src||displayedPoster||src===pendingPoster)return;
+ // Keep confirmed artwork locked; allow a single upgrade from a provisional
+ // native poster when confirmed textless artwork becomes available.
+ if(displayedClean)return;
+ var clean=art&&art.poster||'';
+ var useClean=!!clean&&clean!==failedCleanPoster;
+ if(!useClean&&displayedPoster)return;
+ var src=useClean?clean:fallbackPoster(item),key=artworkKey(item);
+ if(!src||src===pendingPoster)return;
+ if(src===displayedPoster){
+  if(useClean){displayedClean=true;syncPosterBrand(item,art);}
+  return;
+ }
  pendingPoster=src;
  var generation=++imageGeneration;
  var image=new Image();
  image.onload=function(){
   if(generation!==imageGeneration||key!==currentArtworkKey||!selected||artworkKey(selected)!==key)return;
   pendingPoster='';
-  displayedPoster=src;
+  displayedPoster=src;displayedClean=useClean;
   setImage(el('poster'),src);
+  syncPosterBrand(selected,lockedArtwork);
  };
  image.onerror=function(){
-  if(generation===imageGeneration)pendingPoster='';
+  if(generation!==imageGeneration)return;
+  pendingPoster='';
+  if(useClean)failedCleanPoster=src;else failedFallbacks[src]=true;
+  if(selected&&artworkKey(selected)===key)updatePoster(selected,lockedArtwork);
  };
  image.src=src;
  if(image.complete&&image.naturalWidth>0&&pendingPoster===src)image.onload();
@@ -457,7 +493,7 @@ function render(){
     art.logo=artworkValue(item.titleLogoPath)||artworkValue(item.titleLogoUrl)||artworkValue(item.logoPath);
     if(art.logo)railArtRemember(item,art.poster,art.logo);
   }
-  renderTitleLogo(art&&art.logo?[art.logo]:[],name);
+  syncPosterBrand(selected,art);
   var genre=classifyGenre(selected);
   el('genre').textContent=genre;el('genre').hidden=!genre;el('details').hidden=!selected;
   showNetwork(selected);
