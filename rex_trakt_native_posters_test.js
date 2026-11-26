@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.3.6 — Daily Top 20 rating-source fallback and diagnostics
+ * Version 3.3.7 — Movie-only rating normalization
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -15,7 +15,8 @@
  * - Genres and network metadata
  * - Poster fallbacks
  *
- * Daily Top 20 only: 85% IMDb / 15% community quality when available.
+ * Daily TV Top 20: 85% IMDb / 15% community quality when available.
+ * Daily movie Top 20: 90% normalized IMDb / 10% community quality.
  * Source popularity determines membership and breaks exact score ties.
  * Optional Cinemeta IMDb fallback and per-title diagnostic logging.
  * All five other chart modules retain their existing ranking.
@@ -55,7 +56,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.3.6",
+  version: "3.3.7",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -826,7 +827,7 @@ async function fetchDailyImdbRatings(items) {
       rows.forEach(function(row) {
         if (!row || group.indexOf(row.id) < 0 || !row.rating) return;
         var score = dailyAdjustedRating(row.rating.aggregateRating, row.rating.voteCount);
-        if (score !== null) ratings[row.id] = { score: score, source: "IMDbAPI" };
+        if (score !== null) ratings[row.id] = { score: score, rawRating: Number(row.rating.aggregateRating), votes: Number(row.rating.voteCount), source: "IMDbAPI" };
       });
     } catch (error) {
       console.warn("IMDb batch unavailable:", errorText(error));
@@ -845,7 +846,7 @@ async function fetchDailyImdbRatings(items) {
         if (!meta || (meta.imdb_id !== id && meta.id !== id)) return;
         var score = Number(meta.imdbRating);
         if (Number.isFinite(score) && score > 0 && score <= 10) {
-          ratings[id] = { score: score, source: "Cinemeta IMDb" };
+          ratings[id] = { score: score, rawRating: score, votes: null, source: "Cinemeta IMDb" };
         }
       } catch (error) {
         console.warn("Cinemeta IMDb unavailable:", id, errorText(error));
@@ -883,6 +884,84 @@ function rankDailyItems(items, imdbRatings) {
       " | source=" + row.source + " | IMDb=" +
       (row.imdb === null ? "N/A" : row.imdb.toFixed(3)) +
       " | community=" + (row.community === null ? "N/A" : row.community.toFixed(3)) +
+      " | score=" + row.score.toFixed(3) + " | original rank=" + row.originalRank);
+    delete item._dailyQuality;
+    delete item._dailyImdbId;
+    return item;
+  });
+}
+
+function dailyMovieImdbScore(record) {
+  if (!record) return null;
+  var rating = Number(record.rawRating);
+  if (!Number.isFinite(rating) || rating <= 0 || rating > 10) return null;
+  var votes = Number(record.votes);
+  // IMDb has already weighted its published score. Only shrink very small
+  // samples when an actual vote count is known, and avoid inventing counts.
+  if (Number.isFinite(votes) && votes > 0 && votes < 100) {
+    return (rating * votes + 20 * 6.5) / (votes + 20);
+  }
+  return rating;
+}
+
+async function completeDailyMovieRatings(items, ratings) {
+  var missing = [];
+  items.forEach(function(item) {
+    var id = item._dailyImdbId;
+    if (/^tt\d+$/.test(id || "") && !ratings[id] && missing.indexOf(id) < 0) missing.push(id);
+  });
+  for (var i = 0; i < missing.length; i += BATCH_SIZE) {
+    await Promise.all(missing.slice(i, i+BATCH_SIZE).map(async function(id) {
+      try {
+        var data = unwrap(await Widget.http.get(
+          "https://api.imdbapi.dev/titles/" + encodeURIComponent(id),
+          { headers: { Accept: "application/json" } }
+        ));
+        var row = data && (data.title || data);
+        if (!row || row.id !== id || !row.rating) return;
+        var raw = Number(row.rating.aggregateRating);
+        var votes = Number(row.rating.voteCount);
+        var score = dailyAdjustedRating(raw, votes);
+        if (!Number.isFinite(raw) || raw <= 0 || raw > 10) return;
+        ratings[id] = { score: score === null ? raw : score, rawRating: raw,
+          votes: Number.isFinite(votes) && votes > 0 ? votes : null, source: "IMDbAPI single title" };
+      } catch (error) {
+        console.warn("Movie IMDb lookup unavailable:", id, errorText(error));
+      }
+    }));
+  }
+  return ratings;
+}
+
+function rankDailyMovies(items, imdbRatings) {
+  var scored = items.map(function(item) {
+    var record = imdbRatings[item._dailyImdbId];
+    var imdb = dailyMovieImdbScore(record);
+    var community = item._dailyQuality;
+    var hasImdb = Number.isFinite(imdb);
+    var hasCommunity = Number.isFinite(community);
+    // A missing IMDb result is not a high-quality signal. Conservative
+    // community fallback avoids rewarding unavailable IMDb information.
+    var score = hasImdb && hasCommunity ? 0.9 * imdb + 0.1 * community :
+      hasImdb ? imdb : hasCommunity ? community - 0.25 : 6.25;
+    return { item: item, score: score, imdb: imdb, community: community,
+      source: hasImdb ? record.source : "TMDB/Trakt fallback",
+      originalRank: item.rank };
+  });
+  scored.sort(function(a,b) {
+    return b.score - a.score || a.originalRank - b.originalRank;
+  });
+  var canLog = typeof console !== "undefined" && typeof console.log === "function";
+  if (canLog) console.log("Daily movie IMDb coverage: " + scored.filter(function(x) {
+    return x.imdb !== null;
+  }).length + "/" + scored.length);
+  return scored.map(function(row, index) {
+    var item = row.item;
+    item.rank = index + 1;
+    item.position = index + 1;
+    if (canLog) console.log("Movie rank " + item.rank + " | " + item.title +
+      " | source=" + row.source + " | IMDb=" +
+      (row.imdb === null ? "N/A" : row.imdb.toFixed(3)) +
       " | score=" + row.score.toFixed(3) + " | original rank=" + row.originalRank);
     delete item._dailyQuality;
     delete item._dailyImdbId;
@@ -946,6 +1025,10 @@ async function loadNativeList(
   }
 
   var imdbRatings = await fetchDailyImdbRatings(results);
+  if (mediaType === "movie") {
+    imdbRatings = await completeDailyMovieRatings(results, imdbRatings);
+    return rankDailyMovies(results, imdbRatings);
+  }
   return rankDailyItems(results, imdbRatings);
 }
 
