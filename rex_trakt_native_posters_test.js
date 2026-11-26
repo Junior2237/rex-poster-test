@@ -1,13 +1,13 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.3.3 — Premium poster priority across all modules
+ * Version 3.3.4 — Daily Top 20 quality-weighted ranking
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
  *
  * Retains the existing:
- * - Two Trakt lists and ranking order
+ * - Two Trakt lists and original title eligibility
  * - 30-minute module cache
  * - Four-item concurrent metadata batches
  * - Textless-poster preference
@@ -15,7 +15,8 @@
  * - Genres and network metadata
  * - Poster fallbacks
  *
- * Adds four independent Trakt chart modules. Daily Top 20 unchanged.
+ * Daily Top 20 only: 80% vote-adjusted quality / 20% source popularity.
+ * All five other chart modules retain their existing ranking.
  */
 
 var TRAKT_USER = "junior2237";
@@ -52,7 +53,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.3.3",
+  version: "3.3.4",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -187,7 +188,8 @@ async function fetchTraktList(
     },
     params: {
       page: 1,
-      limit: 100
+      limit: 100,
+      extended: "full"
     }
   });
 
@@ -433,7 +435,9 @@ async function getArtwork(
     backdrop: "",
     genres: [],
     network: "",
-    networkLogo: ""
+    networkLogo: "",
+    rating: null,
+    votes: null
   };
 
   var images = null;
@@ -453,6 +457,8 @@ async function getArtwork(
     var details = unwrap(response);
 
     if (details) {
+      result.rating = details.vote_average;
+      result.votes = details.vote_count;
       result.standardPoster = tmdbPath(
         details.poster_path ||
         details.posterPath
@@ -637,7 +643,8 @@ function isNinetiesClub(
 async function buildItem(
   entry,
   mediaType,
-  premiumPortrait
+  premiumPortrait,
+  dailyRanking
 ) {
   var row = entry.row;
   var subject =
@@ -688,6 +695,8 @@ async function buildItem(
     position: entry.rank
   };
 
+  if (dailyRanking) item._dailyQuality = dailyQualityScore(subject, null);
+
   if (tmdbId) {
     item.tmdbId = tmdbId;
 
@@ -697,6 +706,8 @@ async function buildItem(
       title,
       premiumPortrait
     );
+
+    if (dailyRanking) item._dailyQuality = dailyQualityScore(subject, artwork);
 
     // Do not stretch or crop inferior artwork in the oversized Trending row.
     if (premiumPortrait && !artwork.cleanPoster) return null;
@@ -774,6 +785,39 @@ async function buildItem(
   return item;
 }
 
+function dailyAdjustedRating(rating, votes) {
+  var r = Number(rating), v = Number(votes);
+  if (!Number.isFinite(r) || r <= 0 || r > 10 ||
+      !Number.isFinite(v) || v <= 0) return null;
+  // Bayesian shrinkage: 50 prior votes at 6.5.
+  return (v * r + 50 * 6.5) / (v + 50);
+}
+
+function dailyQualityScore(subject, artwork) {
+  var trakt = dailyAdjustedRating(subject && subject.rating, subject && subject.votes);
+  var tmdb = dailyAdjustedRating(artwork && artwork.rating, artwork && artwork.votes);
+  var scores = [trakt, tmdb].filter(function(value) { return value !== null; });
+  return scores.length ? scores.reduce(function(a,b) { return a+b; }, 0) / scores.length : 6.5;
+}
+
+function rankDailyItems(items) {
+  // Every candidate is already trending. Reserve the lower half of the
+  // popularity scale for titles outside this shortlist.
+  function score(item) {
+    var sourceRank = Math.max(1, Math.min(MAX_ITEMS, Number(item.rank) || MAX_ITEMS));
+    var popularity = 10 - 5 * (sourceRank - 1) / Math.max(1, MAX_ITEMS - 1);
+    var quality = Number.isFinite(item._dailyQuality) ? item._dailyQuality : 6.5;
+    return 0.8 * quality + 0.2 * popularity;
+  }
+  items.sort(function(a,b) { return score(b) - score(a) || a.rank - b.rank; });
+  return items.map(function(item, index) {
+    item.rank = index + 1;
+    item.position = index + 1;
+    delete item._dailyQuality;
+    return item;
+  });
+}
+
 async function loadNativeList(
   mediaType,
   slug,
@@ -808,7 +852,9 @@ async function loadNativeList(
         try {
           return await buildItem(
             entry,
-            mediaType
+            mediaType,
+            false,
+            true
           );
         } catch (error) {
           console.warn(
@@ -827,11 +873,7 @@ async function loadNativeList(
     );
   }
 
-  results.sort(function(a, b) {
-    return a.rank - b.rank;
-  });
-
-  return results;
+  return rankDailyItems(results);
 }
 
 async function loadNativeMovies(params) {
