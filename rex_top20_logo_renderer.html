@@ -62,18 +62,18 @@ function norm(v){
 }
 var card=el('card'),link=el('open'),selected=null,lastOpen=0;
 if(!api){el('status').textContent='Preview in Rex Widget Workshop';return}
-function imageURL(v){
- if(v&&typeof v==='object')return imageURL(v.url||v.src||v.path||v.file_path||v.imageUrl||v.backdropPath||'');
+function artworkValue(v){
+ if(v&&typeof v==='object')return artworkValue(v.url||v.src||v.path||v.file_path||v.imageUrl||v.backdropPath||'');
  return str(v).trim();
 }
-function setImage(node,value){var src=imageURL(value);node.hidden=!src;if(src){if(node.getAttribute('src')!==src)node.setAttribute('src',src)}else node.removeAttribute('src')}
+function setImage(node,value){var src=artworkValue(value);node.hidden=!src;if(src){if(node.getAttribute('src')!==src)node.setAttribute('src',src)}else node.removeAttribute('src')}
 function findTitleLogo(item){
  if(!item)return [];
  var candidates=[];
- function add(value){var p=imageURL(value);if(p&&candidates.indexOf(p)<0)candidates.push(p)}
+ function add(value){var p=artworkValue(value);if(p&&candidates.indexOf(p)<0)candidates.push(p)}
  add(item.titleLogoPath);add(item.titleLogoUrl);add(item.logoUrl);add(item.logoPath);
- var paths=Array.isArray(item.backdropPaths)?item.backdropPaths.map(imageURL).filter(Boolean):[];
- var backdrop=imageURL(item.backdropPath);
+ var paths=Array.isArray(item.backdropPaths)?item.backdropPaths.map(artworkValue).filter(Boolean):[];
+ var backdrop=artworkValue(item.backdropPath);
  for(var i=paths.length-1;i>=0;i--){
   var p=paths[i];try{p=decodeURIComponent(p)}catch(e){}
   if(paths[i]!==backdrop&&/\.png(?:$|[?&#/])/i.test(p))add(paths[i]);
