@@ -1,22 +1,21 @@
 
 /*
- * TODAY'S TOP 20 — FAST REX SOURCE
- * Version 2.1.0
+ * TODAY'S TOP 20 — REX
+ * Version 2.2.0 — Visible Logo Diagnostic
  *
- * FIX:
- * - Retrieve missing title logos directly from TMDB
- * - Accept English, neutral and fallback-language logos
- * - Supply full image URLs for the HTML renderer
+ * Temporarily adds a diagnostic label to the
+ * first poster of each list.
  *
- * PRESERVED:
- * - Original Trakt Top 20 lists
- * - 30-minute Rex module cache
- * - Four concurrent metadata jobs
- * - Textless poster preference
- * - Genre metadata
- * - Native poster fields
- * - The 90s Club artwork fallback
- * - Existing module IDs
+ * Retains the existing:
+ * - Two Trakt lists and ranking order
+ * - 30-minute module cache
+ * - Four-item concurrent metadata batches
+ * - Textless-poster preference
+ * - TMDB logo retrieval
+ * - Genres and network metadata
+ * - Poster fallbacks
+ *
+ * No additional repositories or modules.
  */
 
 var TRAKT_USER = "junior2237";
@@ -27,7 +26,7 @@ var MAX_ITEMS = 20;
 var BATCH_SIZE = 4;
 var CACHE_SECONDS = 1800;
 
-var TMDB_IMAGE_BASE =
+var TMDB_BASE =
   "https://image.tmdb.org/t/p/original";
 
 var NINETIES_CLUB_POSTER =
@@ -48,9 +47,9 @@ var WidgetMetadata = {
   id: "junior.trakt.top20.native.test",
   title: "Today's Top 20 — Fast Posters + Title Logos",
   description:
-    "Cached Trakt Top 20 with textless posters and TMDB title logos",
+    "Fast Top 20 with visible TMDB logo diagnostic",
   author: "Junior",
-  version: "2.1.0",
+  version: "2.2.0",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -72,38 +71,39 @@ var WidgetMetadata = {
 };
 
 function unwrap(response) {
-  var data = response;
+  var value = response;
 
   for (var i = 0; i < 3; i++) {
     if (
-      data &&
-      typeof data === "object" &&
-      !Array.isArray(data) &&
-      data.data !== undefined
+      value &&
+      typeof value === "object" &&
+      !Array.isArray(value) &&
+      value.data !== undefined
     ) {
-      data = data.data;
+      value = value.data;
     } else {
       break;
     }
   }
 
-  if (typeof data === "string") {
+  if (typeof value === "string") {
     try {
-      data = JSON.parse(data);
+      value = JSON.parse(value);
     } catch (e) {
       return null;
     }
   }
 
-  return data;
+  return value;
 }
 
 function positiveId(value) {
-  var n = Number(value);
+  var number = Number(value);
 
-  return Number.isSafeInteger(n) && n > 0
-    ? n
-    : null;
+  return (
+    Number.isSafeInteger(number) &&
+    number > 0
+  ) ? number : null;
 }
 
 function tmdbPath(value) {
@@ -114,9 +114,7 @@ function tmdbPath(value) {
 }
 
 function tmdbUrl(path) {
-  return path
-    ? TMDB_IMAGE_BASE + path
-    : "";
+  return path ? TMDB_BASE + path : "";
 }
 
 function errorText(error) {
@@ -124,10 +122,6 @@ function errorText(error) {
     ? error.message
     : String(error);
 }
-
-/*
- * TRAKT — EXISTING LISTS
- */
 
 async function fetchTraktList(
   slug,
@@ -137,9 +131,7 @@ async function fetchTraktList(
   var key = String(clientId || "").trim();
 
   if (!key) {
-    throw new Error(
-      "Missing Trakt Client ID."
-    );
+    throw new Error("Missing Trakt Client ID.");
   }
 
   var url =
@@ -172,21 +164,17 @@ async function fetchTraktList(
   }
 
   if (!Array.isArray(data)) {
-    throw new Error(
-      "Invalid Trakt response: " + slug
-    );
+    throw new Error("Invalid Trakt response.");
   }
 
-  var keyName =
-    mediaType === "movie"
-      ? "movie"
-      : "show";
+  var subjectKey =
+    mediaType === "movie" ? "movie" : "show";
 
-  var ranked = data
+  return data
     .filter(function(row) {
       return row && (
-        row[keyName] ||
-        row.type === keyName
+        row[subjectKey] ||
+        row.type === subjectKey
       );
     })
     .map(function(row, index) {
@@ -200,18 +188,12 @@ async function fetchTraktList(
             : index + 1,
         index: index
       };
-    });
-
-  ranked.sort(function(a, b) {
-    return a.rank - b.rank || a.index - b.index;
-  });
-
-  return ranked.slice(0, MAX_ITEMS);
+    })
+    .sort(function(a, b) {
+      return a.rank - b.rank || a.index - b.index;
+    })
+    .slice(0, MAX_ITEMS);
 }
-
-/*
- * POSTER SELECTION
- */
 
 function chooseCleanPoster(posters) {
   if (!Array.isArray(posters)) {
@@ -268,11 +250,11 @@ function chooseStandardPoster(posters) {
   });
 
   candidates.sort(function(a, b) {
-    var enA = a.iso_639_1 === "en" ? 1 : 0;
-    var enB = b.iso_639_1 === "en" ? 1 : 0;
+    var aEn = a.iso_639_1 === "en" ? 1 : 0;
+    var bEn = b.iso_639_1 === "en" ? 1 : 0;
 
-    if (enB !== enA) {
-      return enB - enA;
+    if (aEn !== bEn) {
+      return bEn - aEn;
     }
 
     var areaA =
@@ -291,49 +273,36 @@ function chooseStandardPoster(posters) {
     : "";
 }
 
-/*
- * FIXED TITLE LOGO SELECTION
- *
- * Priorities:
- * 1. English raster logo
- * 2. English SVG logo
- * 3. Neutral raster logo
- * 4. Neutral SVG logo
- * 5. Other available logo
- */
-
-function chooseTitleLogo(logos) {
+function chooseLogo(logos) {
   if (!Array.isArray(logos)) {
     return "";
   }
 
   var candidates = logos.filter(function(logo) {
-    return logo && tmdbPath(logo.file_path);
+    return (
+      logo &&
+      tmdbPath(logo.file_path)
+    );
   });
 
   function score(logo) {
-    var lang = logo.iso_639_1;
-
     var languageScore =
-      lang === "en" ? 3 :
-      lang == null ? 2 :
-      1;
+      logo.iso_639_1 === "en" ? 3 :
+      logo.iso_639_1 == null ? 2 : 1;
 
-    var path = String(logo.file_path || "");
+    var raster =
+      /\.(png|webp|jpg|jpeg)$/i.test(
+        String(logo.file_path || "")
+      ) ? 1 : 0;
 
-    var formatScore =
-      /\.(png|webp|jpg|jpeg)$/i.test(path)
-        ? 2
-        : 1;
-
-    return languageScore * 10 + formatScore;
+    return languageScore * 10 + raster;
   }
 
   candidates.sort(function(a, b) {
-    var scoreDiff = score(b) - score(a);
+    var difference = score(b) - score(a);
 
-    if (scoreDiff !== 0) {
-      return scoreDiff;
+    if (difference) {
+      return difference;
     }
 
     var areaA =
@@ -352,20 +321,16 @@ function chooseTitleLogo(logos) {
     : "";
 }
 
-/*
- * TMDB IMAGE GALLERY
- */
-
-async function fetchImageGallery(
+async function fetchGallery(
   mediaType,
   tmdbId,
-  includeLanguages
+  languageFilter
 ) {
   var params = {};
 
-  if (includeLanguages) {
+  if (languageFilter) {
     params.include_image_language =
-      includeLanguages;
+      languageFilter;
   }
 
   var response = await Widget.tmdb.get(
@@ -373,16 +338,8 @@ async function fetchImageGallery(
     { params: params }
   );
 
-  var data = unwrap(response);
-
-  return data && typeof data === "object"
-    ? data
-    : null;
+  return unwrap(response);
 }
-
-/*
- * TMDB DETAILS + ARTWORK
- */
 
 async function getArtwork(
   mediaType,
@@ -399,7 +356,6 @@ async function getArtwork(
     networkLogo: ""
   };
 
-  var details = null;
   var images = null;
 
   try {
@@ -414,7 +370,7 @@ async function getArtwork(
       }
     );
 
-    details = unwrap(response);
+    var details = unwrap(response);
 
     if (details) {
       result.standardPoster = tmdbPath(
@@ -429,9 +385,9 @@ async function getArtwork(
 
       if (Array.isArray(details.genres)) {
         result.genres = details.genres
-          .map(function(g) {
-            return g && g.name
-              ? String(g.name)
+          .map(function(genre) {
+            return genre && genre.name
+              ? String(genre.name)
               : "";
           })
           .filter(Boolean);
@@ -457,20 +413,18 @@ async function getArtwork(
     }
   } catch (error) {
     console.warn(
-      "TMDB details:",
+      "TMDB details failed:",
       title,
       errorText(error)
     );
   }
 
   if (images) {
-    result.cleanPoster = chooseCleanPoster(
-      images.posters
-    );
+    result.cleanPoster =
+      chooseCleanPoster(images.posters);
 
-    result.logo = chooseTitleLogo(
-      images.logos
-    );
+    result.logo =
+      chooseLogo(images.logos);
 
     if (!result.standardPoster) {
       result.standardPoster =
@@ -478,15 +432,9 @@ async function getArtwork(
     }
   }
 
-  /*
-   * IMPORTANT FIX:
-   * Retry via the dedicated TMDB images
-   * endpoint when logos are missing.
-   */
-
   if (!result.logo || !result.cleanPoster) {
     try {
-      var gallery = await fetchImageGallery(
+      var gallery = await fetchGallery(
         mediaType,
         tmdbId,
         "en,null"
@@ -494,7 +442,7 @@ async function getArtwork(
 
       if (gallery) {
         if (!result.logo) {
-          result.logo = chooseTitleLogo(
+          result.logo = chooseLogo(
             gallery.logos
           );
         }
@@ -513,34 +461,29 @@ async function getArtwork(
       }
     } catch (error) {
       console.warn(
-        "TMDB gallery:",
+        "TMDB gallery failed:",
         title,
         errorText(error)
       );
     }
   }
 
-  /*
-   * Last logo fallback: allow TMDB to return
-   * any language rather than no logo.
-   */
-
   if (!result.logo) {
     try {
-      var allImages = await fetchImageGallery(
+      var allImages = await fetchGallery(
         mediaType,
         tmdbId,
         null
       );
 
       if (allImages) {
-        result.logo = chooseTitleLogo(
+        result.logo = chooseLogo(
           allImages.logos
         );
       }
     } catch (error) {
       console.warn(
-        "TMDB logo fallback:",
+        "TMDB logo fallback failed:",
         title,
         errorText(error)
       );
@@ -549,10 +492,6 @@ async function getArtwork(
 
   return result;
 }
-
-/*
- * IMDb -> TMDB FALLBACK
- */
 
 async function resolveTmdbId(
   mediaType,
@@ -584,12 +523,6 @@ async function resolveTmdbId(
       matches.length
     ) ? positiveId(matches[0].id) : null;
   } catch (error) {
-    console.warn(
-      "IMDb lookup:",
-      imdbId,
-      errorText(error)
-    );
-
     return null;
   }
 }
@@ -611,10 +544,6 @@ function isNinetiesClub(
     )
   );
 }
-
-/*
- * BUILD VIDEO ITEM
- */
 
 async function buildItem(
   entry,
@@ -655,11 +584,6 @@ async function buildItem(
   }
 
   if (!tmdbId && !/^tt\d+$/.test(imdbId)) {
-    console.warn(
-      "No usable IDs:",
-      title
-    );
-
     return null;
   }
 
@@ -674,6 +598,9 @@ async function buildItem(
     rank: entry.rank,
     position: entry.rank
   };
+
+  var logoDiagnostic =
+    tmdbId ? "MISSING" : "NO TMDB ID";
 
   if (tmdbId) {
     item.tmdbId = tmdbId;
@@ -704,14 +631,9 @@ async function buildItem(
         artwork.backdrop;
     }
 
-    /*
-     * TITLE LOGO FIX
-     *
-     * Give the HTML widget a complete URL.
-     * Keep raw and alternative paths too.
-     */
-
     if (artwork.logo) {
+      logoDiagnostic = "FOUND";
+
       var logoUrl = tmdbUrl(artwork.logo);
 
       item.titleLogoPath = logoUrl;
@@ -747,9 +669,7 @@ async function buildItem(
     )
   ) {
     if (!item.posterPath) {
-      item.coverUrl =
-        NINETIES_CLUB_POSTER;
-
+      item.coverUrl = NINETIES_CLUB_POSTER;
       item.detailPoster =
         NINETIES_CLUB_POSTER;
     }
@@ -759,12 +679,28 @@ async function buildItem(
     }
   }
 
+  /*
+   * VISIBLE DIAGNOSTIC
+   *
+   * Only the first-ranked item is changed.
+   *
+   * Hide its logo deliberately so Rex
+   * displays the diagnostic in the title.
+   *
+   * All other titles remain untouched.
+   */
+  if (entry.rank === 1) {
+    item.title =
+      title +
+      " [TMDB LOGO " +
+      logoDiagnostic +
+      "]";
+
+    delete item.titleLogoPath;
+  }
+
   return item;
 }
-
-/*
- * FAST LOADING — UNCHANGED
- */
 
 async function loadNativeList(
   mediaType,
@@ -823,36 +759,8 @@ async function loadNativeList(
     return a.rank - b.rank;
   });
 
-  var posterCount = results.filter(function(item) {
-    return !!(
-      item.posterPath ||
-      item.coverUrl
-    );
-  }).length;
-
-  var cleanCount = results.filter(function(item) {
-    return !!item.cleanPosterPath;
-  }).length;
-
-  var logoCount = results.filter(function(item) {
-    return !!item.titleLogoPath;
-  }).length;
-
-  console.log(
-    "TOP 20 COMPLETE:",
-    mediaType,
-    "titles:", results.length,
-    "posters:", posterCount,
-    "textless:", cleanCount,
-    "logos:", logoCount
-  );
-
   return results;
 }
-
-/*
- * MODULE ENTRY POINTS
- */
 
 async function loadNativeMovies(params) {
   return loadNativeList(
