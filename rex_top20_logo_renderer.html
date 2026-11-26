@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="rex-widget" content="type=rail; height=480; item-ratio=5:6">
-<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster">
+<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster">
 <title>Rex — Numbered Top 20 Editorial</title>
 <style>
 *{box-sizing:border-box}
@@ -76,49 +76,68 @@ function railArtworkBundle(item){
     (!backdrop||paths[0]===backdrop))return {poster:paths[1],logo:paths[2]};
  return null;
 }
-var railArtMemory=Object.create(null);
-var railArtTTL=4*60*60*1000;
-function railArtKey(item){
- if(!item||item.id==null||item.id==='')return '';
- return 'rex.clean.342.'+String(item.mediaType||item.contentType||'')+':'+String(item.id)+':'+String(item.title||'').trim().toLowerCase();
+var railArtMemory=Object.create(null),railArtTTL=4*60*60*1000;
+function railArtKeys(item){
+ if(!item||item.id==null||item.id==='')return [];
+ var id=String(item.id).trim(),title=String(item.title||'').trim().toLowerCase().replace(/\s+/g,' ');
+ // Title and id together avoid collisions between movies and series while
+ // allowing the native mediaType field to disappear or change on navigation.
+ var type=String(item.mediaType||item.contentType||'').toLowerCase();
+ if(type==='show'||type==='series'||type==='television')type='tv';
+ var base='rex.oversized.clean.343:';
+ var keys=[];
+ if(type)keys.push(base+type+':'+id);
+ if(title)keys.push(base+'idtitle:'+id+':'+title);
+ return keys;
 }
+function railArtKey(item){return railArtKeys(item)[0]||''}
 function railArtRead(key){
  if(!key)return null;
  var data=railArtMemory[key];
- if(!data){
-  try{data=JSON.parse(localStorage.getItem(key)||'null')}catch(e){}
- }
+ if(!data){try{data=JSON.parse(localStorage.getItem(key)||'null')}catch(e){}}
  if(!data||typeof data.at!=='number'||Date.now()-data.at<0||Date.now()-data.at>=railArtTTL||!data.poster)return null;
- railArtMemory[key]=data;
- return data;
+ railArtMemory[key]=data;return data;
 }
-function railArtRemember(key,poster,logo){
- if(!key||!poster)return;
+function railArtFor(item){
+ var keys=railArtKeys(item);
+ for(var i=0;i<keys.length;i++){var data=railArtRead(keys[i]);if(data)return data}
+ return null;
+}
+function railArtRemember(item,poster,logo){
+ if(!poster)return;
  var data={poster:poster,logo:logo||'',at:Date.now()};
- railArtMemory[key]=data;
- try{localStorage.setItem(key,JSON.stringify(data))}catch(e){}
+ railArtKeys(item).forEach(function(key){railArtMemory[key]=data;try{localStorage.setItem(key,JSON.stringify(data))}catch(e){}});
+}
+function imageIdentity(value){
+ var src=artworkValue(value);
+ try{src=decodeURIComponent(src)}catch(e){}
+ // Compare the source filename rather than the proxy's size or URL wrapper.
+ var matches=src.match(/\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)(?=$|[?#&/])/ig);
+ return matches&&matches.length?matches[matches.length-1].toLowerCase():src;
 }
 function railPoster(item){
  if(!item)return '';
- var key=railArtKey(item),cached=railArtRead(key);
- // The native See All grid may hydrate the same item and replace its artwork.
- // Retain the last known clean artwork, not the replacement default poster.
+ var cached=railArtFor(item);
  if(cached)return cached.poster;
  var bundle=railArtworkBundle(item),clean=artworkValue(item.cleanPosterPath);
- var defaultPoster=artworkValue(item.posterPath);
- var poster=(bundle&&bundle.poster)||(clean&&clean!==defaultPoster?clean:'');
+ var nativePoster=artworkValue(item.posterPath)||artworkValue(item.coverUrl);
+ var detail=artworkValue(item.detailPoster);
+ // Use explicit artwork first; detailPoster is also our module's original
+ // clean image when it differs from the normal native poster.
+ var poster=(bundle&&bundle.poster)||
+   (clean&&imageIdentity(clean)!==imageIdentity(nativePoster)?clean:'')||
+   (detail&&nativePoster&&imageIdentity(detail)!==imageIdentity(nativePoster)?detail:'');
  if(poster){
-  railArtRemember(key,poster,(bundle&&bundle.logo)||artworkValue(item.titleLogoPath)||artworkValue(item.titleLogoUrl)||artworkValue(item.logoPath));
+  railArtRemember(item,poster,(bundle&&bundle.logo)||artworkValue(item.titleLogoPath)||artworkValue(item.titleLogoUrl)||artworkValue(item.logoPath));
   return poster;
  }
- // Never cache a generic native fallback as a textless poster.
- return artworkValue(item.detailPoster)||defaultPoster||artworkValue(item.coverUrl)||artworkValue(item.backdropPath);
+ return nativePoster||detail||artworkValue(item.backdropPath);
 }
 function findTitleLogo(item){
  if(!item)return [];
  var candidates=[];
  function add(value){var p=artworkValue(value);if(p&&candidates.indexOf(p)<0)candidates.push(p)}
- var cachedArt=railArtRead(railArtKey(item));
+ var cachedArt=railArtFor(item);
  if(cachedArt)add(cachedArt.logo);
  add(item.titleLogoPath);add(item.titleLogoUrl);add(item.logoUrl);add(item.logoPath);
  var paths=Array.isArray(item.backdropPaths)?item.backdropPaths.map(artworkValue).filter(Boolean):[];
