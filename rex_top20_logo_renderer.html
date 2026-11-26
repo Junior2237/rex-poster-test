@@ -220,6 +220,27 @@ function fallbackPoster(item){
  }
  return '';
 }
+function railLogoCandidates(item,art){
+ var fixed=fixedRailRule(item);
+ if(fixed){
+  var exact=fixedRailSource(item,fixed.logo);
+  return exact?[exact]:[];
+ }
+ var bundle=railArtworkBundle(item);
+ var list=[art&&art.logo,item&&item.titleLogoPath,item&&item.titleLogoUrl,item&&item.logoUrl,bundle&&bundle.logo,item&&item.logoPath,item&&item.titleLogoRawPath];
+ if(item&&Array.isArray(item.titleLogoAlternates))list=list.concat(item.titleLogoAlternates);
+ var result=[];
+ list.forEach(function(value){
+  var src=artworkValue(value);
+  if(!src)return;
+  if(src.charAt(0)==='/'){
+   var resolved=fixedRailSource(item,src);
+   if(resolved&&resolved!==src&&result.indexOf(resolved)<0)result.push(resolved);
+  }
+  if(result.indexOf(src)<0)result.push(src);
+ });
+ return result;
+}
 function syncPosterBrand(item,art){
  if((displayedPoster&&!displayedClean)||(fixedRailRule(item)&&!displayedClean)){
   // Native fallback artwork may already have a printed title.
@@ -229,7 +250,7 @@ function syncPosterBrand(item,art){
   setImage(logo,'');el('title').hidden=true;
   return;
  }
- renderTitleLogo(art&&art.logo?[art.logo]:[],nameOf(item));
+ renderTitleLogo(railLogoCandidates(item,art),nameOf(item));
 }
 function updatePoster(item,art){
  // Keep confirmed artwork locked; allow a single upgrade from a provisional
