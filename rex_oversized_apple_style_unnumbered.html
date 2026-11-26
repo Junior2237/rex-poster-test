@@ -137,6 +137,7 @@ var lastOpen=0;
 var imageGeneration=0;
 var displayedPoster='';
 var pendingPoster='';
+var lockedArtwork=null;
 
 function el(id){
  return document.getElementById(id);
@@ -195,7 +196,7 @@ function railArtKeys(item){
  // allowing the native mediaType field to disappear or change on navigation.
  var type=String(item.mediaType||item.contentType||'').toLowerCase();
  if(type==='show'||type==='series'||type==='television')type='tv';
- var base='rex.editorial700.clean.344:';
+ var base='rex.editorial700.clean.345:';
  var keys=[];
  if(type)keys.push(base+type+':'+id);
  if(title)keys.push(base+'idtitle:'+id+':'+title);
@@ -226,30 +227,27 @@ function imageIdentity(value){
  var matches=src.match(/\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)(?=$|[?#&/])/ig);
  return matches&&matches.length?matches[matches.length-1].toLowerCase():src;
 }
-function railPoster(item){
- if(!item)return '';
+function confirmedArtwork(item){
+ if(!item)return null;
  var cached=railArtFor(item);
- if(cached)return cached.poster;
+ if(cached)return cached;
  var bundle=railArtworkBundle(item),clean=artworkValue(item.cleanPosterPath);
  var nativePoster=artworkValue(item.posterPath)||artworkValue(item.coverUrl);
- var detail=artworkValue(item.detailPoster);
- // Use explicit artwork first; detailPoster is also our module's original
- // clean image when it differs from the normal native poster.
- var poster=(bundle&&bundle.poster)||
-   (clean&&imageIdentity(clean)!==imageIdentity(nativePoster)?clean:'')||
-   (detail&&nativePoster&&imageIdentity(detail)!==imageIdentity(nativePoster)?detail:'');
- if(poster){
-  railArtRemember(item,poster,(bundle&&bundle.logo)||artworkValue(item.titleLogoPath)||artworkValue(item.titleLogoUrl)||artworkValue(item.logoPath));
-  return poster;
- }
- return nativePoster||detail||artworkValue(item.backdropPath);
+ // Do not treat changing native detail art as verified textless artwork.
+ var poster=(bundle&&bundle.poster)||(clean&&imageIdentity(clean)!==imageIdentity(nativePoster)?clean:'');
+ if(!poster)return null;
+ return {poster:poster,logo:(bundle&&bundle.logo)||artworkValue(item.titleLogoPath)||
+  artworkValue(item.titleLogoUrl)||artworkValue(item.logoPath)};
 }
 
-function posterOf(item){return railPoster(item);}
-function logoOf(item){
- var cached=railArtFor(item),bundle=railArtworkBundle(item);
- return (cached&&cached.logo)||artworkValue(item&&item.titleLogoPath)||
-  (bundle&&bundle.logo)||artworkValue(item&&item.titleLogoUrl)||artworkValue(item&&item.logoPath)||'';
+function lockArtwork(item){
+ if(lockedArtwork)return lockedArtwork;
+ var art=confirmedArtwork(item);
+ if(!art)return null;
+ // Lock the source for the entire assignment of this rail cell.
+ lockedArtwork={poster:art.poster,logo:art.logo||''};
+ railArtRemember(item,lockedArtwork.poster,lockedArtwork.logo);
+ return lockedArtwork;
 }
 
 function networkLogoOf(item){
@@ -276,10 +274,11 @@ function networkLogoOf(item){
 
 // Do not commit an image from an earlier recycled rail cell.
 // Keep an already loaded poster for the same item while new metadata arrives.
-function updatePoster(item){
- var src=posterOf(item),key=titleKey(item),node=el('poster');
- if(!src||src===displayedPoster||src===pendingPoster)return;
- if(displayedPoster&&imageIdentity(src)===imageIdentity(displayedPoster))return;
+function updatePoster(item,art){
+ // A confirmed source is immutable until a genuinely different title is assigned.
+ // Avoid native poster fallbacks: they may be replaced after See All hydration.
+ var src=art&&art.poster||'',key=titleKey(item);
+ if(!src||displayedPoster||src===pendingPoster)return;
  pendingPoster=src;
  var generation=++imageGeneration;
  var image=new Image();
@@ -321,6 +320,7 @@ function clearTitleImages(){
  imageGeneration++;
  displayedPoster='';
  pendingPoster='';
+ lockedArtwork=null;
  clearImage('poster');
  clearImage('logo');
  clearImage('platformLogo');
@@ -654,8 +654,14 @@ function render(){
  selected=item;
  var name=nameOf(item);
 
- updatePoster(item);
- updateImage('logo',logoOf(item));
+ var art=lockArtwork(item);
+ updatePoster(item,art);
+ if(art&&!art.logo){
+  // Accept a late logo only; never replace an already selected poster.
+  art.logo=artworkValue(item.titleLogoPath)||artworkValue(item.titleLogoUrl)||artworkValue(item.logoPath);
+  if(art.logo)railArtRemember(item,art.poster,art.logo);
+ }
+ if(art&&art.logo)updateImage('logo',art.logo);
 
  var hasLogo=!el('logo').hidden;
 
@@ -743,7 +749,7 @@ link.addEventListener('keydown',function(e){
 
 if(api){
  api.onContentChanged(render);
- api.onLayoutChanged(function(){updateLayout();render();});
+ api.onLayoutChanged(updateLayout);
  render();
 }
 
