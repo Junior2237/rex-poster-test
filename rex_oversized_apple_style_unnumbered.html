@@ -1,67 +1,178 @@
+
 <!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="rex-widget" content="type=rail; height=480; item-ratio=5:6">
+<meta name="rex-widget" content="type=rail; height=700; item-ratio=4:5">
 <meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster">
-<title>Rex — Apple TV Editorial Oversized</title>
+<title>Rex Editorial — Consistent Artwork</title>
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;width:100%;height:100%;background:transparent;color:white;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif}
-.card{position:relative;width:100%;height:480px;overflow:hidden;border-radius:20px;background:#171922;isolation:isolate}
-.poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
-.shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(to bottom,rgba(0,0,0,.09) 0%,transparent 35%,transparent 48%,rgba(0,0,0,.22) 65%,rgba(0,0,0,.86) 100%)}
-.details{position:absolute;z-index:2;left:22px;right:22px;bottom:22px;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;text-align:left;pointer-events:none}
-.logo{display:block;width:100%;height:78px;margin:0 0 10px;object-fit:contain;object-position:left bottom;filter:drop-shadow(0 2px 7px rgba(0,0,0,.63))}
-.title{display:block;width:100%;margin:0 0 10px;max-height:2.2em;overflow:hidden;font-size:30px;font-weight:850;line-height:1.07;text-align:left;text-shadow:0 2px 7px rgba(0,0,0,.75)}
-.meta{display:flex;align-items:center;gap:8px;max-width:100%;min-height:19px;white-space:nowrap}
-.platform-logo{display:block;max-width:45px;height:20px;object-fit:contain;flex-shrink:0;filter:drop-shadow(0 1px 2px rgba(0,0,0,.55))}
-.platform-name{display:block;max-width:76px;overflow:hidden;text-overflow:ellipsis;border-radius:5px;padding:3px 5px;background:rgba(0,0,0,.5);font-size:11px;font-weight:750;flex-shrink:0}
-.meta-text{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;font-size:16px;font-weight:500;line-height:1.2;color:rgba(255,255,255,.84);text-shadow:0 1px 3px rgba(0,0,0,.5)}
-.open{position:absolute;inset:0;z-index:3;display:block;width:100%;height:100%;border:0;border-radius:20px;outline:none;background:transparent;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.card:focus-within::after,.card.focused::after{content:"";position:absolute;z-index:4;inset:3px;border:4px solid white;border-radius:17px;box-shadow:0 0 0 2px rgba(0,0,0,.4),0 0 18px rgba(255,255,255,.4);pointer-events:none}
-.card:focus-within .poster,.card.focused .poster{filter:brightness(1.07)}
-.status{position:absolute;z-index:2;left:20px;right:20px;bottom:22px;font-size:14px}
-
+html,body{
+ margin:0;padding:0;width:100%;height:100%;
+ background:transparent;color:#fff;
+ font-family:-apple-system,BlinkMacSystemFont,
+ "Helvetica Neue",Arial,sans-serif
+}
+.card{
+ position:relative;width:100%;height:700px;
+ overflow:hidden;border-radius:26px;
+ background:#171922;isolation:isolate
+}
+.poster{
+ position:absolute;inset:0;
+ width:100%;height:100%;
+ display:block;object-fit:cover
+}
+.shade{
+ position:absolute;inset:0;pointer-events:none;
+ background:linear-gradient(to bottom,
+ rgba(0,0,0,.08) 0%,transparent 40%,
+ rgba(0,0,0,.12) 58%,rgba(0,0,0,.84) 100%)
+}
+.details{
+ position:absolute;z-index:2;
+ left:26px;right:26px;bottom:25px;
+ display:flex;flex-direction:column;
+ align-items:flex-start;pointer-events:none
+}
+.brand{
+ position:relative;width:100%;
+ height:90px;margin-bottom:10px;
+ flex-shrink:0
+}
+.logo{
+ position:absolute;left:0;bottom:0;
+ width:370px;max-width:75%;height:90px;
+ object-fit:contain;object-position:left bottom;
+ filter:drop-shadow(0 2px 6px rgba(0,0,0,.55))
+}
+.title{
+ position:absolute;left:0;bottom:0;
+ max-width:100%;max-height:2.2em;
+ overflow:hidden;font-size:36px;
+ font-weight:850;line-height:1.08;
+ text-align:left;
+ text-shadow:0 2px 7px rgba(0,0,0,.75)
+}
+.meta{
+ display:flex;align-items:flex-start;
+ gap:10px;width:100%;min-width:0
+}
+.platform-logo{
+ display:block;max-width:52px;height:22px;
+ object-fit:contain;flex-shrink:0;
+ filter:drop-shadow(0 1px 2px rgba(0,0,0,.55))
+}
+.meta-text{
+ display:block;flex:1;min-width:0;
+ font-size:22px;font-weight:500;line-height:1.28;
+ color:#fff;opacity:.62;
+ text-shadow:0 1px 3px rgba(0,0,0,.5);
+ white-space:normal;overflow-wrap:break-word
+}
+.open{
+ position:absolute;inset:0;z-index:3;
+ display:block;width:100%;height:100%;
+ border:0;border-radius:26px;outline:none;
+ background:transparent;cursor:pointer;
+ -webkit-tap-highlight-color:transparent
+}
+.card:focus-within::after,
+.card.focused::after{
+ content:"";position:absolute;z-index:4;
+ inset:4px;border:5px solid #fff;
+ border-radius:22px;
+ box-shadow:0 0 0 2px rgba(0,0,0,.4),
+ 0 0 18px rgba(255,255,255,.4);
+ pointer-events:none
+}
+.card:focus-within .poster,
+.card.focused .poster{filter:brightness(1.07)}
+.status{
+ position:absolute;z-index:2;
+ left:26px;right:26px;bottom:25px;
+ font-size:18px
+}
 [hidden]{display:none!important}
 </style>
 </head>
+
 <body>
 <div class="card" id="card">
-  <img class="poster" id="poster" alt="" hidden>
-  <div class="shade"></div>
-  
-  <div class="details" id="details" hidden>
-    <img class="logo" id="logo" alt="" hidden>
-    <div class="title" id="title" hidden></div>
-    <div class="meta" id="meta" hidden>
-      <img class="platform-logo" id="platformLogo" alt="" hidden>
-      <span class="platform-name" id="platformName" hidden></span>
-      <span class="meta-text" id="metaText" hidden></span>
-    </div>
+ <img class="poster" id="poster" alt="" hidden>
+ <div class="shade"></div>
+
+ <div class="details" id="details" hidden>
+  <div class="brand">
+   <img class="logo" id="logo" alt="" hidden>
+   <div class="title" id="title" hidden></div>
   </div>
-  <span class="status" id="status">Waiting for titles</span>
-  <a class="open" id="open" href="#" role="button" tabindex="0" aria-label="Open title"></a>
+
+  <div class="meta" id="meta" hidden>
+   <img class="platform-logo"
+        id="platformLogo" alt="" hidden>
+   <span class="meta-text" id="metaText" hidden></span>
+  </div>
+ </div>
+
+ <span class="status" id="status">
+  Waiting for titles
+ </span>
+
+ <a class="open" id="open" href="#"
+    role="button" tabindex="0"
+    aria-label="Open title"></a>
 </div>
+
 <script>
 (function(){
 'use strict';
+
 var api=window.RexWidget;
-function el(id){return document.getElementById(id)}
-function str(v){return v==null?'':String(v)}
-function norm(v){
-  var s=str(v).toLowerCase().replace(/[\u2018\u2019'`]/g,'');
-  if(typeof s.normalize==='function')s=s.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-  return s.replace(/[^a-z0-9]+/g,' ').trim();
+var selected=null;
+var currentKey='';
+var lastOpen=0;
+
+function el(id){
+ return document.getElementById(id);
 }
-var card=el('card'),link=el('open'),selected=null,lastOpen=0;
-if(!api){el('status').textContent='Preview in Rex Widget Workshop';return}
+function str(v){
+ return v==null?'':String(v);
+}
+function fold(v){
+ var s=str(v).toLowerCase().trim();
+ if(typeof s.normalize==='function'){
+  s=s.normalize('NFD')
+   .replace(/[\u0300-\u036f]/g,'');
+ }
+ return s.replace(/\s+/g,' ');
+}
+function add(out,value){
+ if(value&&out.indexOf(value)<0)
+  out.push(value);
+}
+function nameOf(item){
+ return str(item&&(item.title||item.name)||'Untitled')
+  .replace(
+   /^\s*#?\s*(?:20|1[0-9]|[1-9])\s*[.\-:)]+\s+/,
+   ''
+  );
+}
+
+/*
+ * Title identity deliberately excludes
+ * metadata fields that can arrive later.
+ */
+function titleKey(item){
+ return item?fold(nameOf(item)):'';
+}
+
 function artworkValue(v){
  if(v&&typeof v==='object')return artworkValue(v.url||v.src||v.path||v.file_path||v.imageUrl||v.backdropPath||'');
  return str(v).trim();
 }
-function setImage(node,value){var src=artworkValue(value);node.hidden=!src;if(src){if(node.getAttribute('src')!==src)node.setAttribute('src',src)}else node.removeAttribute('src')}
 function railArtworkBundle(item){
  if(!item)return null;
  var paths=Array.isArray(item.backdropPaths)?item.backdropPaths.map(artworkValue).filter(Boolean):[];
@@ -79,7 +190,7 @@ function railArtKeys(item){
  // allowing the native mediaType field to disappear or change on navigation.
  var type=String(item.mediaType||item.contentType||'').toLowerCase();
  if(type==='show'||type==='series'||type==='television')type='tv';
- var base='rex.oversized.clean.343:';
+ var base='rex.editorial700.clean.344:';
  var keys=[];
  if(type)keys.push(base+type+':'+id);
  if(title)keys.push(base+'idtitle:'+id+':'+title);
@@ -128,252 +239,478 @@ function railPoster(item){
  }
  return nativePoster||detail||artworkValue(item.backdropPath);
 }
-function findTitleLogo(item){
- if(!item)return [];
- var candidates=[];
- function add(value){var p=artworkValue(value);if(p&&candidates.indexOf(p)<0)candidates.push(p)}
- var cachedArt=railArtFor(item);
- if(cachedArt)add(cachedArt.logo);
- add(item.titleLogoPath);add(item.titleLogoUrl);add(item.logoUrl);add(item.logoPath);
- var paths=Array.isArray(item.backdropPaths)?item.backdropPaths.map(artworkValue).filter(Boolean):[];
- var backdrop=artworkValue(item.backdropPath);
- var bundle=railArtworkBundle(item);
- if(bundle)add(bundle.logo);
- for(var i=paths.length-1;i>=0;i--){
-  if(bundle&&paths[i]===bundle.poster)continue;
-  var p=paths[i];try{p=decodeURIComponent(p)}catch(e){}
-  if(paths[i]!==backdrop&&/\.png(?:$|[?&#/])/i.test(p))add(paths[i]);
+
+function posterOf(item){return railPoster(item);}
+function logoOf(item){
+ var cached=railArtFor(item),bundle=railArtworkBundle(item);
+ return (cached&&cached.logo)||artworkValue(item&&item.titleLogoPath)||
+  (bundle&&bundle.logo)||artworkValue(item&&item.titleLogoUrl)||artworkValue(item&&item.logoPath)||'';
+}
+
+function networkLogoOf(item){
+ if(!item)return '';
+
+ var n=item.originalNetwork||
+  item.originalNetworks||
+  item.networks||
+  item.network||
+  item.productionNetwork||
+  item.originNetwork;
+
+ if(Array.isArray(n))n=n[0];
+
+ return (
+  n&&typeof n==='object'&&
+  (n.logoPath||n.logoUrl||n.logo||n.image)
+ )||
+ item.originalNetworkLogoPath||
+ item.originalNetworkLogo||
+ item.networkLogoPath||
+ item.networkLogoUrl||'';
+}
+
+function updateImage(id,token){
+ var node=el(id);
+ var src=typeof token==='string'?token:'';
+
+ if(!src)return;
+
+ if(node.getAttribute('src')!==src){
+  node.setAttribute('src',src);
  }
- // The custom module places its logo after the primary backdrop.
- // Rex may rewrite image URLs without preserving their extension.
- if(paths.length===2&&paths[0]===backdrop&&paths[1]!==backdrop)add(paths[1]);
- return candidates;
+
+ node.hidden=false;
 }
-var logoRequest=0,logoKey='';
-function renderTitleLogo(sources,name){
- var logo=el('logo'),title=el('title');
- title.textContent=name;logo.alt='';
- var key=JSON.stringify([selected&&selected.id,sources]);
- if(key===logoKey)return;
- logoKey=key;
- var request=++logoRequest,index=0;
- logo.hidden=true;title.hidden=false;
- logo.onload=null;logo.onerror=null;logo.removeAttribute('src');
- function next(){
-  if(request!==logoRequest)return;
-  if(index>=sources.length){logo.hidden=true;title.hidden=false;logo.removeAttribute('src');return}
-  var src=sources[index++];
-  logo.onload=function(){if(request===logoRequest&&logo.getAttribute('src')===src){logo.hidden=false;title.hidden=true}};
-  logo.onerror=function(){if(request===logoRequest&&logo.getAttribute('src')===src)next()};
-  logo.setAttribute('src',src);
-  if(logo.complete&&logo.naturalWidth>0){logo.hidden=false;title.hidden=true}
+
+function clearImage(id){
+ var node=el(id);
+ node.hidden=true;
+
+ if(node.getAttribute('src')){
+  node.removeAttribute('src');
  }
- next();
 }
-function nameOf(item){return str(item&&item.title||'Untitled').replace(/^\s*#?\s*(?:20|1[0-9]|[1-9])\s*[.\-:)]+\s+/,'')}
-function titleKey(item){return norm(nameOf(item)).replace(/\s+(?:19|20)\d{2}$/,'').trim()}
-function mediaType(item){return norm(item&&(item.mediaType||item.type||item.contentType||item.kind)||'')}
-function yearOf(item){
-  var fields=[item.year,item.releaseYear,item.releaseDate,item.firstAirDate,item.premiered,nameOf(item)];
-  for(var i=0;i<fields.length;i++){var m=str(fields[i]).match(/\b(19\d{2}|20\d{2})\b/);if(m)return Number(m[1])}
-  return null;
+
+function clearTitleImages(){
+ clearImage('poster');
+ clearImage('logo');
+ clearImage('platformLogo');
+
+ el('title').hidden=true;
+ el('metaText').textContent='';
 }
-/* Existing curated genre choices, shared by both versions. */
-var TITLE_GENRES={
- 'widows bay':'Mystery','lanterns':'Sci-Fi','black doves':'Action','yellowjackets':'Thriller','steps':'Animation',
- 'percy jackson and the olympians':'Adventure','the lord of the rings the rings of power':'Fantasy','the rings of power':'Fantasy',
- 'slow horses':'Thriller','ted lasso':'Comedy','breaking bad':'Crime','better call saul':'Crime','stranger things':'Sci-Fi',
- 'the last of us':'Drama','severance':'Thriller','game of thrones':'Fantasy','house of the dragon':'Fantasy',
- 'the mandalorian':'Sci-Fi','andor':'Sci-Fi','silo':'Sci-Fi','fallout':'Sci-Fi','the bear':'Drama','the white lotus':'Drama',
- 'the boys':'Action','the office':'Comedy','friends':'Comedy','brooklyn nine nine':'Comedy',
- 'only murders in the building':'Mystery','the night agent':'Thriller','reacher':'Action','squid game':'Thriller',
- 'black mirror':'Sci-Fi','the walking dead':'Horror','yellowstone':'Western','the crown':'Drama','bridgerton':'Romance',
- 'the penguin':'Crime','peaky blinders':'Crime','shogun':'Drama','the witcher':'Fantasy','the umbrella academy':'Sci-Fi',
- 'the good place':'Comedy','the last kingdom':'Drama','dune':'Sci-Fi','dune part two':'Sci-Fi',
- 'interstellar':'Sci-Fi','inception':'Sci-Fi','john wick':'Action','top gun maverick':'Action','barbie':'Comedy',
- 'oppenheimer':'Drama','arcane':'Animation','invincible':'Animation','bojack horseman':'Animation',
- 'blue eye samurai':'Animation','inside out 2':'Animation','kpop demon hunters':'Animation','the wild robot':'Animation',
- 'the mentalist':'Crime'
-};
-function curatedGenre(item){
-  var key=titleKey(item);
-  if(key==='nocturne'){
-    var type=mediaType(item);
-    if(yearOf(item)===2020||type==='movie'||type==='film')return '';
-    return 'Crime';
-  }
-  return Object.prototype.hasOwnProperty.call(TITLE_GENRES,key)?TITLE_GENRES[key]:'';
-}
-var HUNGER_GAMES=[
- /^(?:the )?hunger games$/,/^(?:the )?hunger games catching fire$/,
- /^(?:the )?hunger games mockingjay part (?:1|2|one|two|i|ii)$/,
- /^(?:the )?hunger games the ballad of songbirds and snakes$/,
- /^(?:the )?ballad of songbirds and snakes$/
-];
-function franchiseGenre(item){var key=titleKey(item);for(var i=0;i<HUNGER_GAMES.length;i++)if(HUNGER_GAMES[i].test(key))return 'Action';return ''}
-var ALIASES={
- 'action':'Action','adventure':'Adventure','fantasy':'Fantasy','science fiction':'Sci-Fi','sci fi':'Sci-Fi','scifi':'Sci-Fi',
- 'comedy':'Comedy','drama':'Drama','crime':'Crime','thriller':'Thriller','suspense':'Thriller',
- 'psychological thriller':'Thriller','mystery':'Mystery','horror':'Horror','romance':'Romance','romantic':'Romance',
- 'documentary':'Documentary','docuseries':'Documentary','animation':'Animation','animated':'Animation','anime':'Animation',
- 'family':'Family','kids':'Family','children':'Family','western':'Western','war':'War','history':'History',
- 'historical':'History','reality':'Reality','reality tv':'Reality','music':'Music','musical':'Musical',
- 'sport':'Sports','sports':'Sports','biography':'Biography','biographical':'Biography','soap':'Soap','talk':'Talk'
-};
-function canonical(v){return ALIASES[norm(v)]||''}
-function label(v){if(typeof v==='string')return v;if(!v||typeof v!=='object')return '';return str(v.title||v.name||v.label||v.genreTitle||'')}
-function splitGenres(value){
-  var raw=label(value),out=[];if(!raw)return out;
-  function add(v){var g=canonical(v);if(g&&out.indexOf(g)<0)out.push(g)}
-  var parts=raw.split(/[·•|,\/;]+/);
-  for(var i=0;i<parts.length;i++){
-    var s=norm(parts[i]);
-    if(!s||/^global rank \d+$/.test(s)||/^streaming trend rank \d+$/.test(s)||s==='trending worldwide')continue;
-    if(s==='action and adventure'||s==='action adventure'){add('Action');continue}
-    if(s==='sci fi and fantasy'||s==='science fiction and fantasy'||s==='sci fi fantasy'){add('Sci-Fi');add('Fantasy');continue}
-    if(s==='mystery and thriller'||s==='mystery thriller'){add('Mystery');add('Thriller');continue}
-    if(s==='kids and family'||s==='children and family'){add('Family');continue}
-    var pair=s.split(/\s+and\s+/);
-    if(pair.length===2&&canonical(pair[0])&&canonical(pair[1])){add(pair[0]);add(pair[1]);continue}
-    add(s);
-  }
-  return out;
-}
-function collectGenres(item){
-  var result=[];
-  function add(v){var list=splitGenres(v);for(var i=0;i<list.length;i++)if(result.indexOf(list[i])<0)result.push(list[i])}
-  var arrays=[item.genreItems,item.genres];
-  for(var a=0;a<arrays.length;a++)if(Array.isArray(arrays[a]))for(var b=0;b<arrays[a].length;b++)add(arrays[a][b]);
-  add(item.genreTitle);add(item.genreName);add(item.genre);return result;
-}
-function explicitPrimary(item){
-  var fields=[item.primaryGenre,item.mainGenre,item.dominantGenre];
-  for(var i=0;i<fields.length;i++){var a=splitGenres(fields[i]);if(a.length===1)return a[0]}
-  if(Array.isArray(item.genreItems))for(var j=0;j<item.genreItems.length;j++){
-    var x=item.genreItems[j];if(x&&(x.isPrimary===true||x.primary===true)){
-      var marked=splitGenres(x);if(marked.length===1)return marked[0];
-    }
-  }
-  return '';
-}
-function synopsis(item){
-  var fields=[item.description,item.overview,item.summary,item.synopsis,item.plot,item.tagline],out=[];
-  for(var i=0;i<fields.length;i++)if(typeof fields[i]==='string'){
-    var s=fields[i].trim();if(s&&out.indexOf(s)<0)out.push(s);
-  }
-  return out.join(' ');
-}
-var EVIDENCE={
- 'Animation':[/\b(?:animated film|animated movie|animated feature|animated series|anime series|cartoon series)\b/gi,/\b(?:animation|animated|anime|cartoon)\b/gi],
- 'Thriller':[/\b(?:psychological thriller|survival thriller|spy thriller|serial killer|deadly conspiracy|espionage|political conspiracy|psychological suspense)\b/gi,/\b(?:thriller|suspense|danger|hostage|paranoia)\b/gi],
- 'Adventure':[/\b(?:quest|expedition|treasure hunt|epic adventure|journey across)\b/gi,/\b(?:journey|exploration|voyage|rescue mission)\b/gi],
- 'Fantasy':[/\b(?:magic|magical|wizard|sorcery|dragon|elves|orcs|ancient prophecy)\b/gi,/\b(?:mythology|spell|curse|kingdom|demigod)\b/gi],
- 'Sci-Fi':[/\b(?:science fiction|time travel|spaceship|extraterrestrial|alien invasion|parallel universe|artificial intelligence)\b/gi,/\b(?:alien|robot|dystopia|technology)\b/gi],
- 'Crime':[/\b(?:organized crime|drug trafficking|murder investigation|criminal empire|heist|mafia|drug cartel|homicide detective)\b/gi,/\b(?:criminal|detective|police|gang|murder|fbi|homicide)\b/gi],
- 'Mystery':[/\b(?:unsolved case|missing person|mysterious disappearance|mysterious death)\b/gi,/\b(?:clues|investigation|enigma|unexplained|mystery)\b/gi],
- 'Comedy':[/\b(?:sitcom|comedy series|romantic comedy|dark comedy|workplace comedy)\b/gi,/\b(?:comedic|hilarious|humor|humour|witty)\b/gi],
- 'Drama':[/\b(?:family drama|character driven|emotional trauma|complex relationships)\b/gi,/\b(?:grief|relationship|family conflict|loss|emotional)\b/gi],
- 'Horror':[/\b(?:horror|haunted|possessed|slasher|zombie|demonic)\b/gi,/\b(?:nightmare|frightening|eerie|creepy)\b/gi],
- 'Romance':[/\b(?:love story|falls in love|falling in love|romantic relationship)\b/gi,/\b(?:romantic|dating|lovers|marriage)\b/gi],
- 'Action':[/\b(?:martial arts|action packed|gunfight|high octane|deadly combat)\b/gi,/\b(?:fighter|vigilante|combat|battle|soldier)\b/gi],
- 'Documentary':[/\b(?:documentary|docuseries|archival footage|nonfiction series)\b/gi,/\b(?:real life|true events|interviews)\b/gi],
- 'Western':[/\b(?:wild west|western drama|cowboy|frontier town)\b/gi,/\b(?:rancher|frontier|sheriff|rodeo)\b/gi],
- 'Sports':[/\b(?:professional athlete|sports team|championship season)\b/gi,/\b(?:football|basketball|golf|soccer|athlete)\b/gi]
-};
-function evidence(g,story){
-  var p=EVIDENCE[g];if(!p||!story)return 0;
-  var strong=story.match(p[0])||[],weak=story.match(p[1])||[];
-  return Math.min(strong.length,2)*4+Math.min(weak.length,2)*1.5;
-}
-function classifyGenre(item){
-  if(!item)return '';
-  var curated=curatedGenre(item);if(curated)return curated;
-  var franchise=franchiseGenre(item);if(franchise)return franchise;
-  var explicit=explicitPrimary(item);if(explicit)return explicit;
-  var genres=collectGenres(item),story=synopsis(item);
-  if(genres.indexOf('Animation')>=0)return 'Animation';
-  if(/\b(?:animated film|animated movie|animated feature|animated series|anime series)\b/i.test(story))return 'Animation';
-  if(!genres.length&&story)for(var k in EVIDENCE)if(evidence(k,story)>=4)genres.push(k);
-  if(!genres.length)return '';
-  if(genres.length===1)return genres[0];
-  var scores=genres.map(function(g){return {name:g,score:evidence(g,story)}});
-  scores.sort(function(a,b){return b.score-a.score});
-  if(scores[0].score>=4&&scores[0].score-scores[1].score>=1.5)return scores[0].name;
-  for(var i=0;i<genres.length;i++)if(genres[i]!=='Drama'&&genres[i]!=='Family')return genres[i];
-  return genres[0];
-}
-/* Metadata like Apple TV: Movie · Action · Comedy. Never invent genres. */
+
+/* Media type */
+
 function typeLabel(item){
-  var type=mediaType(item);
-  if(/^(?:movie|film|cinema)$/.test(type))return 'Movie';
-  if(/^(?:tv|show|series|tv show|tv series|television)$/.test(type))return 'TV Show';
-  return '';
+ if(!item)return '';
+
+ var values=[
+  item.mediaType,
+  item.contentType,
+  item.kind,
+  item.type
+ ];
+
+ for(var i=0;i<values.length;i++){
+  var t=fold(values[i]);
+
+  if(/^(movie|film|cinema)$/.test(t))
+   return 'Movie';
+
+  if(/^(tv|show|series|tv show|tv series|television)$/.test(t))
+   return 'TV Show';
+ }
+
+ if(item.season!=null||item.episode!=null)
+  return 'TV Show';
+
+ return '';
 }
-function infoLabel(item){
-  var pieces=[],type=typeLabel(item),first=classifyGenre(item),list=collectGenres(item);
-  if(type)pieces.push(type);
-  if(first)pieces.push(first);
-  for(var i=0;i<list.length;i++){
-    if(list[i]!==first&&pieces.indexOf(list[i])<0){pieces.push(list[i]);break}
+
+/* Multilingual genres */
+
+var GENRES={
+'动作':'Action','動作':'Action',
+'冒险':'Adventure','冒險':'Adventure',
+'科幻':'Sci-Fi','科學幻想':'Sci-Fi',
+'剧情':'Drama','劇情':'Drama',
+'惊悚':'Thriller','驚悚':'Thriller',
+'悬疑':'Mystery','懸疑':'Mystery',
+'犯罪':'Crime',
+'喜剧':'Comedy','喜劇':'Comedy',
+'恐怖':'Horror','恐怖片':'Horror',
+'爱情':'Romance','愛情':'Romance',
+'浪漫':'Romance','奇幻':'Fantasy',
+'幻想':'Fantasy',
+'动画':'Animation','動畫':'Animation',
+'动漫':'Animation','動漫':'Animation',
+'日本动漫':'Anime','日本动画':'Anime',
+'家庭':'Family','家庭片':'Family',
+'儿童':'Kids','兒童':'Kids',
+'纪录':'Documentary','記錄':'Documentary',
+'记录':'Documentary','紀錄':'Documentary',
+'纪录片':'Documentary','紀錄片':'Documentary',
+'记录片':'Documentary','記錄片':'Documentary',
+'战争':'War','戰爭':'War',
+'历史':'History','歷史':'History',
+'音乐':'Music','音樂':'Music',
+'歌舞':'Musical',
+'西部':'Western','西部片':'Western',
+'体育':'Sports','體育':'Sports',
+'运动':'Sports','運動':'Sports',
+'传记':'Biography','傳記':'Biography',
+'真人秀':'Reality',
+'肥皂剧':'Soap Opera','肥皂劇':'Soap Opera',
+'脱口秀':'Talk','新闻':'News',
+'短片':'Short',
+'电视电影':'TV Movie','電視電影':'TV Movie',
+
+'action':'Action','adventure':'Adventure',
+'science fiction':'Sci-Fi',
+'sci fi':'Sci-Fi','sci-fi':'Sci-Fi',
+'scifi':'Sci-Fi','sf':'Sci-Fi',
+'drama':'Drama','thriller':'Thriller',
+'suspense':'Thriller','mystery':'Mystery',
+'crime':'Crime','comedy':'Comedy',
+'horror':'Horror','romance':'Romance',
+'romantic':'Romance','fantasy':'Fantasy',
+'animation':'Animation','animated':'Animation',
+'anime':'Anime','family':'Family',
+'kids':'Kids','children':'Kids',
+'documentary':'Documentary',
+'documentaries':'Documentary',
+'docuseries':'Documentary',
+'war':'War','history':'History',
+'historical':'History',
+'music':'Music','musical':'Musical',
+'western':'Western','sport':'Sports',
+'sports':'Sports','biography':'Biography',
+'reality':'Reality','reality tv':'Reality',
+'soap':'Soap Opera','soap opera':'Soap Opera',
+'talk':'Talk','news':'News',
+'short':'Short','tv movie':'TV Movie',
+'politics':'Politics',
+
+'アクション':'Action',
+'アドベンチャー':'Adventure',
+'ドラマ':'Drama','スリラー':'Thriller',
+'ミステリー':'Mystery','コメディ':'Comedy',
+'ホラー':'Horror','ロマンス':'Romance',
+'ファンタジー':'Fantasy',
+'アニメ':'Anime',
+'アニメーション':'Animation',
+'ファミリー':'Family',
+'ドキュメンタリー':'Documentary',
+'戦争':'War','歴史':'History',
+'音楽':'Music','西部劇':'Western',
+
+'액션':'Action','모험':'Adventure',
+'공상과학':'Sci-Fi','드라마':'Drama',
+'스릴러':'Thriller','미스터리':'Mystery',
+'범죄':'Crime','코미디':'Comedy',
+'공포':'Horror','로맨스':'Romance',
+'판타지':'Fantasy',
+'애니메이션':'Animation',
+'가족':'Family',
+'다큐멘터리':'Documentary',
+'전쟁':'War','역사':'History',
+'음악':'Music',
+
+'acao':'Action','accion':'Action',
+'aventura':'Adventure',
+'aventuras':'Adventure',
+'aventure':'Adventure',
+'ficcao cientifica':'Sci-Fi',
+'ciencia ficcion':'Sci-Fi',
+'drame':'Drama',
+'suspense psicologico':'Thriller',
+'misterio':'Mystery',
+'mystere':'Mystery',
+'crimen':'Crime',
+'policier':'Crime',
+'comedia':'Comedy',
+'comedie':'Comedy',
+'terror':'Horror',
+'horreur':'Horror',
+'animacao':'Animation',
+'animacion':'Animation',
+'documentario':'Documentary',
+'documental':'Documentary',
+'documentaire':'Documentary',
+'familia':'Family',
+'famille':'Family',
+'guerra':'War','guerre':'War',
+'historia':'History',
+'histoire':'History'
+};
+
+var COMBINED={
+'action and adventure':['Action','Adventure'],
+'action adventure':['Action','Adventure'],
+'动作与冒险':['Action','Adventure'],
+'動作與冒險':['Action','Adventure'],
+'sci fi and fantasy':['Sci-Fi','Fantasy'],
+'science fiction and fantasy':['Sci-Fi','Fantasy'],
+'科幻与奇幻':['Sci-Fi','Fantasy'],
+'科幻與奇幻':['Sci-Fi','Fantasy'],
+'mystery and thriller':['Mystery','Thriller'],
+'悬疑与惊悚':['Mystery','Thriller'],
+'懸疑與驚悚':['Mystery','Thriller'],
+'kids and family':['Kids','Family'],
+'war and politics':['War','Politics']
+};
+
+function readGenres(value,out,depth){
+ if(value==null||depth>6||out.length>=2)
+  return;
+
+ if(Array.isArray(value)){
+  for(var i=0;i<value.length&&out.length<2;i++){
+   readGenres(value[i],out,depth+1);
   }
-  return pieces.join(' · ');
+  return;
+ }
+
+ if(typeof value==='object'){
+  readGenres(
+   value.title||value.name||value.label||
+   value.genreTitle||value.genre||
+   value.category||value.value,
+   out,depth+1
+  );
+  return;
+ }
+
+ if(typeof value!=='string')return;
+
+ var pieces=value.split(/[·•・|,;\/、，]+/);
+
+ for(var j=0;j<pieces.length&&out.length<2;j++){
+  var raw=pieces[j].trim();
+  var key=fold(raw);
+
+  if(!raw||
+   /^(global rank|streaming trend rank)\s*\d+$/.test(key)||
+   key==='trending worldwide'){
+   continue;
+  }
+
+  if(Object.prototype.hasOwnProperty.call(COMBINED,key)){
+   var pair=COMBINED[key];
+
+   for(var p=0;p<pair.length&&out.length<2;p++){
+    add(out,pair[p]);
+   }
+
+   continue;
+  }
+
+  if(Object.prototype.hasOwnProperty.call(GENRES,key)){
+   add(out,GENRES[key]);
+   continue;
+  }
+
+  var split=raw.split(/\s+(?:and|&)\s+|\s*＆\s*/i);
+
+  if(split.length>1){
+   for(var k=0;k<split.length&&out.length<2;k++){
+    readGenres(split[k],out,depth+1);
+   }
+  }else if(raw.length<=40){
+   add(out,raw);
+  }
+ }
 }
-function firstNetwork(item){
-  if(!item)return null;
-  var n=item.originalNetwork||item.originalNetworkName||item.originalNetworks||item.networks||item.network||item.productionNetwork||item.originNetwork;
-  if(Array.isArray(n))n=n[0];if(!n)return null;
-  if(typeof n==='string')return {name:n,logo:''};
-  if(typeof n!=='object')return null;
-  return {name:n.name||n.title||n.networkName||'',logo:n.logoPath||n.logoUrl||n.logo||n.image||''};
+
+function firstTwoGenres(item){
+ var genres=[];
+ if(!item)return genres;
+
+ var fields=[
+  item.genreItems,item.genreTitle,
+  item.genres,item.genreList,
+  item.genre,item.genreName,
+  item.categories,item.category,
+  item.categoryTitle
+ ];
+
+ for(var i=0;i<fields.length&&genres.length<2;i++){
+  readGenres(fields[i],genres,0);
+ }
+
+ var m=item.metadata;
+
+ if(m&&typeof m==='object'&&genres.length<2){
+  var more=[
+   m.genreItems,m.genreTitle,
+   m.genres,m.genre,m.categories
+  ];
+
+  for(var j=0;j<more.length&&genres.length<2;j++){
+   readGenres(more[j],genres,0);
+  }
+ }
+
+ return genres;
 }
-function showNetwork(item){
-  var n=firstNetwork(item),name=n&&n.name||'',logo=n&&n.logo||item&&(item.originalNetworkLogoPath||item.originalNetworkLogo||item.networkLogoPath||item.networkLogoUrl)||'';
-  setImage(el('platformLogo'),logo);el('platformLogo').alt=name;
-  el('platformName').hidden=!!logo||!name;
-  el('platformName').textContent=name;
-  return !!(logo||name);
+
+function infoLabel(item){
+ if(!item)return '';
+
+ var values=[];
+ var type=typeLabel(item);
+
+ if(type)add(values,type);
+
+ var genres=firstTwoGenres(item);
+
+ for(var i=0;i<genres.length;i++){
+  add(values,genres[i]);
+ }
+
+ return values.join(' \u00b7 ');
 }
 
 function updateLayout(){
-  var layout=api.layout||{},height=Number(layout.height);
-  if(Number.isFinite(height)&&height>0)card.style.height=height+'px';
-  var width=card.getBoundingClientRect().width||card.clientWidth||400;
-  el('title').style.fontSize=Math.max(21,Math.min(34,width*.075))+'px';
-  
+ var layout=api.layout||{};
+ var height=Number(layout.height);
+
+ if(Number.isFinite(height)&&height>0){
+  if(el('card').style.height!==height+'px'){
+   el('card').style.height=height+'px';
+  }
+ }
+
+ var width=Number(layout.width)||560;
+
+ el('title').style.fontSize=
+  Math.max(24,Math.min(36,width*.06))+'px';
 }
+
 function render(){
-  var snapshot=api.content,items=snapshot&&snapshot.items||[];
-  selected=items[0]||null;var name=nameOf(selected);
-  /* Prefer clean portrait artwork. Use backdrop only as fallback. */
-  var artwork=railPoster(selected);
-  setImage(el('poster'),artwork);
-  renderTitleLogo(findTitleLogo(selected),name);
-  var info=selected?infoLabel(selected):'';
-  el('metaText').textContent=info;el('metaText').hidden=!info;
-  var network=showNetwork(selected);
-  el('meta').hidden=!selected||!(network||info);
-  el('details').hidden=!selected;
-  el('status').hidden=!!selected;el('status').textContent=snapshot?'No titles available':'Waiting for titles';
-  link.tabIndex=selected?0:-1;
-  link.setAttribute('aria-label',selected?'Open '+name:'Open title');
-  updateLayout();
+ var snapshot=api.content;
+
+ /* Ignore initial unavailable metadata. */
+ if(!snapshot)return;
+
+ var items=snapshot.items||[];
+ var item=items[0]||null;
+
+ if(!item){
+  selected=null;
+  currentKey='';
+  clearTitleImages();
+  el('details').hidden=true;
+  el('status').hidden=false;
+  el('status').textContent='No titles available';
+  el('open').tabIndex=-1;
+  return;
+ }
+
+ var key=titleKey(item);
+
+ if(key!==currentKey){
+  currentKey=key;
+  clearTitleImages();
+ }
+
+ selected=item;
+ var name=nameOf(item);
+
+ updateImage('poster',posterOf(item));
+ updateImage('logo',logoOf(item));
+
+ var hasLogo=!el('logo').hidden;
+
+ el('title').hidden=hasLogo;
+
+ if(el('title').textContent!==name){
+  el('title').textContent=name;
+ }
+
+ if(hasLogo){
+  el('logo').alt=name;
+ }
+
+ var info=infoLabel(item);
+
+ if(el('metaText').textContent!==info){
+  el('metaText').textContent=info;
+ }
+
+ el('metaText').hidden=!info;
+
+ updateImage('platformLogo',networkLogoOf(item));
+
+ el('meta').hidden=
+  !(info||!el('platformLogo').hidden);
+
+ el('details').hidden=false;
+ el('status').hidden=true;
+
+ el('open').tabIndex=0;
+ el('open').setAttribute(
+  'aria-label','Open '+name
+ );
+
+ updateLayout();
 }
+
 function openSelected(){
-  if(!selected)return;var now=Date.now();if(now-lastOpen<350)return;
-  var id=selected.id;if(id==null||id==='')return;
-  if(typeof api.canOpen==='function'&&!api.canOpen('item',id))return;
-  lastOpen=now;
-  try{var result=api.open('item',id);if(result&&typeof result.catch==='function')result.catch(function(){})}catch(e){}
+ if(!selected)return;
+
+ var now=Date.now();
+ if(now-lastOpen<350)return;
+
+ var id=selected.id;
+ if(id==null||id==='')return;
+
+ if(typeof api.canOpen==='function'&&
+  !api.canOpen('item',id)){
+  return;
+ }
+
+ lastOpen=now;
+
+ try{
+  var result=api.open('item',id);
+
+  if(result&&typeof result.catch==='function'){
+   result.catch(function(){});
+  }
+ }catch(e){}
 }
-link.addEventListener('click',function(e){e.preventDefault();openSelected()});
-link.addEventListener('focus',function(){card.classList.add('focused')});
-link.addEventListener('blur',function(){card.classList.remove('focused')});
-link.addEventListener('keydown',function(e){
- if(e.key==='Enter'||e.key==='Select'||e.key===' '||e.keyCode===13||e.keyCode===23){e.preventDefault();openSelected()}
+
+var link=el('open');
+
+link.addEventListener('click',function(e){
+ e.preventDefault();
+ openSelected();
 });
-if(typeof ResizeObserver!=='undefined')new ResizeObserver(updateLayout).observe(card);
-window.addEventListener('resize',updateLayout);
-api.onContentChanged(render);api.onLayoutChanged(updateLayout);render();
+
+link.addEventListener('focus',function(){
+ el('card').classList.add('focused');
+});
+
+link.addEventListener('blur',function(){
+ el('card').classList.remove('focused');
+});
+
+link.addEventListener('keydown',function(e){
+ if(e.key==='Enter'||e.key==='Select'||
+  e.key===' '||e.keyCode===13||e.keyCode===23){
+  e.preventDefault();
+  openSelected();
+ }
+});
+
+if(api){
+ api.onContentChanged(render);
+ api.onLayoutChanged(updateLayout);
+ render();
+}
+
 })();
 </script>
 </body>
