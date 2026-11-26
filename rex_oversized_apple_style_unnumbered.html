@@ -134,6 +134,9 @@ var api=window.RexWidget;
 var selected=null;
 var currentKey='';
 var lastOpen=0;
+var imageGeneration=0;
+var displayedPoster='';
+var pendingPoster='';
 
 function el(id){
  return document.getElementById(id);
@@ -166,7 +169,9 @@ function nameOf(item){
  * metadata fields that can arrive later.
  */
 function titleKey(item){
- return item?fold(nameOf(item)):'';
+ if(!item)return '';
+ var id=item.id==null?'':String(item.id);
+ return id+'|'+fold(nameOf(item));
 }
 
 function artworkValue(v){
@@ -269,6 +274,27 @@ function networkLogoOf(item){
  item.networkLogoUrl||'';
 }
 
+// Do not commit an image from an earlier recycled rail cell.
+// Keep an already loaded poster for the same item while new metadata arrives.
+function updatePoster(item){
+ var src=posterOf(item),key=titleKey(item),node=el('poster');
+ if(!src||src===displayedPoster||src===pendingPoster)return;
+ if(displayedPoster&&imageIdentity(src)===imageIdentity(displayedPoster))return;
+ pendingPoster=src;
+ var generation=++imageGeneration;
+ var image=new Image();
+ image.onload=function(){
+  if(generation!==imageGeneration||key!==currentKey||!selected||titleKey(selected)!==key)return;
+  pendingPoster='';
+  displayedPoster=src;
+  updateImage('poster',src);
+ };
+ image.onerror=function(){
+  if(generation===imageGeneration)pendingPoster='';
+ };
+ image.src=src;
+ if(image.complete&&image.naturalWidth>0&&pendingPoster===src)image.onload();
+}
 function updateImage(id,token){
  var node=el(id);
  var src=typeof token==='string'?token:'';
@@ -292,6 +318,9 @@ function clearImage(id){
 }
 
 function clearTitleImages(){
+ imageGeneration++;
+ displayedPoster='';
+ pendingPoster='';
  clearImage('poster');
  clearImage('logo');
  clearImage('platformLogo');
@@ -598,7 +627,14 @@ function render(){
  var item=items[0]||null;
 
  if(!item){
-  selected=null;
+  // Empty interim snapshots can occur during native rail recycling.
+  // Keep the displayed card but disable opening until a real item returns.
+  if(selected||displayedPoster||pendingPoster){
+   if(pendingPoster){imageGeneration++;pendingPoster='';}
+   selected=null;
+   el('open').tabIndex=-1;
+   return;
+  }
   currentKey='';
   clearTitleImages();
   el('details').hidden=true;
@@ -618,7 +654,7 @@ function render(){
  selected=item;
  var name=nameOf(item);
 
- updateImage('poster',posterOf(item));
+ updatePoster(item);
  updateImage('logo',logoOf(item));
 
  var hasLogo=!el('logo').hidden;
@@ -707,7 +743,7 @@ link.addEventListener('keydown',function(e){
 
 if(api){
  api.onContentChanged(render);
- api.onLayoutChanged(updateLayout);
+ api.onLayoutChanged(function(){updateLayout();render();});
  render();
 }
 
