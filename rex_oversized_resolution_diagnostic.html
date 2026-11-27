@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="rex-widget" content="type=rail; height=700; item-ratio=4:5">
+<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster,titleLogoAlternates,titleLogoRawPath,logoUrl,titleLogoPinned,faceSafePosterPath,nativePosterOnly">
+<title>Rex — Oversized Resolution Diagnostic</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:transparent;color:white;font:16px -apple-system,BlinkMacSystemFont,sans-serif}
+#card{position:relative;width:100%;height:700px;background:#171922;overflow:hidden;border-radius:26px}
+#poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+#panel{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.88);padding:16px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}
+#name{font-size:22px;font-weight:700;margin-bottom:8px}
+</style>
+</head>
+<body>
+<div id="card"><img id="poster" alt=""><div id="panel"><div id="name">Resolution test</div><div id="report">Waiting for title</div></div></div>
+<script>
+(function(){
+'use strict';
+var api=window.RexWidget,seq=0,lastKey='';
+var poster=document.getElementById('poster');
+var report=document.getElementById('report');
+var title=document.getElementById('name');
+function value(v){
+ if(v&&typeof v==='object')return value(v.url||v.src||v.path||v.file_path||v.imageUrl||v.backdropPath);
+ return v==null?'':String(v).trim();
+}
+function render(){
+ var item=api.content&&(api.content.items||[])[0];
+ if(!item)return;
+ var fields=['posterPath','coverUrl','cleanPosterPath','faceSafePosterPath','detailPoster'];
+ var refs=[];
+ fields.forEach(function(k){
+  var src=value(item[k]);
+  if(src)refs.push({name:k,src:src});
+ });
+ if(!refs.length&&Array.isArray(item.backdropPaths)&&item.backdropPaths.length>=2&&item.backdropPaths.length<=3){
+  var bundle=value(item.backdropPaths[0]);
+  if(bundle)refs.push({name:'bundle[0]',src:bundle});
+ }
+ var key=JSON.stringify([item.id,refs]);
+ if(key===lastKey)return;
+ lastKey=key;
+ var n=++seq,results=refs.map(function(){return null;});
+ title.textContent=item.title||item.name||'Untitled';
+ poster.removeAttribute('src');
+ function show(){
+  if(n!==seq)return;
+  var first=-1,best=-1;
+  for(var i=0;i<results.length;i++){
+   var r=results[i];
+   if(r&&r.ok){
+    if(first<0)first=i;
+    if(best<0||r.w*r.h>results[best].w*results[best].h)best=i;
+   }else if(!r&&first<0){
+    // The production renderer waits for earlier references before trying later ones.
+    break;
+   }
+  }
+  // Best available is independent of the production renderer's ordering.
+  best=-1;
+  results.forEach(function(r,i){if(r&&r.ok&&(best<0||r.w*r.h>results[best].w*results[best].h))best=i;});
+  if(first>=0&&poster.getAttribute('src')!==refs[first].src)poster.setAttribute('src',refs[first].src);
+  function dims(i){return i<0?'Not available':results[i].w+' x '+results[i].h;}
+  var lines=['Current first-load: '+dims(first),'Largest available: '+dims(best),''];
+  refs.forEach(function(ref,i){
+   var r=results[i];
+   lines.push(ref.name+': '+(!r?'loading':r.ok?dims(i):'failed'));
+  });
+  if(!refs.length)lines.push('No artwork reference provided.');
+  report.textContent=lines.join('\n');
+ }
+ show();
+ refs.forEach(function(ref,i){
+  var im=new Image();
+  function done(ok){
+   if(n!==seq||results[i])return;
+   results[i]={ok:ok&&im.naturalWidth>0&&im.naturalHeight>0,w:im.naturalWidth||0,h:im.naturalHeight||0};
+   show();
+  }
+  im.onload=function(){done(true);};
+  im.onerror=function(){done(false);};
+  im.src=ref.src;
+  if(im.complete&&im.naturalWidth>0)done(true);
+ });
+}
+if(!api){report.textContent='Open this template in Rex.';return;}
+api.onContentChanged(render);
+render();
+})();
+</script>
+</body>
+</html>
