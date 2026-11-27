@@ -164,30 +164,47 @@ if(!rule)return null;
 var posters=_frs(item,rule.poster),logos=_frs(item,rule.logo);
 return posters.length?{poster:posters[0],posters:posters,logo:logos[0]||'',manual:true}:null;
 }
+function approvedFile(value){
+ var src=_av(value);
+ try{src=decodeURIComponent(src)}catch(e){}
+ var m=src.match(/\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)(?=$|[?#&/])/ig);
+ return m&&m.length?m[m.length-1].toLowerCase():'';
+}
 function _ca(item) {
  if(!item||item.nativePosterOnly)return null;
  var refs=[],bundle=_rab(item);
  // These are alternate reference forms of the same source-selected image,
  // not different artwork. Never use the actual landscape backdrop.
- [item.posterPath,item.coverUrl,item.cleanPosterPath,item.faceSafePosterPath,item.detailPoster].forEach(function(value){
+ [item.faceSafePosterPath,item.cleanPosterPath,item.coverUrl,item.posterPath,item.detailPoster].forEach(function(value){
   var ref=_av(value);
   if(ref&&refs.indexOf(ref)<0)refs.push(ref);
  });
  if(!refs.length&&bundle&&bundle.poster)refs.push(bundle.poster);
  if(!refs.length)return null;
- return {poster:refs[0],refs:refs,v:true,logo:_av(item.titleLogoPath||item.titleLogoUrl||item.logoPath)||(bundle&&bundle.logo)||''};
+ // The verified source path is authoritative; native wrappers may contain stale artwork.
+ var expected=approvedFile(item.faceSafePosterPath)||approvedFile(item.cleanPosterPath)||approvedFile(refs[0]);
+ if(expected){
+  refs=refs.filter(function(ref){var f=approvedFile(ref);return !f||f===expected;});
+ }
+ if(!refs.length)return null;
+ return {poster:refs[0],refs:refs,v:true,identity:expected,logo:_av(item.titleLogoPath||item.titleLogoUrl||item.logoPath)||(bundle&&bundle.logo)||''};
 }
 function _lock(item) {
+ var incoming=_ca(item);
  if(_la&&_la.poster){
-  // If no image has loaded yet, newly supplied native references can be used.
-  // After a successful load, never replace the displayed image.
-  if(!_dc){
-   var incoming=_ca(item);
-   if(incoming)incoming.refs.forEach(function(ref){if(_la.refs.indexOf(ref)<0)_la.refs.push(ref);});
+  // Accept only a new explicit approved filename, never a resized wrapper
+  // or an interim snapshot. Keep normal artwork locking intact.
+  if(incoming&&incoming.identity&&_la.identity&&incoming.identity!==_la.identity){
+   _reset();
+   _la=incoming;
+   return _la;
+  }
+  if(!_dc&&incoming&&(!_la.identity||!incoming.identity||_la.identity===incoming.identity)){
+   incoming.refs.forEach(function(ref){if(_la.refs.indexOf(ref)<0)_la.refs.push(ref);});
   }
   return _la;
  }
- _la=_ca(item);
+ _la=incoming;
  return _la;
 }
 function _ak(item){
