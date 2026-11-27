@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "algorithm": "yunet-ppocr-v5",
-  "generatedAt": "2026-11-27T14:28:26.098141+00:00",
+  "generatedAt": "2026-11-27T14:52:08.632241+00:00",
   "overrides": {
     "movie:2609": {
       "title": "Planes, Trains and Automobiles",
@@ -3994,8 +3994,8 @@
     }
   },
   "textScreening": {
-    "clear": 27,
-    "text": 1251,
+    "clear": 4,
+    "text": 745,
     "unknown": 0
   },
   "unresolved": {
