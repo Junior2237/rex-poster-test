@@ -1,7 +1,154 @@
 {
   "schemaVersion": 1,
   "algorithm": "yunet-ppocr-v5",
-  "generatedAt": "2026-11-27T14:28:26.098141+00:00",
+  "displayAuditVersion": 1,
+  "displayUpgrades": [
+    {
+      "title": "Street Fighter",
+      "layout": "top20",
+      "from": "/b3ZOREKKziY9yM4yMt5oyYfWqCw.jpg",
+      "to": "/qy1LLlrnuLvOV4KA6WklVfqxRfa.jpg",
+      "old": {
+        "score": 2.02615,
+        "edgeStrength": 0.08038,
+        "width": 780,
+        "height": 1170
+      },
+      "new": {
+        "score": 2.40763,
+        "edgeStrength": 0.07152,
+        "width": 780,
+        "height": 1170
+      }
+    },
+    {
+      "title": "Street Fighter",
+      "layout": "trending",
+      "from": "/b3ZOREKKziY9yM4yMt5oyYfWqCw.jpg",
+      "to": "/qy1LLlrnuLvOV4KA6WklVfqxRfa.jpg",
+      "old": {
+        "score": 2.02615,
+        "edgeStrength": 0.08038,
+        "width": 780,
+        "height": 1170
+      },
+      "new": {
+        "score": 2.40763,
+        "edgeStrength": 0.07152,
+        "width": 780,
+        "height": 1170
+      }
+    },
+    {
+      "title": "Supergirl",
+      "layout": "top20",
+      "from": "/9WyCDqi6ogIWYCnlCLJfvNuR9dF.jpg",
+      "to": "/mCOEjgLhWWtcX3qsZGANM5mjX8W.jpg",
+      "old": {
+        "score": 2.60751,
+        "edgeStrength": 0.04859,
+        "width": 780,
+        "height": 1170
+      },
+      "new": {
+        "score": 3.52881,
+        "edgeStrength": 0.06609,
+        "width": 780,
+        "height": 1170
+      }
+    },
+    {
+      "title": "Supergirl",
+      "layout": "trending",
+      "from": "/9WyCDqi6ogIWYCnlCLJfvNuR9dF.jpg",
+      "to": "/mCOEjgLhWWtcX3qsZGANM5mjX8W.jpg",
+      "old": {
+        "score": 2.60751,
+        "edgeStrength": 0.04859,
+        "width": 780,
+        "height": 1170
+      },
+      "new": {
+        "score": 3.52881,
+        "edgeStrength": 0.06609,
+        "width": 780,
+        "height": 1170
+      }
+    },
+    {
+      "title": "Toy Story 5",
+      "layout": "top20",
+      "from": "/q40Py29yikeMJOjBXDKSSA6ybMY.jpg",
+      "to": "/v8lRnrY1fhdQDhlmJABwHb4OUdH.jpg",
+      "old": {
+        "score": 1.60306,
+        "edgeStrength": 0.05804,
+        "width": 780,
+        "height": 1170
+      },
+      "new": {
+        "score": 2.00017,
+        "edgeStrength": 0.06571,
+        "width": 780,
+        "height": 1170
+      }
+    },
+    {
+      "title": "Toy Story 5",
+      "layout": "trending",
+      "from": "/q40Py29yikeMJOjBXDKSSA6ybMY.jpg",
+      "to": "/v8lRnrY1fhdQDhlmJABwHb4OUdH.jpg",
+      "old": {
+        "score": 1.60306,
+        "edgeStrength": 0.05804,
+        "width": 780,
+        "height": 1170
+      },
+      "new": {
+        "score": 2.00017,
+        "edgeStrength": 0.06571,
+        "width": 780,
+        "height": 1170
+      }
+    },
+    {
+      "title": "The End of Oak Street",
+      "layout": "top20",
+      "from": "/ffDlu6T4f3sxJqKzuzf0N5DFhBg.jpg",
+      "to": "/x8NSkBCYPRUJYxFfNCv1LlaNpfP.jpg",
+      "old": {
+        "score": 1.88772,
+        "edgeStrength": 0.05592,
+        "width": 780,
+        "height": 1170
+      },
+      "new": {
+        "score": 2.79344,
+        "edgeStrength": 0.07701,
+        "width": 780,
+        "height": 1170
+      }
+    },
+    {
+      "title": "The End of Oak Street",
+      "layout": "trending",
+      "from": "/ffDlu6T4f3sxJqKzuzf0N5DFhBg.jpg",
+      "to": "/x8NSkBCYPRUJYxFfNCv1LlaNpfP.jpg",
+      "old": {
+        "score": 1.88772,
+        "edgeStrength": 0.05592,
+        "width": 780,
+        "height": 1170
+      },
+      "new": {
+        "score": 2.79344,
+        "edgeStrength": 0.07701,
+        "width": 780,
+        "height": 1170
+      }
+    }
+  ],
+  "generatedAt": "2026-11-27T20:07:36.606350+00:00",
   "overrides": {
     "movie:2609": {
       "title": "Planes, Trains and Automobiles",
@@ -58,23 +205,57 @@
       "layouts": {
         "top20": {
           "baseline": "/ffDlu6T4f3sxJqKzuzf0N5DFhBg.jpg",
-          "posterPath": "/ffDlu6T4f3sxJqKzuzf0N5DFhBg.jpg",
+          "posterPath": "/x8NSkBCYPRUJYxFfNCv1LlaNpfP.jpg",
           "before": 0.0,
           "after": 0.0,
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "selection": "alternate",
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "width": 2000,
+          "height": 3000,
+          "displayAuditVersion": 1,
+          "displayDetail": {
+            "score": 2.79344,
+            "edgeStrength": 0.07701,
+            "width": 780,
+            "height": 1170
+          },
+          "displayPreviousDetail": {
+            "score": 1.88772,
+            "edgeStrength": 0.05592,
+            "width": 780,
+            "height": 1170
+          }
         },
         "trending": {
           "baseline": "/ffDlu6T4f3sxJqKzuzf0N5DFhBg.jpg",
-          "posterPath": "/ffDlu6T4f3sxJqKzuzf0N5DFhBg.jpg",
+          "posterPath": "/x8NSkBCYPRUJYxFfNCv1LlaNpfP.jpg",
           "before": 0.0,
           "after": 0.0,
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "selection": "alternate",
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "width": 2000,
+          "height": 3000,
+          "displayAuditVersion": 1,
+          "displayDetail": {
+            "score": 2.79344,
+            "edgeStrength": 0.07701,
+            "width": 780,
+            "height": 1170
+          },
+          "displayPreviousDetail": {
+            "score": 1.88772,
+            "edgeStrength": 0.05592,
+            "width": 780,
+            "height": 1170
+          }
         }
       }
     },
@@ -139,7 +320,14 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "selection": "confirmed",
+          "displayAuditVersion": 1,
+          "displayDetail": {
+            "score": 2.49952,
+            "edgeStrength": 0.03305,
+            "width": 780,
+            "height": 1170
+          }
         },
         "trending": {
           "baseline": "/1hqRP0oQsPTuS82mSg2x6yy7JxD.jpg",
@@ -149,7 +337,14 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "selection": "confirmed",
+          "displayAuditVersion": 1,
+          "displayDetail": {
+            "score": 2.49952,
+            "edgeStrength": 0.03305,
+            "width": 780,
+            "height": 1170
+          }
         }
       }
     },
@@ -214,7 +409,14 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "selection": "confirmed",
+          "displayAuditVersion": 1,
+          "displayDetail": {
+            "score": 1.79557,
+            "edgeStrength": 0.05633,
+            "width": 780,
+            "height": 1170
+          }
         },
         "trending": {
           "baseline": "/zsKO3CblaLtJumWLsjEBPX8dP5P.jpg",
@@ -224,7 +426,14 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "selection": "confirmed",
+          "displayAuditVersion": 1,
+          "displayDetail": {
+            "score": 1.79557,
+            "edgeStrength": 0.05633,
+            "width": 780,
+            "height": 1170
+          }
         }
       }
     },
@@ -654,7 +863,14 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "displayAuditVersion": 1,
+          "displayDetail": {
+            "score": 2.56036,
+            "edgeStrength": 0.08241,
+            "width": 780,
+            "height": 1170
+          }
         },
         "trending": {
           "baseline": "/sKtKn660vapCgngdjj1f3mPZbnQ.jpg",
@@ -664,7 +880,14 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "displayAuditVersion": 1,
+          "displayDetail": {
+            "score": 2.56036,
+            "edgeStrength": 0.08241,
+            "width": 780,
+            "height": 1170
+          }
         }
       }
     },
@@ -697,24 +920,58 @@
       "title": "Street Fighter",
       "layouts": {
         "top20": {
-          "baseline": "/LqIboqIkbEJ0LXcfrY9Tk5uawL.jpg",
-          "posterPath": "/b3ZOREKKziY9yM4yMt5oyYfWqCw.jpg",
-          "before": 0.302,
+          "baseline": "/b3ZOREKKziY9yM4yMt5oyYfWqCw.jpg",
+          "posterPath": "/qy1LLlrnuLvOV4KA6WklVfqxRfa.jpg",
+          "before": 0.0,
           "after": 0.0,
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "faceCount": 3,
+          "faceAssessment": "overlap_within_limit",
+          "width": 1680,
+          "height": 2520,
+          "displayAuditVersion": 1,
+          "displayDetail": {
+            "score": 2.40763,
+            "edgeStrength": 0.07152,
+            "width": 780,
+            "height": 1170
+          },
+          "displayPreviousDetail": {
+            "score": 2.02615,
+            "edgeStrength": 0.08038,
+            "width": 780,
+            "height": 1170
+          }
         },
         "trending": {
-          "baseline": "/LqIboqIkbEJ0LXcfrY9Tk5uawL.jpg",
-          "posterPath": "/b3ZOREKKziY9yM4yMt5oyYfWqCw.jpg",
-          "before": 0.127,
+          "baseline": "/b3ZOREKKziY9yM4yMt5oyYfWqCw.jpg",
+          "posterPath": "/qy1LLlrnuLvOV4KA6WklVfqxRfa.jpg",
+          "before": 0.0,
           "after": 0.0,
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "faceCount": 3,
+          "faceAssessment": "overlap_within_limit",
+          "width": 1680,
+          "height": 2520,
+          "displayAuditVersion": 1,
+          "displayDetail": {
+            "score": 2.40763,
+            "edgeStrength": 0.07152,
+            "width": 780,
+            "height": 1170
+          },
+          "displayPreviousDetail": {
+            "score": 2.02615,
+            "edgeStrength": 0.08038,
+            "width": 780,
+            "height": 1170
+          }
         }
       }
     },
@@ -1144,7 +1401,14 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "selection": "confirmed",
+          "displayAuditVersion": 1,
+          "displayDetail": {
+            "score": 2.00349,
+            "edgeStrength": 0.08734,
+            "width": 780,
+            "height": 1170
+          }
         },
         "top20": {
           "baseline": "/pjGkn73eCKE73wWx1RgkfTaiIhN.jpg",
@@ -1154,7 +1418,14 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "displayAuditVersion": 1,
+          "displayDetail": {
+            "score": 2.01369,
+            "edgeStrength": 0.06812,
+            "width": 780,
+            "height": 1170
+          }
         }
       }
     },
@@ -1723,7 +1994,14 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "displayAuditVersion": 1,
+          "displayDetail": {
+            "score": 1.56282,
+            "edgeStrength": 0.03038,
+            "width": 780,
+            "height": 1170
+          }
         },
         "trending": {
           "baseline": "/7NVnp7XHiW99nYLqEH5A63uPSJN.jpg",
@@ -1733,7 +2011,14 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "displayAuditVersion": 1,
+          "displayDetail": {
+            "score": 1.56282,
+            "edgeStrength": 0.03038,
+            "width": 780,
+            "height": 1170
+          }
         }
       }
     },
@@ -1817,23 +2102,57 @@
       "layouts": {
         "top20": {
           "baseline": "/9WyCDqi6ogIWYCnlCLJfvNuR9dF.jpg",
-          "posterPath": "/9WyCDqi6ogIWYCnlCLJfvNuR9dF.jpg",
+          "posterPath": "/mCOEjgLhWWtcX3qsZGANM5mjX8W.jpg",
           "before": 0.0,
           "after": 0.0,
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "selection": "alternate",
+          "faceCount": 1,
+          "faceAssessment": "overlap_within_limit",
+          "width": 2000,
+          "height": 3000,
+          "displayAuditVersion": 1,
+          "displayDetail": {
+            "score": 3.52881,
+            "edgeStrength": 0.06609,
+            "width": 780,
+            "height": 1170
+          },
+          "displayPreviousDetail": {
+            "score": 2.60751,
+            "edgeStrength": 0.04859,
+            "width": 780,
+            "height": 1170
+          }
         },
         "trending": {
           "baseline": "/9WyCDqi6ogIWYCnlCLJfvNuR9dF.jpg",
-          "posterPath": "/9WyCDqi6ogIWYCnlCLJfvNuR9dF.jpg",
+          "posterPath": "/mCOEjgLhWWtcX3qsZGANM5mjX8W.jpg",
           "before": 0.0,
           "after": 0.0,
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "selection": "alternate",
+          "faceCount": 1,
+          "faceAssessment": "overlap_within_limit",
+          "width": 2000,
+          "height": 3000,
+          "displayAuditVersion": 1,
+          "displayDetail": {
+            "score": 3.52881,
+            "edgeStrength": 0.06609,
+            "width": 780,
+            "height": 1170
+          },
+          "displayPreviousDetail": {
+            "score": 2.60751,
+            "edgeStrength": 0.04859,
+            "width": 780,
+            "height": 1170
+          }
         }
       }
     },
@@ -1866,24 +2185,58 @@
       "title": "Toy Story 5",
       "layouts": {
         "top20": {
-          "baseline": "/4D5k1Cs9hA0REwXN6w5Lxxlhba5.jpg",
-          "posterPath": "/q40Py29yikeMJOjBXDKSSA6ybMY.jpg",
-          "before": 1,
+          "baseline": "/q40Py29yikeMJOjBXDKSSA6ybMY.jpg",
+          "posterPath": "/v8lRnrY1fhdQDhlmJABwHb4OUdH.jpg",
+          "before": 0.0,
           "after": 0.0,
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "faceCount": 5,
+          "faceAssessment": "overlap_within_limit",
+          "width": 2000,
+          "height": 3000,
+          "displayAuditVersion": 1,
+          "displayDetail": {
+            "score": 2.00017,
+            "edgeStrength": 0.06571,
+            "width": 780,
+            "height": 1170
+          },
+          "displayPreviousDetail": {
+            "score": 1.60306,
+            "edgeStrength": 0.05804,
+            "width": 780,
+            "height": 1170
+          }
         },
         "trending": {
-          "baseline": "/4D5k1Cs9hA0REwXN6w5Lxxlhba5.jpg",
-          "posterPath": "/q40Py29yikeMJOjBXDKSSA6ybMY.jpg",
-          "before": 1,
+          "baseline": "/q40Py29yikeMJOjBXDKSSA6ybMY.jpg",
+          "posterPath": "/v8lRnrY1fhdQDhlmJABwHb4OUdH.jpg",
+          "before": 0.0,
           "after": 0.0,
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "faceCount": 5,
+          "faceAssessment": "overlap_within_limit",
+          "width": 2000,
+          "height": 3000,
+          "displayAuditVersion": 1,
+          "displayDetail": {
+            "score": 2.00017,
+            "edgeStrength": 0.06571,
+            "width": 780,
+            "height": 1170
+          },
+          "displayPreviousDetail": {
+            "score": 1.60306,
+            "edgeStrength": 0.05804,
+            "width": 780,
+            "height": 1170
+          }
         }
       }
     },
@@ -3404,7 +3757,14 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "selection": "confirmed",
+          "displayAuditVersion": 1,
+          "displayDetail": {
+            "score": 2.54557,
+            "edgeStrength": 0.05754,
+            "width": 780,
+            "height": 1170
+          }
         },
         "trending": {
           "baseline": "/rnu5OUtv5X865QEmrdqYEmzZiT2.jpg",
@@ -3414,7 +3774,14 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "selection": "confirmed",
+          "displayAuditVersion": 1,
+          "displayDetail": {
+            "score": 2.54557,
+            "edgeStrength": 0.05754,
+            "width": 780,
+            "height": 1170
+          }
         }
       }
     },
@@ -3991,11 +4358,77 @@
           "selection": "alternate"
         }
       }
+    },
+    "movie:1480665": {
+      "title": "The Hunchback, Soul of Paris",
+      "layouts": {
+        "top20": {
+          "baseline": "/hSwedpXLbAuWsMtAL4Kg3s13iOz.jpg",
+          "posterPath": "/ckuwCKjClzlsA5W5v45cs3NR4zn.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 3,
+          "faceAssessment": "overlap_within_limit",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/hSwedpXLbAuWsMtAL4Kg3s13iOz.jpg",
+          "posterPath": "/ckuwCKjClzlsA5W5v45cs3NR4zn.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 3,
+          "faceAssessment": "overlap_within_limit",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:45790": {
+      "title": "JoJo's Bizarre Adventure",
+      "layouts": {
+        "top20": {
+          "baseline": "/tEP9Wd5nUnUyf3aJzom5gsZiNDS.jpg",
+          "posterPath": "/cg2x9hQMiCJdWLBQfeNmpbrsLrb.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 2,
+          "faceAssessment": "overlap_within_limit",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/tEP9Wd5nUnUyf3aJzom5gsZiNDS.jpg",
+          "posterPath": "/cg2x9hQMiCJdWLBQfeNmpbrsLrb.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 2,
+          "faceAssessment": "overlap_within_limit",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate"
+        }
+      }
     }
   },
   "textScreening": {
-    "clear": 27,
-    "text": 1251,
+    "clear": 9,
+    "text": 762,
     "unknown": 0
   },
   "unresolved": {
@@ -4014,6 +4447,11 @@
       "status": "unresolved",
       "mode": "excluded"
     },
+    "movie:13785": {
+      "title": "Best in Show",
+      "status": "unresolved",
+      "mode": "excluded"
+    },
     "movie:13203": {
       "title": "Son in Law",
       "status": "unresolved",
@@ -4021,11 +4459,6 @@
     },
     "movie:175574": {
       "title": "Free Birds",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
-    "movie:13785": {
-      "title": "Best in Show",
       "status": "unresolved",
       "mode": "excluded"
     },
@@ -4069,13 +4502,18 @@
       "status": "unresolved",
       "mode": "excluded"
     },
-    "movie:1480665": {
-      "title": "The Hunchback, Soul of Paris",
+    "movie:1269325": {
+      "title": "Drishyam: The Conclusion",
       "status": "unresolved",
       "mode": "excluded"
     },
-    "movie:1269325": {
-      "title": "Drishyam: The Conclusion",
+    "movie:1643567": {
+      "title": "Ghosts: The Possession of Button House",
+      "status": "unresolved",
+      "mode": "excluded"
+    },
+    "movie:1496785": {
+      "title": "Aadarsha Kutumbam House No: 47 - AK47",
       "status": "unresolved",
       "mode": "excluded"
     },
@@ -4084,8 +4522,13 @@
       "status": "unresolved",
       "mode": "excluded"
     },
-    "movie:1643567": {
-      "title": "Ghosts: The Possession of Button House",
+    "movie:1457866": {
+      "title": "THE FURTHER MIS-ADVENTURES OF CLIFF BOOTH",
+      "status": "unresolved",
+      "mode": "excluded"
+    },
+    "movie:1709391": {
+      "title": "Hanuman Ansh",
       "status": "unresolved",
       "mode": "excluded"
     },
@@ -4096,6 +4539,11 @@
     },
     "movie:1084409": {
       "title": "A Talent for Murder",
+      "status": "unresolved",
+      "mode": "excluded"
+    },
+    "tv:314360": {
+      "title": "YAGA",
       "status": "unresolved",
       "mode": "excluded"
     },
