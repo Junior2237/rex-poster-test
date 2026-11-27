@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.6.0 — Balanced logo sizing and automatic alternatives
+ * Version 3.6.1 — Universal logo and poster choice metadata
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -62,7 +62,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.6.0",
+  version: "3.6.1",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -462,7 +462,7 @@ async function loadCachedRow(key, target, loader) {
 }
 
 async function getArtwork(mediaType, tmdbId, title, premiumPortrait) {
-  var key = "art:" + mediaType + ":" + tmdbId + ":" + (premiumPortrait ? "premium" : "standard-logo360");
+  var key = "art:" + mediaType + ":" + tmdbId + ":" + (premiumPortrait ? "premium-logo361" : "standard-logo361");
   var cached = startupCacheRead(key, ARTWORK_CACHE_SECONDS);
   if (cached && cached.logo && cached.cleanPoster && Array.isArray(cached.genres)) return cached;
   var artwork = await getArtworkUncached(mediaType, tmdbId, title, premiumPortrait);
@@ -485,6 +485,7 @@ async function getArtworkUncached(
     cleanBackdrop: "",
     logo: "",
     logos: [],
+    cleanPosterAlternates: [],
     backdrop: "",
     genres: [],
     network: "",
@@ -508,9 +509,17 @@ async function getArtworkUncached(
 
   var images = null;
   var allLogoRecords = [];
+  var allPosterRecords = [];
+  function collectPosters(list) {
+    if(Array.isArray(list))allPosterRecords=allPosterRecords.concat(list);
+    var records=allPosterRecords.filter(function(p){return p&&p.iso_639_1===null&&/^\/[A-Za-z0-9_-]+\.(jpg|jpeg|png|webp)$/i.test(p.file_path||"")&&Number(p.width)>=600&&Number(p.height)>=900&&p.width/p.height>=.60&&p.width/p.height<=.75;});
+    records.sort(function(a,b){return Math.min(b.width,2000)*Math.min(b.height,3000)-Math.min(a.width,2000)*Math.min(a.height,3000)||(Number(b.vote_average)||0)-(Number(a.vote_average)||0);});
+    result.cleanPosterAlternates=[];
+    records.forEach(function(p){if(result.cleanPosterAlternates.length<6&&result.cleanPosterAlternates.indexOf(p.file_path)<0)result.cleanPosterAlternates.push(p.file_path);});
+  }
   function collectLogos(list){
     if(Array.isArray(list))allLogoRecords=allLogoRecords.concat(list);
-    result.logos=chooseLogoCandidates(allLogoRecords,!premiumPortrait);
+    result.logos=chooseLogoCandidates(allLogoRecords,true);
     result.logo=result.logos[0]||"";
   }
 
@@ -584,6 +593,7 @@ async function getArtworkUncached(
     result.cleanBackdrop = selectRailBackdrop(images.backdrops);
 
     collectLogos(images.logos);
+    collectPosters(images.posters);
 
     if (!result.standardPoster) {
       result.standardPoster =
@@ -607,6 +617,7 @@ async function getArtworkUncached(
       if (gallery) {
         if (!result.cleanBackdrop) result.cleanBackdrop = selectRailBackdrop(gallery.backdrops);
         collectLogos(gallery.logos);
+        collectPosters(gallery.posters);
 
         if (!result.cleanPoster) {
           result.cleanPoster =
@@ -640,6 +651,7 @@ async function getArtworkUncached(
       if (allImages) {
         if (!result.cleanBackdrop) result.cleanBackdrop = selectRailBackdrop(allImages.backdrops);
         collectLogos(allImages.logos);
+        collectPosters(allImages.posters);
         if (!result.cleanPoster) {
           result.cleanPoster = selectCleanPoster(allImages.posters);
         }
@@ -911,6 +923,7 @@ async function buildItem(
     if (!artwork.logo || !/^\/[A-Za-z0-9_-]+\.png$/i.test(artwork.logo)) return null;
     if (!artwork.standardPoster) artwork.standardPoster = tmdbPath(subject.poster_path || row.poster_path);
     assignPosterFields(item, artwork, premiumPortrait);
+    item.cleanPosterAlternates=(artwork.cleanPosterAlternates||[]).filter(function(p){return p!==artwork.cleanPoster;}).map(tmdbUrl);
     if (artwork.releaseDate) item.releaseDate = artwork.releaseDate;
 
     if (artwork.backdrop) item.backdropPath = artwork.backdrop;
@@ -937,7 +950,7 @@ async function buildItem(
       item.titleLogoRawPath =
         artwork.logo;
       item.titleLogoAlternates = (artwork.logos || []).filter(function(path){return path!==artwork.logo;}).map(tmdbUrl);
-      if (dailyRanking && artwork.titleLogoPinned) item.titleLogoPinned = true;
+      if (artwork.titleLogoPinned) item.titleLogoPinned = true;
     }
 
     if (artwork.genres.length) {
@@ -1235,14 +1248,14 @@ async function loadNativeList(
 
 async function loadNativeMovies(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("daily-movies-v360", MAX_ITEMS, function() {
+  return loadCachedRow("daily-movies-v361", MAX_ITEMS, function() {
     return loadNativeList("movie", MOVIES_LIST, params);
   });
 }
 
 async function loadNativeShows(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("daily-shows-v360", MAX_ITEMS, function() {
+  return loadCachedRow("daily-shows-v361", MAX_ITEMS, function() {
     return loadNativeList("tv", TV_LIST, params);
   });
 }
@@ -1316,25 +1329,25 @@ async function loadArtworkChart(mediaType, chart, params) {
 
 async function loadTrendingMovies(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("trending-movies-v360", CHART_TARGET, function() {
+  return loadCachedRow("trending-movies-v361", CHART_TARGET, function() {
     return loadArtworkChart("movie", "trending", params);
   });
 }
 async function loadTrendingShows(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("trending-shows-v360", CHART_TARGET, function() {
+  return loadCachedRow("trending-shows-v361", CHART_TARGET, function() {
     return loadArtworkChart("tv", "trending", params);
   });
 }
 async function loadPopularMovies(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("popular-movies-v360", CHART_TARGET, function() {
+  return loadCachedRow("popular-movies-v361", CHART_TARGET, function() {
     return loadArtworkChart("movie", "popular", params);
   });
 }
 async function loadPopularShows(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("popular-shows-v360", CHART_TARGET, function() {
+  return loadCachedRow("popular-shows-v361", CHART_TARGET, function() {
     return loadArtworkChart("tv", "popular", params);
   });
 }
@@ -1345,7 +1358,7 @@ async function loadPopularShows(params) {
  * Unlike active Trakt watcher counts, upcoming titles can qualify.
  */
 async function loadCombinedTrending(params) {
-  return loadCachedRow("combined-trending-v360", CHART_TARGET, function() {
+  return loadCachedRow("combined-trending-v361", CHART_TARGET, function() {
     return loadCombinedTrendingUncached(params);
   });
 }
