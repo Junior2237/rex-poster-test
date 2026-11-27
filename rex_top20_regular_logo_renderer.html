@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="rex-widget" content="type=rail; height=384; item-ratio=2:3">
-<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster">
+<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster,titleLogoAlternates,titleLogoRawPath,logoUrl">
 <title>Top 20 — Apple TV Size — Refined Genres</title>
 <style>
 *{box-sizing:border-box}
@@ -244,31 +244,45 @@ function fallbackPoster(item){
  }
  return '';
 }
-function railLogoCandidates(item,art){
- var fixed=fixedRailRule(item),bundle=railArtworkBundle(item);
- var result=[];
- function append(v){
-  var src=artworkValue(v);
-  if(src&&result.indexOf(src)<0)result.push(src);
+var railLogoMemory=Object.create(null);
+function railLogoRead(item){
+ var keys=railArtKeys(item);
+ for(var i=0;i<keys.length;i++){
+  var key=keys[i]+':logo356',entry=railLogoMemory[key];
+  if(!entry){try{entry=JSON.parse(localStorage.getItem(key)||'null')}catch(e){}}
+  if(entry&&entry.src&&Date.now()-entry.at>=0&&Date.now()-entry.at<railArtTTL)return entry.src;
  }
- function appendPath(path){fixedRailSources(item,path).forEach(append);}
- if(fixed){
-  appendPath(fixed.logo);
-  (fixed.logoAlternates||[]).forEach(appendPath);
- }
- // Native title-logo fields may be opaque resource tokens rather than URLs.
- // They are still valid image sources and must not be rejected by filename.
- [art&&art.logo,item&&item.titleLogoPath,item&&item.titleLogoUrl,item&&item.logoUrl,item&&item.logoPath,item&&item.titleLogoRawPath,bundle&&bundle.logo].forEach(function(v){
-  var src=artworkValue(v);
-  if(src.charAt(0)==='/')appendPath(src);
-  append(src);
+ return '';
+}
+function railLogoRemember(item,src){
+ if(!src)return;
+ railArtKeys(item).forEach(function(k){
+  var key=k+':logo356',entry={src:src,at:Date.now()};railLogoMemory[key]=entry;
+  try{localStorage.setItem(key,JSON.stringify(entry))}catch(e){}
  });
- if(item&&Array.isArray(item.titleLogoAlternates))item.titleLogoAlternates.forEach(append);
- if(fixed&&item&&Array.isArray(item.backdropPaths)){
-  // The source module sends the title logo last in its three-entry bundle.
-  var paths=item.backdropPaths.map(artworkValue).filter(Boolean);
-  if(paths.length===3)append(paths[2]);
+}
+function railLogoCandidates(item,art){
+ if(!item)return [];
+ var fixed=fixedRailRule(item),bundle=railArtworkBundle(item),result=[];
+ function append(v){var src=artworkValue(v);if(src&&result.indexOf(src)<0)result.push(src);}
+ function appendPath(path){fixedRailSources(item,path).forEach(append);}
+ var remembered=railLogoRead(item);if(remembered)append(remembered);
+ // Explicit native fields and the actual artwork bundle take priority.
+ [item.titleLogoPath,item.titleLogoUrl,item.logoUrl,item.logoPath,item.titleLogoRawPath,bundle&&bundle.logo,art&&art.logo].forEach(function(v){
+  var src=artworkValue(v);if(src.charAt(0)==='/')appendPath(src);append(src);
+ });
+ if(Array.isArray(item.titleLogoAlternates))item.titleLogoAlternates.forEach(function(v){
+  var src=artworkValue(v);if(src.charAt(0)==='/')appendPath(src);append(src);
+ });
+ if(fixed){appendPath(fixed.logo);(fixed.logoAlternates||[]).forEach(appendPath);}
+ var paths=Array.isArray(item.backdropPaths)?item.backdropPaths.map(artworkValue).filter(Boolean):[];
+ var excluded=[item.backdropPath,item.posterPath,item.coverUrl,item.detailPoster,item.cleanPosterPath,art&&art.poster,bundle&&bundle.poster].map(imageIdentity).filter(Boolean);
+ // Recover valid PNG title logos even when native refresh changes array length.
+ for(var i=paths.length-1;i>=0;i--){
+  var p=paths[i],identity=imageIdentity(p);
+  if(excluded.indexOf(identity)<0&&/\.png(?:$|[?#&/])/i.test(identity))append(p);
  }
+ if(fixed&&paths.length===3&&excluded.indexOf(imageIdentity(paths[2]))<0)append(paths[2]);
  return result;
 }
 function nativeFixedPosterIsUsable(item,art){
@@ -283,26 +297,9 @@ function nativeFixedPosterIsUsable(item,art){
  return displayedClean||native.some(function(v){return v&&imageIdentity(v)===actual;});
 }
 function syncPosterBrand(item,art){
- var fixed=fixedRailRule(item);
- if(fixed){
-  if(nativeFixedPosterIsUsable(item,art)){
-   renderTitleLogo(railLogoCandidates(item,art),nameOf(item));
-   return;
-  }
-  // Do not show a duplicate logo on a known printed poster or before loading.
-  logoRequest++;logoKey='';
-  var pinnedLogo=el('logo');
-  pinnedLogo.onload=null;pinnedLogo.onerror=null;
-  setImage(pinnedLogo,'');el('title').hidden=true;
-  return;
- }
- if(displayedPoster&&!displayedClean){
-  logoRequest++;logoKey='';
-  var logo=el('logo');
-  logo.onload=null;logo.onerror=null;
-  setImage(logo,'');el('title').hidden=true;
-  return;
- }
+ if(!item)return;
+ // Branding must not depend on the poster being classified as clean.
+ // Always attempt the real title logo, then display a readable title.
  renderTitleLogo(railLogoCandidates(item,art),nameOf(item));
 }
 function updatePoster(item,art){
@@ -350,17 +347,24 @@ function renderTitleLogo(sources,name){
  var key=JSON.stringify([selected&&selected.id,sources]);
  if(key===logoKey)return;
  logoKey=key;
- var request=++logoRequest,index=0;
+ var request=++logoRequest,index=0,item=selected;
+ var visible=logo.getAttribute('src');
+ // Keep a successfully displayed logo during metadata updates.
+ if(visible&&!logo.hidden&&logo.complete&&logo.naturalWidth>0){title.hidden=true;return;}
  logo.hidden=true;title.hidden=false;
  logo.onload=null;logo.onerror=null;logo.removeAttribute('src');
  function next(){
   if(request!==logoRequest)return;
-  if(index>=sources.length){logo.hidden=true;title.hidden=false;logo.removeAttribute('src');return}
+  if(index>=sources.length){logo.hidden=true;title.hidden=false;logo.removeAttribute('src');return;}
   var src=sources[index++];
-  logo.onload=function(){if(request===logoRequest&&logo.getAttribute('src')===src){logo.hidden=false;title.hidden=true}};
-  logo.onerror=function(){if(request===logoRequest&&logo.getAttribute('src')===src)next()};
+  function success(){
+   if(request!==logoRequest||logo.getAttribute('src')!==src)return;
+   logo.hidden=false;title.hidden=true;railLogoRemember(item,src);
+  }
+  logo.onload=success;
+  logo.onerror=function(){if(request===logoRequest&&logo.getAttribute('src')===src)next();};
   logo.setAttribute('src',src);
-  if(logo.complete&&logo.naturalWidth>0){logo.hidden=false;title.hidden=true}
+  if(logo.complete&&logo.naturalWidth>0)success();
  }
  next();
 }
