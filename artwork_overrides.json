@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "revision": 6,
+  "revision": 7,
   "overrides": {
     "tv:244447": {
       "title": "The Hunting Wives",
@@ -15,7 +15,8 @@
       "logoAlternates": [
         "/vuIB3iTCnBXkSo4eYoCY8fZ3SXU.png",
         "/5qE6Fm2d9fbH8m72kDPi40msky9.png"
-      ]
+      ],
+      "combinedTrendingPosterPath": "/rnu5OUtv5X865QEmrdqYEmzZiT2.jpg"
     },
     "movie:13963": {
       "title": "The Last Waltz",

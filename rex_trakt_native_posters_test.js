@@ -1,10 +1,10 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.6.10 — Restore working artwork transport and strict textless eligibility
+ * Version 3.6.11 — Permanent manifest artwork, no renderer substitutions
  *
  * Carries title logos through the documented backdropPaths array.
- * Preserves the real primary backdrop and original title.
+ * Transports the locked portrait as native poster and first backdrop entry; retains the real backdrop in the bundle.
  *
  * Retains the existing:
  * - Two Trakt lists with strict title-logo eligibility
@@ -15,7 +15,7 @@
  * - Textless-poster preference
  * - TMDB logo retrieval
  * - Genres and network metadata
- * - Poster fallbacks
+ * - Permanent textless poster selections; no alternate poster fallback
  *
  * Daily TV Top 20: 85% IMDb / 15% community quality when available.
  * Daily movie Top 20: 90% normalized IMDb / 10% community quality,
@@ -62,7 +62,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.6.10",
+  version: "3.6.11",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -450,6 +450,7 @@ async function loadCachedRow(key, target, loader) {
   // The manifest version participates in the row-cache identity so a new
   // scheduled selection cannot be hidden by the module's old cached list.
   var manifest=await faceManifest();
+  key="locked-v3611:"+key;
   if(manifest&&manifest.generatedAt)key+=":"+manifest.generatedAt;
   var cached = startupCacheRead("row:" + key, CACHE_SECONDS);
   if (Array.isArray(cached) && cached.length === target) return cached;
@@ -735,32 +736,21 @@ function nativeReleaseDate(value) {
 }
 
 function assignPosterFields(item, artwork, premiumPortrait) {
-  // Native Rex grid uses the normal TMDB poster. Custom rails explicitly
-  // prefer cleanPosterPath, and the detail-page poster stays as before.
-  var clean = artwork.cleanPoster || artwork.cleanBackdrop;
-  var selected = clean || artwork.standardPoster;
-  // A deliberate override must survive Rex dropping custom fields.
-  // For pinned titles only, the native grid receives the same replacement.
-  var standard = (artwork.fixedRailPoster || artwork.faceSafePoster) && clean ? clean : artwork.standardPoster || selected;
-  if (standard) {
-    item.posterPath = standard;
-    item.coverUrl = tmdbUrl(standard);
-  }
-  if (selected) item.detailPoster = selected;
-  // Absolute source URL is usable by HTML img elements without translation.
-  if (clean) item.cleanPosterPath = tmdbUrl(clean);
+  var locked = artwork.cleanPoster;
+  item.posterPath = locked;
+  item.coverUrl = tmdbUrl(locked);
+  item.detailPoster = locked;
+  item.cleanPosterPath = tmdbUrl(locked);
+  item.faceSafePosterPath = tmdbUrl(locked);
+  item.lockedPosterPath = tmdbUrl(locked);
 }
-
-function nativeArtworkBundle(artwork){
-  var backdrop=artwork.backdrop;
-  var clean=artwork.cleanPoster||artwork.cleanBackdrop;
-  var logo=artwork.logo;
-  var paths=backdrop?[backdrop]:[];
-  if(clean&&clean!==backdrop&&clean!==logo) paths.push(clean);
-  if(logo&&paths.indexOf(logo)<0)paths.push(logo);
+function nativeArtworkBundle(artwork) {
+  var locked = artwork.cleanPoster;
+  var paths = [locked];
+  if (artwork.backdrop && artwork.backdrop !== locked && artwork.backdrop !== artwork.logo) paths.push(artwork.backdrop);
+  if (artwork.logo && paths.indexOf(artwork.logo) < 0) paths.push(artwork.logo);
   return paths;
 }
-
 function selectHuntingWivesStill(episode, excluded){
   var stills=episode&&episode.images&&episode.images.stills;
   var candidates=(Array.isArray(stills)?stills:[]).filter(function(p){
@@ -778,51 +768,32 @@ function selectHuntingWivesStill(episode, excluded){
 
 var artworkRegistryPromise=null;
 async function artworkRegistry(){
-  var cached=startupCacheRead("registry-v365",300);
+  var cached=startupCacheRead("registry-v3611",300);
   if(cached&&cached.schemaVersion===1&&cached.overrides)return cached.overrides;
   if(artworkRegistryPromise)return artworkRegistryPromise;
   artworkRegistryPromise=(async function(){
     try{
       var data=unwrap(await Widget.http.get("https://raw.githubusercontent.com/Junior2237/rex-poster-test/refs/heads/main/artwork_overrides.json",{headers:{Accept:"application/json"}}));
       if(data&&data.schemaVersion===1&&data.overrides&&typeof data.overrides==="object"){
-        startupCacheWrite("registry-v365",data);return data.overrides;
+        startupCacheWrite("registry-v3611",data);return data.overrides;
       }
     }catch(e){}
-    return cached&&cached.overrides||{"tv:244447":{"title":"The Hunting Wives","strategy":"fixed","posterPath":"/hsEcXCnzoalH3i0HowKbOpJRqD0.jpg","logoPath":"/dT0HdklknEGQYkn1dNACIs4IeAt.png","revision":3,"posterPaths":{"top20":"/kg09RkDPfvz44TX7K3rmUv1dI02.jpg","trending":"/yzfW8fZvPQOZKAIRaPlf8WlU9yT.jpg"},"logoAlternates":["/vuIB3iTCnBXkSo4eYoCY8fZ3SXU.png","/5qE6Fm2d9fbH8m72kDPi40msky9.png"]},"movie:13963":{"title":"The Last Waltz","strategy":"fixed","posterPath":"/iXFOL9hCoCHFGACjJSIrY8eLlSY.jpg","logoPath":"/dI3b6DHMYGZDyZMfSqq8hHNrFBi.png","revision":3,"logoAlternates":["/z0mhltWcY0kIpdRTPpdpTfD9Ks.png"],"autoLogo":true},"movie:9089":{"title":"Home for the Holidays","strategy":"fixed","posterPath":"/s6ol3yUC7qTPwWoCM7b7rnSaeJl.jpg","logoPath":"/AtMN8tMKMQ8PDo760zKoLkRl4LA.png","revision":2,"logoAlternates":["/gkbavCi5ubuVp9XleopJDuWPplT.png","/buEFy3l1eKjoM5PfxUuuEhiHKLS.png"]},"movie:950237":{"title":"The 90s Club","requireManualLogo":true,"revision":1},"movie:1597":{"title":"Meet the Parents","strategy":"fixed","posterPath":"/t6Qs4qaANlikve2OmO0s3U1w9nv.jpg","revision":1},"tv:225171":{"title":"Pluribus","strategy":"fixed","posterPath":"/os1oQkTMZXiFP7KdEv3o03eshGC.jpg","revision":1}};
+    var lastKnown=startupCacheRead("registry-v3611",Infinity);
+    return lastKnown&&lastKnown.overrides||{"tv:244447":{"title":"The Hunting Wives","strategy":"fixed","posterPath":"/hsEcXCnzoalH3i0HowKbOpJRqD0.jpg","logoPath":"/dT0HdklknEGQYkn1dNACIs4IeAt.png","revision":3,"posterPaths":{"top20":"/kg09RkDPfvz44TX7K3rmUv1dI02.jpg","trending":"/yzfW8fZvPQOZKAIRaPlf8WlU9yT.jpg"},"combinedTrendingPosterPath":"/rnu5OUtv5X865QEmrdqYEmzZiT2.jpg","logoAlternates":["/vuIB3iTCnBXkSo4eYoCY8fZ3SXU.png","/5qE6Fm2d9fbH8m72kDPi40msky9.png"]},"movie:13963":{"title":"The Last Waltz","strategy":"fixed","posterPath":"/iXFOL9hCoCHFGACjJSIrY8eLlSY.jpg","logoPath":"/dI3b6DHMYGZDyZMfSqq8hHNrFBi.png","revision":3,"logoAlternates":["/z0mhltWcY0kIpdRTPpdpTfD9Ks.png"],"autoLogo":true},"movie:9089":{"title":"Home for the Holidays","strategy":"fixed","posterPath":"/s6ol3yUC7qTPwWoCM7b7rnSaeJl.jpg","logoPath":"/AtMN8tMKMQ8PDo760zKoLkRl4LA.png","revision":2,"logoAlternates":["/gkbavCi5ubuVp9XleopJDuWPplT.png","/buEFy3l1eKjoM5PfxUuuEhiHKLS.png"]},"movie:950237":{"title":"The 90s Club","requireManualLogo":true,"revision":1},"movie:1597":{"title":"Meet the Parents","strategy":"fixed","posterPath":"/t6Qs4qaANlikve2OmO0s3U1w9nv.jpg","revision":1},"tv:225171":{"title":"Pluribus","strategy":"fixed","posterPath":"/os1oQkTMZXiFP7KdEv3o03eshGC.jpg","revision":1}};
   })();
   try{return await artworkRegistryPromise;}finally{artworkRegistryPromise=null;}
 }
-async function applyArtworkOverride(artwork,mediaType,tmdbId,premiumPortrait){
+async function applyArtworkOverride(artwork,mediaType,tmdbId,premiumPortrait,combinedTrending){
   var registry=await artworkRegistry(),id=mediaType+":"+tmdbId,rule=registry[id];
   if(!rule||typeof rule!=="object")return artwork;
   var excluded=[artwork.standardPoster,artwork.backdrop,artwork.cleanPoster,artwork.logo];
   function safePath(v){return typeof v==="string"&&/^\/[A-Za-z0-9_-]+\.(jpg|jpeg|png|webp)$/i.test(v)?v:"";}
   var layout=premiumPortrait?"trending":"top20";
-  var manual=safePath(rule.posterPaths&&rule.posterPaths[layout])||safePath(rule.posterPath),alternate=manual;
-  var key="override:"+id+":"+layout+":"+String(rule.revision||1);
-  if(!alternate)alternate=safePath(startupCacheRead(key,ARTWORK_CACHE_SECONDS));
-  if(!alternate&&rule.strategy==="episodeStill"&&mediaType==="tv"){
-    var episodes=Array.isArray(rule.episodes)?rule.episodes.slice(0,3):[[1,1]];
-    for(var i=0;i<episodes.length&&!alternate;i++){
-      var season=Number(episodes[i][0]),episode=Number(episodes[i][1]);
-      if(!Number.isInteger(season)||season<0||!Number.isInteger(episode)||episode<1)continue;
-      try{
-        var data=unwrap(await Widget.tmdb.get("tv/"+tmdbId+"/season/"+season+"/episode/"+episode,{params:{language:"en-US",append_to_response:"images",include_image_language:"null"}}));
-        alternate=selectHuntingWivesStill(data,excluded);
-      }catch(e){}
-    }
-  }
-  if(!alternate&&(rule.strategy==="alternateBackdrop"||rule.strategy==="episodeStill")){
-    try{
-      var gallery=await fetchGallery(mediaType,tmdbId,null);
-      alternate=chooseCleanBackdrop((gallery&&gallery.backdrops||[]).filter(function(x){return x&&excluded.indexOf(x.file_path)<0;}));
-    }catch(e){}
-    if(!alternate&&artwork.cleanBackdrop&&excluded.indexOf(artwork.cleanBackdrop)<0)alternate=artwork.cleanBackdrop;
-  }
+  // Only explicit registry paths can override an automatic manifest lock.
+  var alternate=(combinedTrending===true&&premiumPortrait===true?safePath(rule.combinedTrendingPosterPath):"")||safePath(rule.posterPaths&&rule.posterPaths[layout])||safePath(rule.posterPath);
   var logo=safePath(rule.logoPath);
   if (!/\.png$/i.test(logo)) logo="";
   if (rule.requireManualLogo && !logo) return Object.assign({},artwork,{logo:"",logos:[]});
-  if(alternate)startupCacheWrite(key,alternate);
   if(!alternate&&!logo)return artwork;
   var logoPaths = [];
   (rule.autoLogo ? [artwork.logo].concat(artwork.logos||[],[logo],rule.logoAlternates||[]) : [logo,artwork.logo].concat(Array.isArray(rule.logoAlternates)?rule.logoAlternates:[],artwork.logos||[])).forEach(function(p){
@@ -850,7 +821,7 @@ async function faceManifest(){
       data=validFaceManifest(unwrap(await Widget.http.get("https://raw.githubusercontent.com/Junior2237/rex-poster-test/refs/heads/main/face_safe_posters.json",{headers:{Accept:"application/json"}})));
     }catch(e){}
     if(data)startupCacheWrite("face-manifest-v368",data);
-    faceManifestMemory=data||validFaceManifest(startupCacheRead("face-manifest-v368",72*3600))||{overrides:{}};
+    faceManifestMemory=data||validFaceManifest(startupCacheRead("face-manifest-v368",Infinity))||{overrides:{}};
     faceManifestAt=Date.now();
     return faceManifestMemory;
   })();
@@ -953,17 +924,8 @@ async function buildItem(
       if (mediaType === "movie") item._dailyTmdbRaw = artwork.rating;
     }
 
-    try { artwork = await applyArtworkOverride(artwork, mediaType, tmdbId, premiumPortrait); } catch(e) {}
+    try { artwork = await applyArtworkOverride(artwork, mediaType, tmdbId, premiumPortrait, combinedTrending); } catch(e) {}
 
-    // Scope this manual portrait to the combined oversized Trending rail.
-    // Preserve the registry-selected Top 20 and other chart artwork.
-    if (combinedTrending === true && premiumPortrait === true &&
-        mediaType === "tv" && Number(tmdbId) === 244447) {
-      artwork = Object.assign({}, artwork, {
-        cleanPoster: "/rnu5OUtv5X865QEmrdqYEmzZiT2.jpg",
-        fixedRailPoster: true
-      });
-    }
 
     // Automated selections never replace a manually pinned poster.
     artwork = applyFaceSafePoster(artwork,await facePromise,mediaType,tmdbId,premiumPortrait);
@@ -971,35 +933,13 @@ async function buildItem(
     // Fail closed: no standard titled poster or unverified alternative in any row.
     if (!artwork.logo || !/^\/[A-Za-z0-9_-]+\.png$/i.test(artwork.logo)) return null;
     if (!hasEligibleTextlessPoster(artwork)) return null;
-    if (!artwork.standardPoster) artwork.standardPoster = tmdbPath(subject.poster_path || row.poster_path);
+    // A single approved portrait is carried through every native/custom field.
+    // Keep the genuine landscape in the bundle, never as a poster alternative.
     assignPosterFields(item, artwork, premiumPortrait);
-    if(artwork.verifiedPoster||artwork.faceSafePoster){
-      item.faceSafePosterPath=tmdbUrl(artwork.verifiedPoster||artwork.faceSafePoster);
-      if(artwork.faceSafePoster)console.log("Face-safe applied: "+title+" "+artwork.faceSafePoster);
-    }
-    item.cleanPosterAlternates=(artwork.cleanPosterAlternates||[]).filter(function(p){return p!==artwork.cleanPoster;}).map(tmdbUrl);
     if (artwork.releaseDate) item.releaseDate = artwork.releaseDate;
-
-    if (artwork.backdrop) item.backdropPath = artwork.backdrop;
-    // Only these two unresolved cards require the alternate artwork in the
-    // native primary backdrop slot as well as the native poster slot.
-    var nativePaths = nativeArtworkBundle(artwork);
-    if (artwork.fixedRailPoster && artwork.cleanPoster &&
-        ((mediaType === "movie" && (Number(tmdbId) === 13963 || Number(tmdbId) === 1597)) ||
-         (mediaType === "tv" && Number(tmdbId) === 225171) ||
-         (mediaType === "tv" && Number(tmdbId) === 244447 && premiumPortrait))) {
-      item.backdropPath = artwork.cleanPoster;
-      nativePaths = [artwork.cleanPoster];
-      if (artwork.backdrop && nativePaths.indexOf(artwork.backdrop) < 0) nativePaths.push(artwork.backdrop);
-      if (artwork.logo && nativePaths.indexOf(artwork.logo) < 0) nativePaths.push(artwork.logo);
-    }
-    // Carry automatic replacements through native fields even if Rex strips
-    // custom metadata. A portrait-first bundle is recognized by our renderers.
-    if(artwork.faceSafePoster&&artwork.backdrop&&artwork.backdrop!==artwork.cleanPoster){
-      item.backdropPath=artwork.cleanPoster;
-      nativePaths=[artwork.cleanPoster,artwork.backdrop,artwork.logo];
-    }
-    if (nativePaths.length) item.backdropPaths = nativePaths;
+    item.backdropPath = artwork.cleanPoster;
+    item.backdropPaths = nativeArtworkBundle(artwork);
+    item.cleanPosterAlternates = [];
 
     if (artwork.logo) {
       var logoUrl = tmdbUrl(artwork.logo);

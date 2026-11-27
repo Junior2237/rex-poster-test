@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="rex-widget" content="type=rail; height=700; item-ratio=4:5">
-<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster,titleLogoAlternates,titleLogoRawPath,logoUrl,titleLogoPinned,faceSafePosterPath,nativePosterOnly">
+<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster,titleLogoAlternates,titleLogoRawPath,logoUrl,titleLogoPinned,faceSafePosterPath,lockedPosterPath,nativePosterOnly">
 <title>Rex Editorial — Consistent Artwork</title>
 <style>
 *{box-sizing:border-box}
@@ -180,16 +180,26 @@ function artworkValue(v){
  if(v&&typeof v==='object')return artworkValue(v.url||v.src||v.path||v.file_path||v.imageUrl||v.backdropPath||'');
  return str(v).trim();
 }
-function railArtworkBundle(item){
-if(!item)return null;
-var p=Array.isArray(item.backdropPaths)?item.backdropPaths.map(artworkValue).filter(Boolean):[],d=imageIdentity(item.backdropPath),n=imageIdentity(item.posterPath||item.coverUrl);
-if(p.length===2&&d&&d===n&&d===imageIdentity(p[0])&&/\.png$/i.test(imageIdentity(p[1])))return {poster:p[0],n:1};if(p.length!==3||imageIdentity(p[0])===imageIdentity(p[1])||!/\.png$/i.test(imageIdentity(p[2])))return null;
-if(d&&d===imageIdentity(p[0])&&n===d)return {poster:p[0],logo:p[2],verified:true};
-if(!d||d===imageIdentity(p[0]))return {poster:p[1],logo:p[2]};
-return null;
+// v3.6.11: the source module alone selects the poster.
+function lockedArtworkURL(value) {
+ var src=artworkValue(value);
+ if (/^\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)$/i.test(src)) return 'https://image.tmdb.org/t/p/original'+src;
+ return src;
 }
-function verifiedRailSource(item){var b=railArtworkBundle(item);return artworkValue(item.faceSafePosterPath)||(b&&b.verified?b.poster:'');}
-var railArtMemory=Object.create(null),railArtTTL=4*60*60*1000;
+function railArtworkBundle(item) {
+ if(!item)return null;
+ var p=Array.isArray(item.backdropPaths)?item.backdropPaths.map(artworkValue).filter(Boolean):[];
+ var d=imageIdentity(item.backdropPath),n=imageIdentity(item.posterPath||item.coverUrl);
+ if((p.length===2||p.length===3)&&d&&n&&d===n&&d===imageIdentity(p[0])&&/\.png$/i.test(imageIdentity(p[p.length-1]))){
+  return {poster:lockedArtworkURL(p[0]),logo:lockedArtworkURL(p[p.length-1]),verified:true};
+ }
+ return null;
+}
+function verifiedRailSource(item) {
+ var bundle=railArtworkBundle(item);
+ return lockedArtworkURL(item.lockedPosterPath||item.faceSafePosterPath)||(bundle&&bundle.poster)||'';
+}
+var railArtTTL=4*60*60*1000; // title-logo cache only
 function railArtKeys(item){
  if(!item||item.id==null||item.id==='')return [];
  var id=String(item.id).trim(),title=String(item.title||'').trim().toLowerCase().replace(/\s+/g,' ');
@@ -204,23 +214,7 @@ function railArtKeys(item){
  return keys;
 }
 function railArtKey(item){return railArtKeys(item)[0]||''}
-function railArtRead(key){
- if(!key)return null;
- var data=railArtMemory[key];
- if(!data){try{data=JSON.parse(localStorage.getItem(key)||'null')}catch(e){}}
- if(!data||typeof data.at!=='number'||Date.now()-data.at<0||Date.now()-data.at>=railArtTTL||!data.poster)return null;
- railArtMemory[key]=data;return data;
-}
-function railArtFor(item){
- var keys=railArtKeys(item);
- for(var i=0;i<keys.length;i++){var data=railArtRead(keys[i]);if(data)return data}
- return null;
-}
-function railArtRemember(item,poster,logo,v){
- if(!poster)return;
- var data={poster:poster,logo:logo||'',at:Date.now(),v:!!v};
- railArtKeys(item).forEach(function(key){railArtMemory[key]=data;try{localStorage.setItem(key,JSON.stringify(data))}catch(e){}});
-}
+
 function imageIdentity(value){
  var src=artworkValue(value);
  try{src=decodeURIComponent(src)}catch(e){}
@@ -268,42 +262,18 @@ function fixedRailSelection(item){
  var posters=fixedRailSources(item,rule.poster),logos=fixedRailSources(item,rule.logo);
  return posters.length?{poster:posters[0],posters:posters,logo:logos[0]||'',manual:true}:null;
 }
-function confirmedArtwork(item){
- if(!item)return null;
- var manual=fixedRailSelection(item);
- if(manual)return manual;
- // Never trust old automatic artwork for a title with an explicit override.
- if(fixedRailRule(item))return null;
- var safe=verifiedRailSource(item);
- if(safe)return {poster:safe,v:1,logo:artworkValue(item.titleLogoPath)};var nb=railArtworkBundle(item);if(item.nativePosterOnly||nb&&nb.n)return {poster:artworkValue(item.posterPath||item.coverUrl)||nb&&nb.poster,n:1};
- var cached=railArtFor(item);
- if(cached&&!item.faceSafePosterPath)return cached;
- var bundle=railArtworkBundle(item),clean=artworkValue(item.faceSafePosterPath)||artworkValue(item.cleanPosterPath);
- var nativePoster=artworkValue(item.posterPath)||artworkValue(item.coverUrl);
- // Do not treat changing native detail art as verified textless artwork.
- var poster=(clean&&imageIdentity(clean)!==imageIdentity(nativePoster)?clean:'')||(bundle&&bundle.poster);
- if(!poster)return null;
- return {poster:poster,logo:(bundle&&bundle.logo)||artworkValue(item.titleLogoPath)||
-  artworkValue(item.titleLogoUrl)||artworkValue(item.logoPath)};
+function confirmedArtwork(item) {
+ if(!item||item.nativePosterOnly)return null;
+ var src=verifiedRailSource(item),bundle=railArtworkBundle(item);
+ if(!src)return null;
+ return {poster:src,v:true,logo:lockedArtworkURL(item.titleLogoPath||item.titleLogoUrl||item.logoPath||(bundle&&bundle.logo)||'')};
 }
-
-function lockArtwork(item){
- var manual=fixedRailSelection(item);
- if(manual){
-  if(!lockedArtwork||imageIdentity(lockedArtwork.poster)!==imageIdentity(manual.poster)){
-   if(lockedArtwork){displayedClean=false;failedCleanPoster='';pendingPoster='';imageGeneration++;}
-   lockedArtwork=manual;
-  }else{
-   if(manual.logo)lockedArtwork.logo=manual.logo;
-   lockedArtwork.posters=manual.posters;
-  }
-  return lockedArtwork;
- }
- if(fixedRailRule(item))return null;
- if(lockedArtwork&&lockedArtwork.v)return lockedArtwork;
- var art=confirmedArtwork(item);if(lockedArtwork&&(!art||!art.v&&!art.n))return lockedArtwork;if(!art||!art.poster)return lockedArtwork;if(lockedArtwork&&imageIdentity(lockedArtwork.poster)!==imageIdentity(art.poster)){displayedClean=false;failedCleanPoster='';pendingPoster='';imageGeneration++;}lockedArtwork=art;if(!art.n)railArtRemember(item,art.poster,art.logo,art.v);return lockedArtwork;
+function lockArtwork(item) {
+ // Keep the first authoritative selection for this card. No renderer overrides.
+ if(lockedArtwork&&lockedArtwork.poster)return lockedArtwork;
+ lockedArtwork=confirmedArtwork(item);
+ return lockedArtwork;
 }
-
 function networkLogoOf(item){
  if(!item)return '';
 
@@ -329,17 +299,7 @@ function networkLogoOf(item){
 // Do not commit an image from an earlier recycled rail cell.
 // Keep an already loaded poster for the same item while new metadata arrives.
 function setImage(node,value){var src=artworkValue(value);node.hidden=!src;if(src){if(node.getAttribute('src')!==src)node.setAttribute('src',src)}else node.removeAttribute('src')}
-function fallbackPoster(item){
- if(fallbackArtwork&&!failedFallbacks[fallbackArtwork])return fallbackArtwork;
- var candidates=[item.posterPath,item.coverUrl,item.detailPoster,item.backdropPath];
- for(var i=0;i<candidates.length;i++){
-  var src=artworkValue(candidates[i]);
-  if(src&&!failedFallbacks[src]&&src!==failedCleanPoster){
-   fallbackArtwork=src;return src;
-  }
- }
- return '';
-}
+
 var railLogoMemory=Object.create(null);
 function railLogoRead(item){
  var keys=railArtKeys(item);
@@ -399,40 +359,22 @@ function syncPosterBrand(item,art){
  // Always attempt the real title logo, then display a readable title.
  renderTitleLogo(railLogoCandidates(item,art),nameOf(item));
 }
-function updatePoster(item,art){
- // Keep confirmed artwork locked; allow a single upgrade from a provisional
- // native poster when confirmed textless artwork becomes available.
- if(displayedClean)return;
- var clean=art&&art.poster||'';
- if(art&&art.manual){
-  var available=art.posters||[clean];
-  clean='';
-  for(var i=0;i<available.length;i++){if(!failedFallbacks[available[i]]){clean=available[i];break;}}
- }
- var useClean=!!clean&&clean!==failedCleanPoster;
- if(!useClean&&displayedPoster)return;
- var src=useClean?clean:fallbackPoster(item),key=titleKey(item);
- if(!src||src===pendingPoster)return;
- if(src===displayedPoster){
-  if(useClean){displayedClean=true;syncPosterBrand(item,art);}
-  return;
- }
+function updatePoster(item,art) {
+ if(!art||!art.poster||displayedClean)return;
+ var src=art.poster,key=titleKey(item);
+ if(src===pendingPoster||src===displayedPoster)return;
  pendingPoster=src;
- var generation=++imageGeneration;
- var image=new Image();
+ var generation=++imageGeneration,image=new Image();
  image.onload=function(){
   if(generation!==imageGeneration||key!==currentKey||!selected||titleKey(selected)!==key)return;
-  pendingPoster='';
-  displayedPoster=src;displayedClean=useClean;
+  pendingPoster='';displayedPoster=src;displayedClean=true;
   setImage(el('poster'),src);
   syncPosterBrand(selected,lockedArtwork);
  };
  image.onerror=function(){
   if(generation!==imageGeneration)return;
+  // Retain the lock; a subsequent render may retry the exact same URL.
   pendingPoster='';
-  if(useClean&&art&&art.manual){failedFallbacks[src]=true;}
-  else if(useClean)failedCleanPoster=src;else failedFallbacks[src]=true;
-  if(selected&&titleKey(selected)===key)updatePoster(selected,lockedArtwork);
  };
  image.src=src;
  if(image.complete&&image.naturalWidth>0&&pendingPoster===src)image.onload();
@@ -872,7 +814,7 @@ function render(){
  if(art&&!art.logo&&!fixedRailRule(item)){
   // Accept a late logo only; never replace an already selected poster.
   art.logo=artworkValue(item.titleLogoPath)||artworkValue(item.titleLogoUrl)||artworkValue(item.logoPath);
-  if(art.logo)railArtRemember(item,art.poster,art.logo);
+
  }
  syncPosterBrand(item,art);
 

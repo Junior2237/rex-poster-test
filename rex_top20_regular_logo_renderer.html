@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="rex-widget" content="type=rail; height=384; item-ratio=2:3">
-<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster,titleLogoAlternates,titleLogoRawPath,logoUrl,titleLogoPinned,faceSafePosterPath,nativePosterOnly">
+<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster,titleLogoAlternates,titleLogoRawPath,logoUrl,titleLogoPinned,faceSafePosterPath,lockedPosterPath,nativePosterOnly">
 <title>Top 20 — Apple TV Size — Refined Genres</title>
 <style>
 *{box-sizing:border-box}
@@ -88,16 +88,26 @@ if(v&&typeof v==='object')return _av(v.url||v.src||v.path||v.file_path||v.imageU
 return str(v).trim();
 }
 function setImage(node,value){var src=_av(value);node.hidden=!src;if(src){if(node.getAttribute('src')!==src)node.setAttribute('src',src)}else node.removeAttribute('src')}
-function _rab(item){
-if(!item)return null;
-var p=Array.isArray(item.backdropPaths)?item.backdropPaths.map(_av).filter(Boolean):[],d=_iid(item.backdropPath),n=_iid(item.posterPath||item.coverUrl);
-if(p.length===2&&d&&d===n&&d===_iid(p[0])&&/\.png$/i.test(_iid(p[1])))return {poster:p[0],n:1};if(p.length!==3||_iid(p[0])===_iid(p[1])||!/\.png$/i.test(_iid(p[2])))return null;
-if(d&&d===_iid(p[0])&&n===d)return {poster:p[0],logo:p[2],verified:true};
-if(!d||d===_iid(p[0]))return {poster:p[1],logo:p[2]};
-return null;
+// v3.6.11: the source module alone selects the poster.
+function lockedArtworkURL(value) {
+ var src=_av(value);
+ if (/^\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)$/i.test(src)) return 'https://image.tmdb.org/t/p/original'+src;
+ return src;
 }
-function _vs(item){var b=_rab(item);return _av(item.faceSafePosterPath)||(b&&b.verified?b.poster:'');}
-var _ram=Object.create(null),_rat=4*60*60*1000;
+function _rab(item) {
+ if(!item)return null;
+ var p=Array.isArray(item.backdropPaths)?item.backdropPaths.map(_av).filter(Boolean):[];
+ var d=_iid(item.backdropPath),n=_iid(item.posterPath||item.coverUrl);
+ if((p.length===2||p.length===3)&&d&&n&&d===n&&d===_iid(p[0])&&/\.png$/i.test(_iid(p[p.length-1]))){
+  return {poster:lockedArtworkURL(p[0]),logo:lockedArtworkURL(p[p.length-1]),verified:true};
+ }
+ return null;
+}
+function _vs(item) {
+ var bundle=_rab(item);
+ return lockedArtworkURL(item.lockedPosterPath||item.faceSafePosterPath)||(bundle&&bundle.poster)||'';
+}
+var _rat=4*60*60*1000; /* title-logo cache only */
 function _raks(item){
 if(!item||item.id==null||item.id==='')return [];
 var id=String(item.id).trim(),title=String(item.title||'').trim().toLowerCase().replace(/\s+/g,' ');
@@ -109,23 +119,7 @@ if(type)keys.push(base+type+':'+id);
 if(title)keys.push(base+'idtitle:'+id+':'+title);
 return keys;
 }
-function _rar(key){
-if(!key)return null;
-var data=_ram[key];
-if(!data){try{data=JSON.parse(localStorage.getItem(key)||'null')}catch(e){}}
-if(!data||typeof data.at!=='number'||Date.now()-data.at<0||Date.now()-data.at>=_rat||!data.poster)return null;
-_ram[key]=data;return data;
-}
-function _raf(item){
-var keys=_raks(item);
-for(var i=0;i<keys.length;i++){var data=_rar(keys[i]);if(data)return data}
-return null;
-}
-function _raw(item,poster,logo,v){
-if(!poster)return;
-var data={poster:poster,logo:logo||'',at:Date.now(),v:!!v};
-_raks(item).forEach(function(key){_ram[key]=data;try{localStorage.setItem(key,JSON.stringify(data))}catch(e){}});
-}
+
 function _iid(value){
 var src=_av(value);
 try{src=decodeURIComponent(src)}catch(e){}
@@ -169,37 +163,17 @@ if(!rule)return null;
 var posters=_frs(item,rule.poster),logos=_frs(item,rule.logo);
 return posters.length?{poster:posters[0],posters:posters,logo:logos[0]||'',manual:true}:null;
 }
-function _ca(item){
-if(!item)return null;
-var manual=_frsel(item);
-if(manual)return manual;
-if(_frr(item))return null;
-var safe=_vs(item);
-if(safe)return {poster:safe,v:1,logo:_av(item.titleLogoPath)};var nb=_rab(item);if(item.nativePosterOnly||nb&&nb.n)return {poster:_av(item.posterPath||item.coverUrl)||nb&&nb.poster,n:1};
-var cached=_raf(item);
-if(cached)return cached;
-var bundle=_rab(item),clean=_av(item.cleanPosterPath);
-var nativePoster=_av(item.posterPath)||_av(item.coverUrl);
-var poster=(clean&&_iid(clean)!==_iid(nativePoster)?clean:'')||(bundle&&bundle.poster);
-if(!poster)return null;
-return {poster:poster,logo:(bundle&&bundle.logo)||_av(item.titleLogoPath)||
-_av(item.titleLogoUrl)||_av(item.logoPath)};
+function _ca(item) {
+ if(!item||item.nativePosterOnly)return null;
+ var src=_vs(item),bundle=_rab(item);
+ if(!src)return null;
+ return {poster:src,v:true,logo:lockedArtworkURL(item.titleLogoPath||item.titleLogoUrl||item.logoPath||(bundle&&bundle.logo)||'')};
 }
-function _lock(item){
-var manual=_frsel(item);
-if(manual){
-if(!_la||_iid(_la.poster)!==_iid(manual.poster)){
-if(_la){_dc=false;_fcp='';_pp='';_ig++;}
-_la=manual;
-}else{
-if(manual.logo)_la.logo=manual.logo;
-_la.posters=manual.posters;
-}
-return _la;
-}
-if(_frr(item))return null;
-if(_la&&_la.v)return _la;
-var art=_ca(item);if(_la&&(!art||!art.v&&!art.n))return _la;if(!art||!art.poster)return _la;if(_la&&_iid(_la.poster)!==_iid(art.poster)){_dc=false;_fcp='';_pp='';_ig++;}_la=art;if(!art.n)_raw(item,art.poster,art.logo,art.v);return _la;
+function _lock(item) {
+ // Keep the first authoritative selection for this card. No renderer overrides.
+ if(_la&&_la.poster)return _la;
+ _la=_ca(item);
+ return _la;
 }
 function _ak(item){
 if(!item)return '';
@@ -219,17 +193,7 @@ logo.onload=null;logo.onerror=null;logo.style.transform='';
 setImage(logo,'');
 el('title').hidden=true;
 }
-function _fp(item){
-if(_fa&&!_ff[_fa])return _fa;
-var candidates=[item.posterPath,item.coverUrl,item.detailPoster,item.backdropPath];
-for(var i=0;i<candidates.length;i++){
-var src=_av(candidates[i]);
-if(src&&!_ff[src]&&src!==_fcp){
-_fa=src;return src;
-}
-}
-return '';
-}
+
 var _rlm=Object.create(null);
 function _rlr(item){
 var keys=_raks(item);
@@ -273,41 +237,25 @@ function _spb(item,art){
 if(!item)return;if(art&&art.n){logoRequest++;logoKey='';el('logo').hidden=el('title').hidden=true;el('logo').removeAttribute('src');return;}
 _rtl(_rlc(item,art),_nm(item));
 }
-function _up(item,art){
-if(_dc)return;
-var clean=art&&art.poster||'';
-if(art&&art.manual){
-var available=art.posters||[clean];
-clean='';
-for(var i=0;i<available.length;i++){if(!_ff[available[i]]){clean=available[i];break;}}
-}
-var useClean=!!clean&&clean!==_fcp;
-if(!useClean&&_dp)return;
-var src=useClean?clean:_fp(item),key=_ak(item);
-if(!src||src===_pp)return;
-if(src===_dp){
-if(useClean){_dc=true;_spb(item,art);}
-return;
-}
-_pp=src;
-var generation=++_ig;
-var image=new Image();
-image.onload=function(){
-if(generation!==_ig||key!==_cak||!selected||_ak(selected)!==key)return;
-_pp='';
-_dp=src;_dc=useClean;
-setImage(el('poster'),src);
-_spb(selected,_la);
-};
-image.onerror=function(){
-if(generation!==_ig)return;
-_pp='';
-if(useClean&&art&&art.manual){_ff[src]=true;}
-else if(useClean)_fcp=src;else _ff[src]=true;
-if(selected&&_ak(selected)===key)_up(selected,_la);
-};
-image.src=src;
-if(image.complete&&image.naturalWidth>0&&_pp===src)image.onload();
+function _up(item,art) {
+ if(!art||!art.poster||_dc)return;
+ var src=art.poster,key=_ak(item);
+ if(src===_pp||src===_dp)return;
+ _pp=src;
+ var generation=++_ig,image=new Image();
+ image.onload=function(){
+  if(generation!==_ig||key!==_cak||!selected||_ak(selected)!==key)return;
+  _pp='';_dp=src;_dc=true;
+  setImage(el('poster'),src);
+  _spb(selected,_la);
+ };
+ image.onerror=function(){
+  if(generation!==_ig)return;
+  // Retain the lock; a subsequent render may retry the exact same URL.
+  _pp='';
+ };
+ image.src=src;
+ if(image.complete&&image.naturalWidth>0&&_pp===src)image.onload();
 }
 var logoRequest=0,logoKey='';
 var _lb=Object.create(null);
@@ -587,7 +535,7 @@ var name=_nm(selected),art=_lock(selected);
 _up(selected,art);
 if(art&&!art.logo&&!_frr(item)){
 art.logo=_av(item.titleLogoPath)||_av(item.titleLogoUrl)||_av(item.logoPath);
-if(art.logo)_raw(item,art.poster,art.logo);
+
 }
 _spb(selected,art);
 var genre=_cg(selected);
