@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.5.8 — Top 20 legibility-aware logo selection
+ * Version 3.5.9 — Adaptive visible-logo sizing and pinned logo preferences
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -62,7 +62,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.5.8",
+  version: "3.5.9",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -813,7 +813,7 @@ async function applyArtworkOverride(artwork,mediaType,tmdbId,premiumPortrait){
     p=safePath(p);
     if(p&&/\.png$/i.test(p)&&logoPaths.indexOf(p)<0)logoPaths.push(p);
   });
-  return Object.assign({},artwork,alternate?{cleanPoster:alternate,fixedRailPoster:true}:{},logoPaths.length?{logo:logoPaths[0],logos:logoPaths}:{});
+  return Object.assign({},artwork,alternate?{cleanPoster:alternate,fixedRailPoster:true}:{},logoPaths.length?{logo:logoPaths[0],logos:logoPaths,titleLogoPinned:!!logo}:{});
 }
 
 async function buildItem(
@@ -937,6 +937,7 @@ async function buildItem(
       item.titleLogoRawPath =
         artwork.logo;
       item.titleLogoAlternates = (artwork.logos || []).filter(function(path){return path!==artwork.logo;}).map(tmdbUrl);
+      if (dailyRanking && artwork.titleLogoPinned) item.titleLogoPinned = true;
     }
 
     if (artwork.genres.length) {
@@ -1234,14 +1235,14 @@ async function loadNativeList(
 
 async function loadNativeMovies(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("daily-movies-v358", MAX_ITEMS, function() {
+  return loadCachedRow("daily-movies-v359", MAX_ITEMS, function() {
     return loadNativeList("movie", MOVIES_LIST, params);
   });
 }
 
 async function loadNativeShows(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("daily-shows-v358", MAX_ITEMS, function() {
+  return loadCachedRow("daily-shows-v359", MAX_ITEMS, function() {
     return loadNativeList("tv", TV_LIST, params);
   });
 }
