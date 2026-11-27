@@ -11,12 +11,12 @@
 html,body{margin:0;background:transparent;color:white;font:16px -apple-system,BlinkMacSystemFont,sans-serif}
 #card{position:relative;width:100%;height:700px;background:#171922;overflow:hidden;border-radius:26px}
 #poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-#panel{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.88);padding:16px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}
+#panel{position:absolute;z-index:999;top:0;left:0;right:0;background:rgba(0,0,0,.88);padding:12px;line-height:1.25;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere;pointer-events:none}
 #name{font-size:22px;font-weight:700;margin-bottom:8px}
 </style>
 </head>
 <body>
-<div id="card"><img id="poster" alt=""><div id="panel"><div id="name">Resolution test</div><div id="report">Waiting for title</div></div></div>
+<div id="card"><img id="poster" alt=""><div id="panel"><div id="name">RESOLUTION TEST v2</div><div id="report">Waiting for title</div></div></div>
 <script>
 (function(){
 'use strict';
@@ -45,7 +45,7 @@ function render(){
  if(key===lastKey)return;
  lastKey=key;
  var n=++seq,results=refs.map(function(){return null;});
- title.textContent=item.title||item.name||'Untitled';
+ title.textContent='RESOLUTION TEST v2 — '+(item.title||item.name||'Untitled');
  poster.removeAttribute('src');
  function show(){
   if(n!==seq)return;
@@ -71,7 +71,8 @@ function render(){
    lines.push(ref.name+': '+(!r?'loading':r.ok?dims(i):'failed'));
   });
   if(!refs.length)lines.push('No artwork reference provided.');
-  report.textContent=lines.join('\n');
+  lines.push('Card: '+Math.round(poster.getBoundingClientRect().width)+' x '+Math.round(poster.getBoundingClientRect().height)+' CSS px');
+report.textContent=lines.join('\n');
  }
  show();
  refs.forEach(function(ref,i){
@@ -88,7 +89,10 @@ function render(){
  });
 }
 if(!api){report.textContent='Open this template in Rex.';return;}
+function layout(){var h=Number((api.layout||{}).height);if(Number.isFinite(h)&&h>0)document.getElementById('card').style.height=h+'px';}
 api.onContentChanged(render);
+if(typeof api.onLayoutChanged==='function')api.onLayoutChanged(layout);
+layout();
 render();
 })();
 </script>
