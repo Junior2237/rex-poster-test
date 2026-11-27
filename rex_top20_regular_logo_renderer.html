@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="rex-widget" content="type=rail; height=384; item-ratio=2:3">
-<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster,titleLogoAlternates,titleLogoRawPath,logoUrl,titleLogoPinned">
+<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster,titleLogoAlternates,titleLogoRawPath,logoUrl,titleLogoPinned,faceSafePosterPath">
 <title>Top 20 — Apple TV Size — Refined Genres</title>
 <style>
 *{box-sizing:border-box}
@@ -174,8 +174,8 @@ var manual=_frsel(item);
 if(manual)return manual;
 if(_frr(item))return null;
 var cached=_raf(item);
-if(cached)return cached;
-var bundle=_rab(item),clean=_av(item.cleanPosterPath);
+if(cached&&!item.faceSafePosterPath)return cached;
+var bundle=_rab(item),clean=_av(item.faceSafePosterPath)||_av(item.cleanPosterPath);
 var nativePoster=_av(item.posterPath)||_av(item.coverUrl);
 var poster=(clean&&_iid(clean)!==_iid(nativePoster)?clean:'')||(bundle&&bundle.poster);
 if(!poster)return null;
