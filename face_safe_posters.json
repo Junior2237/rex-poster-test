@@ -1,7 +1,9 @@
 {
   "schemaVersion": 1,
   "algorithm": "yunet-ppocr-v5",
-  "generatedAt": "2026-11-27T14:52:08.632241+00:00",
+  "qualityVersion": 1,
+  "qualityUpgrades": [],
+  "generatedAt": "2026-11-27T15:01:12.615851+00:00",
   "overrides": {
     "movie:2609": {
       "title": "Planes, Trains and Automobiles",
@@ -139,7 +141,17 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "selection": "confirmed",
+          "qualityVersion": 1,
+          "qualityScore": 92.084,
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 1.0,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.7933,
+          "voteAverage": 3.334,
+          "voteCount": 1,
+          "qualityAuditVersion": 1
         },
         "trending": {
           "baseline": "/1hqRP0oQsPTuS82mSg2x6yy7JxD.jpg",
@@ -149,7 +161,17 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "selection": "confirmed",
+          "qualityVersion": 1,
+          "qualityScore": 92.084,
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 1.0,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.7933,
+          "voteAverage": 3.334,
+          "voteCount": 1,
+          "qualityAuditVersion": 1
         }
       }
     },
@@ -214,7 +236,17 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "selection": "confirmed",
+          "qualityVersion": 1,
+          "qualityScore": 92.5,
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 1.0,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.2895,
+          "voteAverage": 0,
+          "voteCount": 0,
+          "qualityAuditVersion": 1
         },
         "trending": {
           "baseline": "/zsKO3CblaLtJumWLsjEBPX8dP5P.jpg",
@@ -224,7 +256,17 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "selection": "confirmed",
+          "qualityVersion": 1,
+          "qualityScore": 92.5,
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 1.0,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.2895,
+          "voteAverage": 0,
+          "voteCount": 0,
+          "qualityAuditVersion": 1
         }
       }
     },
@@ -654,7 +696,17 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 1,
+          "qualityScore": 94.775,
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 1.0,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.5968,
+          "voteAverage": 8.034,
+          "voteCount": 5,
+          "qualityAuditVersion": 1
         },
         "trending": {
           "baseline": "/sKtKn660vapCgngdjj1f3mPZbnQ.jpg",
@@ -664,7 +716,17 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 1,
+          "qualityScore": 94.775,
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 1.0,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.5968,
+          "voteAverage": 8.034,
+          "voteCount": 5,
+          "qualityAuditVersion": 1
         }
       }
     },
@@ -1144,7 +1206,17 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "selection": "confirmed",
+          "qualityVersion": 1,
+          "qualityScore": 90.171,
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 0.9575,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.1854,
+          "voteAverage": 3.334,
+          "voteCount": 1,
+          "qualityAuditVersion": 1
         },
         "top20": {
           "baseline": "/pjGkn73eCKE73wWx1RgkfTaiIhN.jpg",
@@ -1154,7 +1226,17 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 1,
+          "qualityScore": 91.291,
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 1.0,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.3015,
+          "voteAverage": 0.166,
+          "voteCount": 1,
+          "qualityAuditVersion": 1
         }
       }
     },
@@ -2282,7 +2364,17 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 1,
+          "qualityScore": 70.157,
+          "width": 1000,
+          "height": 1500,
+          "sharpness": 0.9128,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.1384,
+          "voteAverage": 1.75,
+          "voteCount": 2,
+          "qualityAuditVersion": 1
         },
         "top20": {
           "baseline": "/xm67vBnDwOxFgAyhCx4DtfvM2S5.jpg",
@@ -2296,7 +2388,15 @@
           "faceAssessment": "overlap_within_limit",
           "width": 729,
           "height": 1094,
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 1,
+          "qualityScore": 54.953,
+          "sharpness": 0.6673,
+          "edgeEvidence": true,
+          "edgeDefinition": 0.8807,
+          "voteAverage": 3.334,
+          "voteCount": 1,
+          "qualityAuditVersion": 1
         }
       }
     },
@@ -2576,7 +2676,17 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 1,
+          "qualityScore": 90.781,
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 0.9618,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.1899,
+          "voteAverage": 0,
+          "voteCount": 0,
+          "qualityAuditVersion": 1
         },
         "top20": {
           "baseline": "/xcWMs3eNj7mG3jPCwZCCAXNT6Rr.jpg",
@@ -2590,7 +2700,15 @@
           "faceAssessment": "overlap_within_limit",
           "width": 768,
           "height": 1152,
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 1,
+          "qualityScore": 63.788,
+          "sharpness": 0.8375,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.0594,
+          "voteAverage": 0,
+          "voteCount": 0,
+          "qualityAuditVersion": 1
         }
       }
     },
@@ -3512,7 +3630,15 @@
           "faceAssessment": "overlap_within_limit",
           "width": 1065,
           "height": 1427,
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 1,
+          "qualityScore": 56.449,
+          "sharpness": 0.5972,
+          "edgeEvidence": true,
+          "edgeDefinition": 0.8071,
+          "voteAverage": 0,
+          "voteCount": 0,
+          "qualityAuditVersion": 1
         },
         "trending": {
           "baseline": "/8znyj20O3EYLD2EzWnZQMnkE4zH.jpg",
@@ -3526,7 +3652,15 @@
           "faceAssessment": "overlap_within_limit",
           "width": 1065,
           "height": 1427,
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 1,
+          "qualityScore": 56.449,
+          "sharpness": 0.5972,
+          "edgeEvidence": true,
+          "edgeDefinition": 0.8071,
+          "voteAverage": 0,
+          "voteCount": 0,
+          "qualityAuditVersion": 1
         }
       }
     },
@@ -3578,7 +3712,15 @@
           "faceAssessment": "overlap_within_limit",
           "width": 618,
           "height": 927,
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 1,
+          "qualityScore": 35.75,
+          "sharpness": 0.2804,
+          "edgeEvidence": true,
+          "edgeDefinition": 0.4744,
+          "voteAverage": 0,
+          "voteCount": 0,
+          "qualityAuditVersion": 1
         },
         "trending": {
           "baseline": "/zleCYDRbW5mKwgZwVK4SNIrKXWx.jpg",
@@ -3592,7 +3734,15 @@
           "faceAssessment": "overlap_within_limit",
           "width": 618,
           "height": 927,
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 1,
+          "qualityScore": 35.75,
+          "sharpness": 0.2804,
+          "edgeEvidence": true,
+          "edgeDefinition": 0.4744,
+          "voteAverage": 0,
+          "voteCount": 0,
+          "qualityAuditVersion": 1
         }
       }
     },
@@ -3644,7 +3794,15 @@
           "faceAssessment": "no_faces_detected",
           "width": 1000,
           "height": 1500,
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 1,
+          "qualityScore": 64.101,
+          "sharpness": 0.7945,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.0142,
+          "voteAverage": 1.222,
+          "voteCount": 3,
+          "qualityAuditVersion": 1
         },
         "trending": {
           "baseline": "/ka1ilKJLUkNvirukSAASEcufNFK.jpg",
@@ -3658,7 +3816,15 @@
           "faceAssessment": "no_faces_detected",
           "width": 1000,
           "height": 1500,
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 1,
+          "qualityScore": 64.101,
+          "sharpness": 0.7945,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.0142,
+          "voteAverage": 1.222,
+          "voteCount": 3,
+          "qualityAuditVersion": 1
         }
       }
     },
@@ -3677,7 +3843,15 @@
           "faceAssessment": "overlap_within_limit",
           "width": 1200,
           "height": 1800,
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 1,
+          "qualityScore": 79.082,
+          "sharpness": 1.0,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.7054,
+          "voteAverage": 0,
+          "voteCount": 0,
+          "qualityAuditVersion": 1
         },
         "trending": {
           "baseline": "/qZb0FSpnL1vJSNl742oupBOIE3Z.jpg",
@@ -3691,7 +3865,15 @@
           "faceAssessment": "overlap_within_limit",
           "width": 1200,
           "height": 1800,
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 1,
+          "qualityScore": 79.082,
+          "sharpness": 1.0,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.7054,
+          "voteAverage": 0,
+          "voteCount": 0,
+          "qualityAuditVersion": 1
         }
       }
     },
@@ -3875,7 +4057,15 @@
           "faceAssessment": "overlap_within_limit",
           "width": 816,
           "height": 1224,
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 1,
+          "qualityScore": 58.574,
+          "sharpness": 0.7011,
+          "edgeEvidence": true,
+          "edgeDefinition": 0.9162,
+          "voteAverage": 0,
+          "voteCount": 0,
+          "qualityAuditVersion": 1
         },
         "trending": {
           "baseline": "/uRHsiw1wLxPHFXkkv4Ix1s0O6f4.jpg",
@@ -3889,7 +4079,15 @@
           "faceAssessment": "overlap_within_limit",
           "width": 816,
           "height": 1224,
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 1,
+          "qualityScore": 58.574,
+          "sharpness": 0.7011,
+          "edgeEvidence": true,
+          "edgeDefinition": 0.9162,
+          "voteAverage": 0,
+          "voteCount": 0,
+          "qualityAuditVersion": 1
         }
       }
     },
@@ -3941,7 +4139,15 @@
           "faceAssessment": "overlap_within_limit",
           "width": 900,
           "height": 1350,
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 1,
+          "qualityScore": 58.437,
+          "sharpness": 0.6967,
+          "edgeEvidence": true,
+          "edgeDefinition": 0.9115,
+          "voteAverage": 2.278,
+          "voteCount": 3,
+          "qualityAuditVersion": 1
         },
         "trending": {
           "baseline": "/tlPgDzwIE7VYYIIAGCTUOnN4wI1.jpg",
@@ -3955,7 +4161,15 @@
           "faceAssessment": "overlap_within_limit",
           "width": 900,
           "height": 1350,
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 1,
+          "qualityScore": 58.437,
+          "sharpness": 0.6967,
+          "edgeEvidence": true,
+          "edgeDefinition": 0.9115,
+          "voteAverage": 2.278,
+          "voteCount": 3,
+          "qualityAuditVersion": 1
         }
       }
     },
@@ -3994,8 +4208,8 @@
     }
   },
   "textScreening": {
-    "clear": 4,
-    "text": 745,
+    "clear": 17,
+    "text": 1013,
     "unknown": 0
   },
   "unresolved": {
