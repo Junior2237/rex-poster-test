@@ -21,7 +21,7 @@ html,body{width:100%;height:100%;margin:0;padding:0;background:transparent;color
 .network-logo{display:block;width:auto;max-width:66px;height:17px;object-fit:contain}
 .network-name{max-width:100%;overflow:hidden;font-size:9px;font-weight:800;line-height:1.15;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap;text-overflow:ellipsis}
 .details{position:absolute;z-index:2;left:13px;right:13px;bottom:16px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;text-align:center;pointer-events:none}
-.logo{display:block;width:100%;height:56px;margin:0 auto;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 2px 5px rgba(0,0,0,.65))}
+.logo{display:block;width:100%;height:92px;margin:0 auto;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 2px 5px rgba(0,0,0,.65))}
 .title{display:block;width:100%;margin:0 auto;max-height:2.3em;overflow:hidden;text-align:center;font-size:20px;font-weight:850;line-height:1.1;text-shadow:0 2px 6px rgba(0,0,0,.85)}
 
 /* APPLE TV-STYLE SUBDUED GENRE — 68% WHITE */
@@ -235,7 +235,7 @@ var _rlm=Object.create(null);
 function _rlr(item){
 var keys=_raks(item);
 for(var i=0;i<keys.length;i++){
-var key=keys[i]+':logo356',entry=_rlm[key];
+var key=keys[i]+':logo358',entry=_rlm[key];
 if(!entry){try{entry=JSON.parse(localStorage.getItem(key)||'null')}catch(e){}}
 if(entry&&entry.src&&Date.now()-entry.at>=0&&Date.now()-entry.at<_rat)return entry.src;
 }
@@ -244,7 +244,7 @@ return '';
 function _rlw(item,src){
 if(!src)return;
 _raks(item).forEach(function(k){
-var key=k+':logo356',entry={src:src,at:Date.now()};_rlm[key]=entry;
+var key=k+':logo358',entry={src:src,at:Date.now()};_rlm[key]=entry;
 try{localStorage.setItem(key,JSON.stringify(entry))}catch(e){}
 });
 }
@@ -253,10 +253,11 @@ if(!item)return [];
 var fixed=_frr(item),bundle=_rab(item),result=[];
 function append(v){var src=artworkValue(v);if(src&&result.indexOf(src)<0)result.push(src);}
 function appendPath(path){_frs(item,path).forEach(append);}
-var remembered=_rlr(item);if(remembered)append(remembered);
+
 [item.titleLogoPath,item.titleLogoUrl,item.logoUrl,item.logoPath,item.titleLogoRawPath,bundle&&bundle.logo,art&&art.logo].forEach(function(v){
 var src=artworkValue(v);if(src.charAt(0)==='/')appendPath(src);append(src);
 });
+var remembered=_rlr(item);if(remembered)append(remembered);
 if(Array.isArray(item.titleLogoAlternates))item.titleLogoAlternates.forEach(function(v){
 var src=artworkValue(v);if(src.charAt(0)==='/')appendPath(src);append(src);
 });
@@ -544,6 +545,7 @@ var layout=api.layout||{},height=Number(layout.height);
 if(Number.isFinite(height)&&height>0)card.style.height=height+'px';
 var width=card.getBoundingClientRect().width||card.clientWidth||256;
 el('title').style.fontSize=Math.min(22,Math.max(16,width*.085))+'px';
+el('logo').style.height=Math.round(Math.min(92,(Number.isFinite(height)&&height>0?height:384)*.24,width*.4))+'px';
 updateRank();
 }
 function render(){
