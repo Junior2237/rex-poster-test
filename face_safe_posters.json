@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "algorithm": "yunet-ppocr-v3",
-  "generatedAt": "2026-11-27T03:46:14.011718+00:00",
+  "algorithm": "yunet-ppocr-v4",
+  "generatedAt": "2026-11-27T04:07:09.508704+00:00",
   "overrides": {
     "movie:2609": {
       "title": "Planes, Trains and Automobiles",
@@ -2602,145 +2602,226 @@
           "selection": "alternate"
         }
       }
+    },
+    "tv:256721": {
+      "title": "Gachiakuta",
+      "layouts": {
+        "trending": {
+          "baseline": "/RxuL7KuFoOzHC0htjtLGxJEGGx.jpg",
+          "posterPath": "/dvRzzC8tEDlONN2BRpnsSe9nV0O.jpg",
+          "before": 1,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
     }
   },
   "textScreening": {
-    "clear": 178,
-    "text": 146,
+    "clear": 24,
+    "text": 359,
     "unknown": 0
   },
   "unresolved": {
     "movie:13479": {
       "title": "A Charlie Brown Thanksgiving",
-      "status": "unresolved"
+      "status": "unresolved",
+      "posterPath": "/xmtGJz3uMqYmA6pEpZgDWMzbX2E.jpg",
+      "mode": "native"
     },
     "movie:351339": {
       "title": "Anthropoid",
-      "status": "unresolved"
+      "status": "unresolved",
+      "posterPath": "/5hUghRVVkBYufftfNQkGevY5AmE.jpg",
+      "mode": "native"
     },
     "movie:13203": {
       "title": "Son in Law",
-      "status": "unresolved"
+      "status": "unresolved",
+      "posterPath": "/gj4afHL9bMQ18opZzMp77tlPkAq.jpg",
+      "mode": "native"
     },
     "movie:175574": {
       "title": "Free Birds",
-      "status": "unresolved"
+      "status": "unresolved",
+      "posterPath": "/gnSU2wUBq2gTkBEkxY8C1d1fXAQ.jpg",
+      "mode": "native"
     },
     "tv:171802": {
       "title": "Blade Runner 2099",
-      "status": "partial"
+      "status": "partial",
+      "posterPath": "/d8IKBDXQvj3d6clsjqydT4xcw14.jpg",
+      "mode": "native"
     },
     "tv:291507": {
       "title": "The Body",
-      "status": "unresolved"
+      "status": "unresolved",
+      "posterPath": "/zleCYDRbW5mKwgZwVK4SNIrKXWx.jpg",
+      "mode": "native"
     },
     "tv:117488": {
       "title": "Yellowjackets",
-      "status": "unresolved"
+      "status": "unresolved",
+      "posterPath": "/xRnGrn7Z7SC0KIBodocoU1QgDZF.jpg",
+      "mode": "native"
     },
     "tv:308007": {
       "title": "The Altruists",
-      "status": "unresolved"
+      "status": "unresolved",
+      "posterPath": "/hiX70sXdvEPVE11QqmLuaX16gdh.jpg",
+      "mode": "native"
     },
     "tv:213375": {
       "title": "VisionQuest",
-      "status": "unresolved"
+      "status": "unresolved",
+      "posterPath": "/WGyAyBPncfuu8MZhLY9RtfZPM0.jpg",
+      "mode": "native"
     },
     "tv:2190": {
       "title": "South Park",
-      "status": "unresolved"
+      "status": "unresolved",
+      "posterPath": "/k7n2EVge7G77eMr3brztRGG1fFU.jpg",
+      "mode": "native"
     },
     "tv:326247": {
       "title": "Fool Night",
-      "status": "unresolved"
+      "status": "unresolved",
+      "posterPath": "/7kHLQwQZKbQOZJGx1mIDYIKeBYv.jpg",
+      "mode": "native"
     },
     "movie:1765072": {
       "title": "You Can See Everything",
-      "status": "unresolved"
+      "status": "unresolved",
+      "posterPath": "/mVh3qkw2NUFxWWyF0G1hg2Wh0K5.jpg",
+      "mode": "native"
     },
     "tv:302837": {
       "title": "Toos: The Van der Valk Kidnapping",
-      "status": "no eligible portrait"
+      "status": "unresolved",
+      "posterPath": "/yTn41duVqEmiBimV3itSyOpUPnU.jpg",
+      "mode": "native"
     },
     "movie:1611767": {
       "title": "Clashing Through the Snow",
-      "status": "partial"
+      "status": "partial",
+      "posterPath": "/95K1Y96ELBDL3M8kyTVb5wocCtX.jpg",
+      "mode": "native"
     },
     "movie:1101412": {
       "title": "Fall 2: Deadpoint",
-      "status": "unresolved"
+      "status": "unresolved",
+      "posterPath": "/fgSm5ylwiXbIHn8UbUXDjk9RRu4.jpg",
+      "mode": "native"
     },
     "tv:292044": {
       "title": "The Story Untold",
-      "status": "no eligible portrait"
+      "status": "unresolved",
+      "posterPath": "/8Ti4oMqxii5ry9ibrD8GarC0dlt.jpg",
+      "mode": "native"
     },
     "movie:1400837": {
       "title": "Other Mommy",
-      "status": "unresolved"
+      "status": "unresolved",
+      "posterPath": "/fGRNCssTRrhYZxNzykGGCoMsAVq.jpg",
+      "mode": "native"
     },
     "movie:1084409": {
       "title": "A Talent for Murder",
-      "status": "unresolved"
+      "status": "unresolved",
+      "posterPath": "/eaPfmH83P4yf4gyaWFD4FvvdOcM.jpg",
+      "mode": "native"
     },
     "tv:456": {
       "title": "The Simpsons",
-      "status": "unresolved"
+      "status": "unresolved",
+      "posterPath": "/tf0CUEynk6GfmrlHIQKQ5mfFP5P.jpg",
+      "mode": "native"
     },
     "tv:30957": {
       "title": "The Amazing Race",
-      "status": "partial"
+      "status": "partial",
+      "posterPath": "/x1jq0atcQg6UkaZpco0kFL6QHuM.jpg",
+      "mode": "native"
     },
     "tv:97546": {
       "title": "Ted Lasso",
-      "status": "unresolved"
+      "status": "unresolved",
+      "posterPath": "/uRHsiw1wLxPHFXkkv4Ix1s0O6f4.jpg",
+      "mode": "native"
     },
     "movie:931285": {
       "title": "Mortal Kombat II",
-      "status": "unresolved"
+      "status": "unresolved",
+      "posterPath": "/hwRdDFIhaEmpRgoki805YvyyjZf.jpg",
+      "mode": "native"
     },
     "movie:1439930": {
       "title": "The Punisher: One Last Kill",
-      "status": "unresolved"
+      "status": "unresolved",
+      "posterPath": "/qQclTgLMDvGBuUBFGHRipxkEwWR.jpg",
+      "mode": "native"
     },
     "movie:1265609": {
       "title": "War Machine",
-      "status": "unresolved"
+      "status": "unresolved",
+      "posterPath": "/rFhKkXhk7ClU03jQ5rHIApJDwev.jpg",
+      "mode": "native"
     },
     "movie:1236153": {
       "title": "Mercy",
-      "status": "partial"
+      "status": "partial",
+      "posterPath": "/pyok1kZJCfyuFapYXzHcy7BLlQa.jpg",
+      "mode": "native"
     },
     "movie:1171145": {
       "title": "Crime 101",
-      "status": "partial"
+      "status": "partial",
+      "posterPath": "/tVvpFIoteRHNnoZMhdnwIVwJpCA.jpg",
+      "mode": "native"
     },
     "movie:1317288": {
       "title": "Marty Supreme",
-      "status": "partial"
+      "status": "partial",
+      "posterPath": "/lYWEXbQgRTR4ZQleSXAgRbxAjvq.jpg",
+      "mode": "native"
     },
     "tv:226637": {
       "title": "High Potential",
-      "status": "partial"
+      "status": "partial",
+      "posterPath": "/xCtaUDBUP1iKqtoqpHfeH1T2pWF.jpg",
+      "mode": "native"
     },
     "tv:273240": {
       "title": "Off Campus",
-      "status": "unresolved"
+      "status": "unresolved",
+      "posterPath": "/tcPc5ZMBO4y2BtCJMe3o2nwZb2B.jpg",
+      "mode": "native"
     },
     "tv:278178": {
       "title": "I Will Find You",
-      "status": "partial"
+      "status": "partial",
+      "posterPath": "/pb9oYHHNzauiCQZT03MpDAg46GI.jpg",
+      "mode": "native"
     },
     "tv:250923": {
       "title": "Nobody Wants This",
-      "status": "partial"
+      "status": "partial",
+      "posterPath": "/1RNtqMeSNNBkXqK8WPUMf72vGrt.jpg",
+      "mode": "native"
     },
     "tv:136315": {
       "title": "The Bear",
-      "status": "partial"
+      "status": "partial",
+      "posterPath": "/eKfVzzEazSIjJMrw9ADa2x8ksLz.jpg",
+      "mode": "native"
     },
     "tv:256721": {
       "title": "Gachiakuta",
-      "status": "unresolved"
+      "status": "partial",
+      "posterPath": "/jH78nLFrTU6aP7hY7KO6DZHFLoX.jpg",
+      "mode": "native"
     }
   }
 }
