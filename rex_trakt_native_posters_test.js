@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.5.5 — Hunting Wives combined Trending portrait override
+ * Version 3.5.6 — Preserve title logo alternatives
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -62,7 +62,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.5.5",
+  version: "3.5.6",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -794,7 +794,12 @@ async function applyArtworkOverride(artwork,mediaType,tmdbId,premiumPortrait){
   var logo=safePath(rule.logoPath);
   if(alternate)startupCacheWrite(key,alternate);
   if(!alternate&&!logo)return artwork;
-  return Object.assign({},artwork,alternate?{cleanPoster:alternate,fixedRailPoster:true}:{},logo?{logo:logo,logos:[logo]}:{});
+  var logoPaths = [];
+  [logo,artwork.logo].concat(Array.isArray(rule.logoAlternates)?rule.logoAlternates:[],artwork.logos||[]).forEach(function(p){
+    p=safePath(p);
+    if(p&&/\.png$/i.test(p)&&logoPaths.indexOf(p)<0)logoPaths.push(p);
+  });
+  return Object.assign({},artwork,alternate?{cleanPoster:alternate,fixedRailPoster:true}:{},logoPaths.length?{logo:logoPaths[0],logos:logoPaths}:{});
 }
 
 async function buildItem(
@@ -1236,14 +1241,14 @@ async function loadNativeList(
 
 async function loadNativeMovies(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("daily-movies-v354", MAX_ITEMS, function() {
+  return loadCachedRow("daily-movies-v356", MAX_ITEMS, function() {
     return loadNativeList("movie", MOVIES_LIST, params);
   });
 }
 
 async function loadNativeShows(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("daily-shows-v351", MAX_ITEMS, function() {
+  return loadCachedRow("daily-shows-v356", MAX_ITEMS, function() {
     return loadNativeList("tv", TV_LIST, params);
   });
 }
@@ -1317,25 +1322,25 @@ async function loadArtworkChart(mediaType, chart, params) {
 
 async function loadTrendingMovies(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("trending-movies-v354", CHART_TARGET, function() {
+  return loadCachedRow("trending-movies-v356", CHART_TARGET, function() {
     return loadArtworkChart("movie", "trending", params);
   });
 }
 async function loadTrendingShows(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("trending-shows-v354", CHART_TARGET, function() {
+  return loadCachedRow("trending-shows-v356", CHART_TARGET, function() {
     return loadArtworkChart("tv", "trending", params);
   });
 }
 async function loadPopularMovies(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("popular-movies-v354", CHART_TARGET, function() {
+  return loadCachedRow("popular-movies-v356", CHART_TARGET, function() {
     return loadArtworkChart("movie", "popular", params);
   });
 }
 async function loadPopularShows(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("popular-shows-v354", CHART_TARGET, function() {
+  return loadCachedRow("popular-shows-v356", CHART_TARGET, function() {
     return loadArtworkChart("tv", "popular", params);
   });
 }
@@ -1346,7 +1351,7 @@ async function loadPopularShows(params) {
  * Unlike active Trakt watcher counts, upcoming titles can qualify.
  */
 async function loadCombinedTrending(params) {
-  return loadCachedRow("combined-trending-v355", CHART_TARGET, function() {
+  return loadCachedRow("combined-trending-v356", CHART_TARGET, function() {
     return loadCombinedTrendingUncached(params);
   });
 }
