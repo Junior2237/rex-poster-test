@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="rex-widget" content="type=rail; height=384; item-ratio=2:3">
-<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster,titleLogoAlternates,titleLogoRawPath,logoUrl,titleLogoPinned,faceSafePosterPath,lockedPosterPath,nativePosterOnly">
+<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster,titleLogoAlternates,titleLogoRawPath,logoUrl,titleLogoPinned,faceSafePosterPath,nativePosterOnly">
 <title>Top 20 — Apple TV Size — Refined Genres</title>
 <style>
 *{box-sizing:border-box}
@@ -88,11 +88,10 @@ if(v&&typeof v==='object')return _av(v.url||v.src||v.path||v.file_path||v.imageU
 return str(v).trim();
 }
 function setImage(node,value){var src=_av(value);node.hidden=!src;if(src){if(node.getAttribute('src')!==src)node.setAttribute('src',src)}else node.removeAttribute('src')}
-// v3.6.12: use only source-supplied artwork references.
-function lockedArtworkURL(value, item) {
+// v3.6.13: artwork references from item fields.
+function resolveArtworkRef(value, item) {
  var src=_av(value);
  if(!src)return '';
- // Only use URLs already supplied by Rex. Never construct an external URL.
  if(!/^\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)$/i.test(src))return src;
  var identity=_iid(src);
  var sources=item?[item.lockedPosterPath,item.faceSafePosterPath,item.cleanPosterPath,item.coverUrl,item.posterPath,item.detailPoster,item.backdropPath,item.titleLogoPath,item.titleLogoUrl,item.logoUrl,item.logoPath,item.titleLogoRawPath]:[];
@@ -101,7 +100,6 @@ function lockedArtworkURL(value, item) {
   var candidate=_av(sources[i]);
   if(candidate&&candidate!==src&&_iid(candidate)===identity&&!/^\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)$/i.test(candidate))return candidate;
  }
- // Rex may provide a native relative image reference; keep it unchanged.
  return src;
 }
 function _rab(item) {
@@ -109,13 +107,13 @@ function _rab(item) {
  var p=Array.isArray(item.backdropPaths)?item.backdropPaths.map(_av).filter(Boolean):[];
  var d=_iid(item.backdropPath),n=_iid(item.posterPath||item.coverUrl);
  if((p.length===2||p.length===3)&&d&&n&&d===n&&d===_iid(p[0])&&/\.png$/i.test(_iid(p[p.length-1]))){
-  return {poster:lockedArtworkURL(p[0],item),logo:lockedArtworkURL(p[p.length-1],item),verified:true};
+  return {poster:resolveArtworkRef(p[0],item),logo:resolveArtworkRef(p[p.length-1],item),verified:true};
  }
  return null;
 }
 function _vs(item) {
  var bundle=_rab(item);
- return lockedArtworkURL(item.lockedPosterPath||item.faceSafePosterPath,item)||(bundle&&bundle.poster)||'';
+ return resolveArtworkRef(item.lockedPosterPath||item.faceSafePosterPath,item)||(bundle&&bundle.poster)||'';
 }
 var _rat=4*60*60*1000; /* title-logo cache only */
 function _raks(item){
@@ -152,20 +150,12 @@ if(Array.isArray(item.backdropPaths))values=values.concat(item.backdropPaths);
 return values.map(_av).filter(Boolean);
 }
 function _frs(item,path){
-var sources=_rs(item),identity=_iid(path),result=[];
-function add(src){if(src&&result.indexOf(src)<0)result.push(src);}
-if(!path)return result;
-for(var i=0;i<sources.length;i++){
-if(_iid(sources[i])===identity&&sources[i].charAt(0)!=='/')add(sources[i]);
-}
-for(var i=0;i<sources.length;i++){
-var source=sources[i];
-if(/^https?:\/\/image\.tmdb\.org\/t\/p\/(?:original|[wh]\d+)\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)(?:[?#].*)?$/i.test(source)){
-add(source.replace(/\/t\/p\/(?:original|[wh]\d+)\/[^?#]+(?:[?#].*)?$/i,'/t/p/original'+path));
-}
-}
-for(var i=0;i<sources.length;i++){if(_iid(sources[i])===identity)add(sources[i]);}
-return result;
+ var entries=_rs(item),identity=_iid(path),result=[];
+ if(!identity)return result;
+ for(var i=0;i<entries.length;i++){
+  if(_iid(entries[i])===identity&&result.indexOf(entries[i])<0)result.push(entries[i]);
+ }
+ return result;
 }
 function _frsel(item){
 var rule=_frr(item);
@@ -177,7 +167,7 @@ function _ca(item) {
  if(!item||item.nativePosterOnly)return null;
  var src=_vs(item),bundle=_rab(item);
  if(!src)return null;
- return {poster:src,v:true,logo:lockedArtworkURL(item.titleLogoPath||item.titleLogoUrl||item.logoPath||(bundle&&bundle.logo)||'',item)};
+ return {poster:src,v:true,logo:resolveArtworkRef(item.titleLogoPath||item.titleLogoUrl||item.logoPath||(bundle&&bundle.logo)||'',item)};
 }
 function _lock(item) {
  // Keep the first authoritative selection for this card. No renderer overrides.
@@ -261,7 +251,6 @@ function _up(item,art) {
  };
  image.onerror=function(){
   if(generation!==_ig)return;
-  // Retain the lock; a subsequent render may retry the exact same URL.
   _pp='';
  };
  image.src=src;

@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="rex-widget" content="type=rail; height=700; item-ratio=4:5">
-<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster,titleLogoAlternates,titleLogoRawPath,logoUrl,titleLogoPinned,faceSafePosterPath,lockedPosterPath,nativePosterOnly">
+<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster,titleLogoAlternates,titleLogoRawPath,logoUrl,titleLogoPinned,faceSafePosterPath,nativePosterOnly">
 <title>Rex Editorial — Consistent Artwork</title>
 <style>
 *{box-sizing:border-box}
@@ -180,11 +180,10 @@ function artworkValue(v){
  if(v&&typeof v==='object')return artworkValue(v.url||v.src||v.path||v.file_path||v.imageUrl||v.backdropPath||'');
  return str(v).trim();
 }
-// v3.6.12: use only source-supplied artwork references.
-function lockedArtworkURL(value, item) {
+// v3.6.13: artwork references from item fields.
+function resolveArtworkRef(value, item) {
  var src=artworkValue(value);
  if(!src)return '';
- // Only use URLs already supplied by Rex. Never construct an external URL.
  if(!/^\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)$/i.test(src))return src;
  var identity=imageIdentity(src);
  var sources=item?[item.lockedPosterPath,item.faceSafePosterPath,item.cleanPosterPath,item.coverUrl,item.posterPath,item.detailPoster,item.backdropPath,item.titleLogoPath,item.titleLogoUrl,item.logoUrl,item.logoPath,item.titleLogoRawPath]:[];
@@ -193,7 +192,6 @@ function lockedArtworkURL(value, item) {
   var candidate=artworkValue(sources[i]);
   if(candidate&&candidate!==src&&imageIdentity(candidate)===identity&&!/^\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)$/i.test(candidate))return candidate;
  }
- // Rex may provide a native relative image reference; keep it unchanged.
  return src;
 }
 function railArtworkBundle(item) {
@@ -201,13 +199,13 @@ function railArtworkBundle(item) {
  var p=Array.isArray(item.backdropPaths)?item.backdropPaths.map(artworkValue).filter(Boolean):[];
  var d=imageIdentity(item.backdropPath),n=imageIdentity(item.posterPath||item.coverUrl);
  if((p.length===2||p.length===3)&&d&&n&&d===n&&d===imageIdentity(p[0])&&/\.png$/i.test(imageIdentity(p[p.length-1]))){
-  return {poster:lockedArtworkURL(p[0],item),logo:lockedArtworkURL(p[p.length-1],item),verified:true};
+  return {poster:resolveArtworkRef(p[0],item),logo:resolveArtworkRef(p[p.length-1],item),verified:true};
  }
  return null;
 }
 function verifiedRailSource(item) {
  var bundle=railArtworkBundle(item);
- return lockedArtworkURL(item.lockedPosterPath||item.faceSafePosterPath,item)||(bundle&&bundle.poster)||'';
+ return resolveArtworkRef(item.lockedPosterPath||item.faceSafePosterPath,item)||(bundle&&bundle.poster)||'';
 }
 var railArtTTL=4*60*60*1000; // title-logo cache only
 function railArtKeys(item){
@@ -248,21 +246,11 @@ function railSources(item){
  return values.map(artworkValue).filter(Boolean);
 }
 function fixedRailSources(item,path){
- var sources=railSources(item),identity=imageIdentity(path),result=[];
- function add(src){if(src&&result.indexOf(src)<0)result.push(src);}
- if(!path)return result;
- // Exact native resource tokens are preferable to bare TMDB paths.
- for(var i=0;i<sources.length;i++){
-  if(imageIdentity(sources[i])===identity&&sources[i].charAt(0)!=='/')add(sources[i]);
+ var entries=railSources(item),identity=imageIdentity(path),result=[];
+ if(!identity)return result;
+ for(var i=0;i<entries.length;i++){
+  if(imageIdentity(entries[i])===identity&&result.indexOf(entries[i])<0)result.push(entries[i]);
  }
- // If Rex already delivered a TMDB CDN URL, use the same source family.
- for(var i=0;i<sources.length;i++){
-  var source=sources[i];
-  if(/^https?:\/\/image\.tmdb\.org\/t\/p\/(?:original|[wh]\d+)\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)(?:[?#].*)?$/i.test(source)){
-   add(source.replace(/\/t\/p\/(?:original|[wh]\d+)\/[^?#]+(?:[?#].*)?$/i,'/t/p/original'+path));
-  }
- }
- for(var i=0;i<sources.length;i++){if(imageIdentity(sources[i])===identity)add(sources[i]);}
  return result;
 }
 function fixedRailSource(item,path){return fixedRailSources(item,path)[0]||'';}
@@ -276,7 +264,7 @@ function confirmedArtwork(item) {
  if(!item||item.nativePosterOnly)return null;
  var src=verifiedRailSource(item),bundle=railArtworkBundle(item);
  if(!src)return null;
- return {poster:src,v:true,logo:lockedArtworkURL(item.titleLogoPath||item.titleLogoUrl||item.logoPath||(bundle&&bundle.logo)||'',item)};
+ return {poster:src,v:true,logo:resolveArtworkRef(item.titleLogoPath||item.titleLogoUrl||item.logoPath||(bundle&&bundle.logo)||'',item)};
 }
 function lockArtwork(item) {
  // Keep the first authoritative selection for this card. No renderer overrides.
@@ -383,7 +371,6 @@ function updatePoster(item,art) {
  };
  image.onerror=function(){
   if(generation!==imageGeneration)return;
-  // Retain the lock; a subsequent render may retry the exact same URL.
   pendingPoster='';
  };
  image.src=src;
