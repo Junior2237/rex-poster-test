@@ -173,15 +173,22 @@ function nameOf(item){
 function titleKey(item){
  if(!item)return '';
  var id=item.id==null?'':String(item.id);
- return id+'|'+fold(nameOf(item)).replace(/\s*\((?:19|20)\d{2}\)\s*$/,'');
+ return id+'|'+fold(nameOf(item));
 }
 
 function artworkValue(v){
  if(v&&typeof v==='object')return artworkValue(v.url||v.src||v.path||v.file_path||v.imageUrl||v.backdropPath||'');
  return str(v).trim();
 }
-function railArtworkBundle(item){if(!item)return null;var p=Array.isArray(item.backdropPaths)?item.backdropPaths.map(artworkValue).filter(Boolean):[],d=imageIdentity(item.backdropPath),n=imageIdentity(item.posterPath||item.coverUrl);if((p.length===2||p.length===3)&&d&&d===n&&d===imageIdentity(p[0])&&/\.png$/i.test(imageIdentity(p[p.length-1])))return {poster:p[0],logo:p[p.length-1],verified:true};return null;}
-function verifiedRailSource(item){var b=railArtworkBundle(item);return artworkValue(item.faceSafePosterPath)||(b&&b.poster)||'';}
+function railArtworkBundle(item){
+if(!item)return null;
+var p=Array.isArray(item.backdropPaths)?item.backdropPaths.map(artworkValue).filter(Boolean):[],d=imageIdentity(item.backdropPath),n=imageIdentity(item.posterPath||item.coverUrl);
+if(p.length===2&&d&&d===n&&d===imageIdentity(p[0])&&/\.png$/i.test(imageIdentity(p[1])))return {poster:p[0],n:1};if(p.length!==3||imageIdentity(p[0])===imageIdentity(p[1])||!/\.png$/i.test(imageIdentity(p[2])))return null;
+if(d&&d===imageIdentity(p[0])&&n===d)return {poster:p[0],logo:p[2],verified:true};
+if(!d||d===imageIdentity(p[0]))return {poster:p[1],logo:p[2]};
+return null;
+}
+function verifiedRailSource(item){var b=railArtworkBundle(item);return artworkValue(item.faceSafePosterPath)||(b&&b.verified?b.poster:'');}
 var railArtMemory=Object.create(null),railArtTTL=4*60*60*1000;
 function railArtKeys(item){
  if(!item||item.id==null||item.id==='')return [];
@@ -190,7 +197,7 @@ function railArtKeys(item){
  // allowing the native mediaType field to disappear or change on navigation.
  var type=String(item.mediaType||item.contentType||'').toLowerCase();
  if(type==='show'||type==='series'||type==='television')type='tv';
- var base='rex.editorial700.clean.369:';
+ var base='rex.editorial700.clean.367:';
  var keys=[];
  if(type)keys.push(base+type+':'+id);
  if(title)keys.push(base+'idtitle:'+id+':'+title);
@@ -201,7 +208,7 @@ function railArtRead(key){
  if(!key)return null;
  var data=railArtMemory[key];
  if(!data){try{data=JSON.parse(localStorage.getItem(key)||'null')}catch(e){}}
- if(!data||typeof data.at!=='number'||Date.now()-data.at<0||!data.v||!data.poster)return null;
+ if(!data||typeof data.at!=='number'||Date.now()-data.at<0||Date.now()-data.at>=railArtTTL||!data.poster)return null;
  railArtMemory[key]=data;return data;
 }
 function railArtFor(item){
@@ -261,8 +268,42 @@ function fixedRailSelection(item){
  var posters=fixedRailSources(item,rule.poster),logos=fixedRailSources(item,rule.logo);
  return posters.length?{poster:posters[0],posters:posters,logo:logos[0]||'',manual:true}:null;
 }
-function confirmedArtwork(item){if(!item)return null;var m=fixedRailSelection(item);if(m){m.v=1;return m;}if(fixedRailRule(item))return null;var p=verifiedRailSource(item),c=railArtFor(item);if(p){var q=fixedRailSources(item,(p.match(/\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)(?=$|[?#&/])/ig)||[]).pop()||p);return {poster:p.charAt(0)==='/'?q[0]||p:p,posters:[p].concat(q),logo:artworkValue(item.titleLogoPath),v:1};}return c&&c.v?c:null;}
-function lockArtwork(item){if(lockedArtwork&&lockedArtwork.v)return lockedArtwork;var art=confirmedArtwork(item);if(!art||!art.poster)return null;lockedArtwork=art;return art;}
+function confirmedArtwork(item){
+ if(!item)return null;
+ var manual=fixedRailSelection(item);
+ if(manual)return manual;
+ // Never trust old automatic artwork for a title with an explicit override.
+ if(fixedRailRule(item))return null;
+ var safe=verifiedRailSource(item);
+ if(safe)return {poster:safe,v:1,logo:artworkValue(item.titleLogoPath)};var nb=railArtworkBundle(item);if(item.nativePosterOnly||nb&&nb.n)return {poster:artworkValue(item.posterPath||item.coverUrl)||nb&&nb.poster,n:1};
+ var cached=railArtFor(item);
+ if(cached&&!item.faceSafePosterPath)return cached;
+ var bundle=railArtworkBundle(item),clean=artworkValue(item.faceSafePosterPath)||artworkValue(item.cleanPosterPath);
+ var nativePoster=artworkValue(item.posterPath)||artworkValue(item.coverUrl);
+ // Do not treat changing native detail art as verified textless artwork.
+ var poster=(clean&&imageIdentity(clean)!==imageIdentity(nativePoster)?clean:'')||(bundle&&bundle.poster);
+ if(!poster)return null;
+ return {poster:poster,logo:(bundle&&bundle.logo)||artworkValue(item.titleLogoPath)||
+  artworkValue(item.titleLogoUrl)||artworkValue(item.logoPath)};
+}
+
+function lockArtwork(item){
+ var manual=fixedRailSelection(item);
+ if(manual){
+  if(!lockedArtwork||imageIdentity(lockedArtwork.poster)!==imageIdentity(manual.poster)){
+   if(lockedArtwork){displayedClean=false;failedCleanPoster='';pendingPoster='';imageGeneration++;}
+   lockedArtwork=manual;
+  }else{
+   if(manual.logo)lockedArtwork.logo=manual.logo;
+   lockedArtwork.posters=manual.posters;
+  }
+  return lockedArtwork;
+ }
+ if(fixedRailRule(item))return null;
+ if(lockedArtwork&&lockedArtwork.v)return lockedArtwork;
+ var art=confirmedArtwork(item);if(lockedArtwork&&(!art||!art.v&&!art.n))return lockedArtwork;if(!art||!art.poster)return lockedArtwork;if(lockedArtwork&&imageIdentity(lockedArtwork.poster)!==imageIdentity(art.poster)){displayedClean=false;failedCleanPoster='';pendingPoster='';imageGeneration++;}lockedArtwork=art;if(!art.n)railArtRemember(item,art.poster,art.logo,art.v);return lockedArtwork;
+}
+
 function networkLogoOf(item){
  if(!item)return '';
 
@@ -353,9 +394,49 @@ function nativeFixedPosterIsUsable(item,art){
  return displayedClean||native.some(function(v){return v&&imageIdentity(v)===actual;});
 }
 function syncPosterBrand(item,art){
- if(!item)return;if(!displayedClean){logoRequest++;logoKey='';el('logo').hidden=el('title').hidden=true;return;}renderTitleLogo(railLogoCandidates(item,art),nameOf(item));
+ if(!item)return;if(art&&art.n){logoRequest++;logoKey='';el('logo').hidden=el('title').hidden=true;el('logo').removeAttribute('src');return;}
+ // Branding must not depend on the poster being classified as clean.
+ // Always attempt the real title logo, then display a readable title.
+ renderTitleLogo(railLogoCandidates(item,art),nameOf(item));
 }
-function updatePoster(item,art){if(displayedClean||pendingPoster||!art||!art.v)return;var p=art.poster,srcs=[p].concat(art.posters||[]).filter(function(s,j,z){return s&&imageIdentity(s)===imageIdentity(p)&&z.indexOf(s)===j;}),k=titleKey(item),g=++imageGeneration,j=0;function next(){if(g!==imageGeneration||k!==currentKey||!selected||titleKey(selected)!==k||displayedClean)return;if(j>=srcs.length){pendingPoster='';return;}var src=srcs[j++],im=new Image();pendingPoster=src;im.onload=function(){if(g!==imageGeneration||k!==currentKey||!selected||titleKey(selected)!==k||displayedClean)return;pendingPoster='';displayedPoster=src;displayedClean=true;setImage(el('poster'),src);railArtRemember(selected,src,art.logo,1);syncPosterBrand(selected,art);};im.onerror=next;im.src=src;if(im.complete&&im.naturalWidth>0)im.onload();}next();}
+function updatePoster(item,art){
+ // Keep confirmed artwork locked; allow a single upgrade from a provisional
+ // native poster when confirmed textless artwork becomes available.
+ if(displayedClean)return;
+ var clean=art&&art.poster||'';
+ if(art&&art.manual){
+  var available=art.posters||[clean];
+  clean='';
+  for(var i=0;i<available.length;i++){if(!failedFallbacks[available[i]]){clean=available[i];break;}}
+ }
+ var useClean=!!clean&&clean!==failedCleanPoster;
+ if(!useClean&&displayedPoster)return;
+ var src=useClean?clean:fallbackPoster(item),key=titleKey(item);
+ if(!src||src===pendingPoster)return;
+ if(src===displayedPoster){
+  if(useClean){displayedClean=true;syncPosterBrand(item,art);}
+  return;
+ }
+ pendingPoster=src;
+ var generation=++imageGeneration;
+ var image=new Image();
+ image.onload=function(){
+  if(generation!==imageGeneration||key!==currentKey||!selected||titleKey(selected)!==key)return;
+  pendingPoster='';
+  displayedPoster=src;displayedClean=useClean;
+  setImage(el('poster'),src);
+  syncPosterBrand(selected,lockedArtwork);
+ };
+ image.onerror=function(){
+  if(generation!==imageGeneration)return;
+  pendingPoster='';
+  if(useClean&&art&&art.manual){failedFallbacks[src]=true;}
+  else if(useClean)failedCleanPoster=src;else failedFallbacks[src]=true;
+  if(selected&&titleKey(selected)===key)updatePoster(selected,lockedArtwork);
+ };
+ image.src=src;
+ if(image.complete&&image.naturalWidth>0&&pendingPoster===src)image.onload();
+}
 var logoRequest=0,logoKey='';
 var _lb=Object.create(null);
 function _bounds(im){
@@ -791,7 +872,7 @@ function render(){
  if(art&&!art.logo&&!fixedRailRule(item)){
   // Accept a late logo only; never replace an already selected poster.
   art.logo=artworkValue(item.titleLogoPath)||artworkValue(item.titleLogoUrl)||artworkValue(item.logoPath);
-  if(art.logo&&displayedClean)railArtRemember(item,displayedPoster,art.logo,1);
+  if(art.logo)railArtRemember(item,art.poster,art.logo);
  }
  syncPosterBrand(item,art);
 
