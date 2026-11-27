@@ -105,15 +105,16 @@ function resolveArtworkRef(value, item) {
 function _rab(item) {
  if(!item)return null;
  var p=Array.isArray(item.backdropPaths)?item.backdropPaths.map(_av).filter(Boolean):[];
- var d=_iid(item.backdropPath),n=_iid(item.posterPath||item.coverUrl);
- if((p.length===2||p.length===3)&&d&&n&&d===n&&d===_iid(p[0])&&/\.png$/i.test(_iid(p[p.length-1]))){
-  return {poster:resolveArtworkRef(p[0],item),logo:resolveArtworkRef(p[p.length-1],item),verified:true};
- }
- return null;
+ // Native references can be opaque tokens. The module places the approved
+ // portrait first and the title logo last. No filename tests are needed.
+ if(p.length!==2&&p.length!==3)return null;
+ return {poster:p[0],logo:p[p.length-1],verified:true};
 }
 function _vs(item) {
- var bundle=_rab(item);
- return resolveArtworkRef(item.lockedPosterPath||item.faceSafePosterPath,item)||(bundle&&bundle.poster)||'';
+ if(!item)return '';
+ // Source v3.6.14 places the same approved image in every poster field.
+ // Rex's native poster reference is preferred over custom fields.
+ return _av(item.posterPath)||_av(item.coverUrl)||_av(item.cleanPosterPath)||_av(item.faceSafePosterPath)||_av(item.detailPoster)||'';
 }
 var _rat=4*60*60*1000; /* title-logo cache only */
 function _raks(item){
@@ -165,13 +166,27 @@ return posters.length?{poster:posters[0],posters:posters,logo:logos[0]||'',manua
 }
 function _ca(item) {
  if(!item||item.nativePosterOnly)return null;
- var src=_vs(item),bundle=_rab(item);
- if(!src)return null;
- return {poster:src,v:true,logo:resolveArtworkRef(item.titleLogoPath||item.titleLogoUrl||item.logoPath||(bundle&&bundle.logo)||'',item)};
+ var refs=[],bundle=_rab(item);
+ // These are alternate reference forms of the same source-selected image,
+ // not different artwork. Never use the actual landscape backdrop.
+ [item.posterPath,item.coverUrl,item.cleanPosterPath,item.faceSafePosterPath,item.detailPoster].forEach(function(value){
+  var ref=_av(value);
+  if(ref&&refs.indexOf(ref)<0)refs.push(ref);
+ });
+ if(!refs.length&&bundle&&bundle.poster)refs.push(bundle.poster);
+ if(!refs.length)return null;
+ return {poster:refs[0],refs:refs,v:true,logo:_av(item.titleLogoPath||item.titleLogoUrl||item.logoPath)||(bundle&&bundle.logo)||''};
 }
 function _lock(item) {
- // Keep the first authoritative selection for this card. No renderer overrides.
- if(_la&&_la.poster)return _la;
+ if(_la&&_la.poster){
+  // If no image has loaded yet, newly supplied native references can be used.
+  // After a successful load, never replace the displayed image.
+  if(!_dc){
+   var incoming=_ca(item);
+   if(incoming)incoming.refs.forEach(function(ref){if(_la.refs.indexOf(ref)<0)_la.refs.push(ref);});
+  }
+  return _la;
+ }
  _la=_ca(item);
  return _la;
 }
@@ -238,9 +253,10 @@ if(!item)return;if(art&&art.n){logoRequest++;logoKey='';el('logo').hidden=el('ti
 _rtl(_rlc(item,art),_nm(item));
 }
 function _up(item,art) {
- if(!art||!art.poster||_dc)return;
- var src=art.poster,key=_ak(item);
- if(src===_pp||src===_dp)return;
+ if(!art||!art.poster||_dc||_pp)return;
+ var refs=art.refs||[art.poster],src='',key=_ak(item);
+ for(var i=0;i<refs.length;i++){if(!_ff[refs[i]]){src=refs[i];break;}}
+ if(!src)return;
  _pp=src;
  var generation=++_ig,image=new Image();
  image.onload=function(){
@@ -251,7 +267,8 @@ function _up(item,art) {
  };
  image.onerror=function(){
   if(generation!==_ig)return;
-  _pp='';
+  _pp='';_ff[src]=true;
+  if(selected&&_ak(selected)===key)_up(selected,_la);
  };
  image.src=src;
  if(image.complete&&image.naturalWidth>0&&_pp===src)image.onload();

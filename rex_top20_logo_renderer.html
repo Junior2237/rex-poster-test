@@ -66,15 +66,16 @@ function resolveArtworkRef(value, item) {
 function _rab(item) {
  if(!item)return null;
  var p=Array.isArray(item.backdropPaths)?item.backdropPaths.map(_av).filter(Boolean):[];
- var d=_iid(item.backdropPath),n=_iid(item.posterPath||item.coverUrl);
- if((p.length===2||p.length===3)&&d&&n&&d===n&&d===_iid(p[0])&&/\.png$/i.test(_iid(p[p.length-1]))){
-  return {poster:resolveArtworkRef(p[0],item),logo:resolveArtworkRef(p[p.length-1],item),verified:true};
- }
- return null;
+ // Native references can be opaque tokens. The module places the approved
+ // portrait first and the title logo last. No filename tests are needed.
+ if(p.length!==2&&p.length!==3)return null;
+ return {poster:p[0],logo:p[p.length-1],verified:true};
 }
 function _vs(item) {
- var bundle=_rab(item);
- return resolveArtworkRef(item.lockedPosterPath||item.faceSafePosterPath,item)||(bundle&&bundle.poster)||'';
+ if(!item)return '';
+ // Source v3.6.14 places the same approved image in every poster field.
+ // Rex's native poster reference is preferred over custom fields.
+ return _av(item.posterPath)||_av(item.coverUrl)||_av(item.cleanPosterPath)||_av(item.faceSafePosterPath)||_av(item.detailPoster)||'';
 }
 var _rat=4*60*60*1000; /* title-logo cache only */function _raks(item){if(!item||item.id==null||item.id==='')return [];var id=String(item.id).trim(),title=String(item.title||'').trim().toLowerCase().replace(/\s+/g,' ');var type=String(item.mediaType||item.contentType||'').toLowerCase();if(type==='show'||type==='series'||type==='television')type='tv';var base='rex.editorial480.clean.367:';var keys=[];if(type)keys.push(base+type+':'+id);if(title)keys.push(base+'idtitle:'+id+':'+title);return keys;}
 function _iid(value){var src=_av(value);try{src=decodeURIComponent(src)}catch(e){}var matches=src.match(/\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)(?=$|[?#&/])/ig);return matches&&matches.length?matches[matches.length-1].toLowerCase():src;}var _fra={"1597":{title:"meet the parents",poster:"/t6Qs4qaANlikve2OmO0s3U1w9nv.jpg"},"225171":{title:"pluribus",poster:"/os1oQkTMZXiFP7KdEv3o03eshGC.jpg"},"9089":{title:"home for the holidays",poster:"/s6ol3yUC7qTPwWoCM7b7rnSaeJl.jpg",logo:"/AtMN8tMKMQ8PDo760zKoLkRl4LA.png",logoAlternates:["/gkbavCi5ubuVp9XleopJDuWPplT.png","/buEFy3l1eKjoM5PfxUuuEhiHKLS.png"]},"13963":{title:"the last waltz",poster:"/iXFOL9hCoCHFGACjJSIrY8eLlSY.jpg",logo:"/dI3b6DHMYGZDyZMfSqq8hHNrFBi.png",logoAlternates:["/z0mhltWcY0kIpdRTPpdpTfD9Ks.png"]},"244447":{title:"the hunting wives",poster:"/kg09RkDPfvz44TX7K3rmUv1dI02.jpg",logo:"/dT0HdklknEGQYkn1dNACIs4IeAt.png",logoAlternates:["/vuIB3iTCnBXkSo4eYoCY8fZ3SXU.png","/5qE6Fm2d9fbH8m72kDPi40msky9.png"]}};function _frr(item){if(!item)return null;var id=String(item.tmdbId||item.id||'').replace(/^(?:tv|movie)[.:]/,'');var title=_nm(item).toLowerCase().replace(/\s*\((?:19|20)\d{2}\)\s*$/,'').trim();var rule=_fra[id];if(rule&&rule.title===title)return rule;for(var k in _fra){if(_fra[k].title===title)return _fra[k];}return null;}function _rs(item){var values=[item.cleanPosterPath,item.titleLogoPath,item.titleLogoUrl,item.logoUrl,item.logoPath,item.titleLogoRawPath,item.detailPoster,item.backdropPath,item.posterPath,item.coverUrl];if(Array.isArray(item.backdropPaths))values=values.concat(item.backdropPaths);return values.map(_av).filter(Boolean);}function _frs(item,path){
@@ -87,21 +88,36 @@ function _iid(value){var src=_av(value);try{src=decodeURIComponent(src)}catch(e)
 }
 function _frsel(item){var rule=_frr(item);if(!rule)return null;var posters=_frs(item,rule.poster),logos=_frs(item,rule.logo);return posters.length?{poster:posters[0],posters:posters,logo:logos[0]||'',manual:true}:null;}function _ca(item) {
  if(!item||item.nativePosterOnly)return null;
- var src=_vs(item),bundle=_rab(item);
- if(!src)return null;
- return {poster:src,v:true,logo:resolveArtworkRef(item.titleLogoPath||item.titleLogoUrl||item.logoPath||(bundle&&bundle.logo)||'',item)};
+ var refs=[],bundle=_rab(item);
+ // These are alternate reference forms of the same source-selected image,
+ // not different artwork. Never use the actual landscape backdrop.
+ [item.posterPath,item.coverUrl,item.cleanPosterPath,item.faceSafePosterPath,item.detailPoster].forEach(function(value){
+  var ref=_av(value);
+  if(ref&&refs.indexOf(ref)<0)refs.push(ref);
+ });
+ if(!refs.length&&bundle&&bundle.poster)refs.push(bundle.poster);
+ if(!refs.length)return null;
+ return {poster:refs[0],refs:refs,v:true,logo:_av(item.titleLogoPath||item.titleLogoUrl||item.logoPath)||(bundle&&bundle.logo)||''};
 }
 function _lock(item) {
- // Keep the first authoritative selection for this card. No renderer overrides.
- if(_la&&_la.poster)return _la;
+ if(_la&&_la.poster){
+  // If no image has loaded yet, newly supplied native references can be used.
+  // After a successful load, never replace the displayed image.
+  if(!_dc){
+   var incoming=_ca(item);
+   if(incoming)incoming.refs.forEach(function(ref){if(_la.refs.indexOf(ref)<0)_la.refs.push(ref);});
+  }
+  return _la;
+ }
  _la=_ca(item);
  return _la;
 }
 function _ak(item){if(!item)return '';return String(item.id==null?'':item.id)+'|'+_nm(item).trim().toLowerCase();}function _reset(){_ig++;_dp='';_pp='';_la=null;_dc=false;_fcp='';_fa='';_ff=Object.create(null);_si(el('poster'),'');_lreq++;_lk='';var logo=el('logo');logo.onload=null;logo.onerror=null;logo.style.transform='';_si(logo,'');el('title').hidden=true;}
 var _rlm=Object.create(null);function _rlr(item){var keys=_raks(item);for(var i=0;i<keys.length;i++){var key=keys[i]+':logo360',entry=_rlm[key];if(!entry){try{entry=JSON.parse(localStorage.getItem(key)||'null')}catch(e){}}if(entry&&entry.src&&Date.now()-entry.at>=0&&Date.now()-entry.at<_rat)return entry.src;}return '';}function _rlw(item,src){if(!src)return;_raks(item).forEach(function(k){var key=k+':logo360',entry={src:src,at:Date.now()};_rlm[key]=entry;try{localStorage.setItem(key,JSON.stringify(entry))}catch(e){}});}function _rlc(item,art){if(!item)return [];var fixed=_frr(item),bundle=_rab(item),result=[];function append(v){var src=_av(v);if(src&&result.indexOf(src)<0)result.push(src);}function _ap(path){_frs(item,path).forEach(append);}[item.titleLogoPath,item.titleLogoUrl,item.logoUrl,item.logoPath,item.titleLogoRawPath,bundle&&bundle.logo,art&&art.logo].forEach(function(v){var src=_av(v);if(src.charAt(0)==='/')_ap(src);append(src);});var _rm=_rlr(item);if(_rm)append(_rm);if(Array.isArray(item.titleLogoAlternates))item.titleLogoAlternates.forEach(function(v){var src=_av(v);if(src.charAt(0)==='/')_ap(src);append(src);});if(fixed){_ap(fixed.logo);(fixed.logoAlternates||[]).forEach(_ap);}var paths=Array.isArray(item.backdropPaths)?item.backdropPaths.map(_av).filter(Boolean):[];var excluded=[item.backdropPath,item.posterPath,item.coverUrl,item.detailPoster,item.cleanPosterPath,art&&art.poster,bundle&&bundle.poster].map(_iid).filter(Boolean);for(var i=paths.length-1;i>=0;i--){var p=paths[i],identity=_iid(p);if(excluded.indexOf(identity)<0&&/\.png(?:$|[?#&/])/i.test(identity))append(p);}if(fixed&&paths.length===3&&excluded.indexOf(_iid(paths[2]))<0)append(paths[2]);return result;}function _spb(item,art){if(!item)return;if(art&&art.n){_lreq++;_lk='';el('logo').hidden=el('title').hidden=true;el('logo').removeAttribute('src');return;}_rtl(_rlc(item,art),_nm(item));}function _up(item,art) {
- if(!art||!art.poster||_dc)return;
- var src=art.poster,key=_ak(item);
- if(src===_pp||src===_dp)return;
+ if(!art||!art.poster||_dc||_pp)return;
+ var refs=art.refs||[art.poster],src='',key=_ak(item);
+ for(var i=0;i<refs.length;i++){if(!_ff[refs[i]]){src=refs[i];break;}}
+ if(!src)return;
  _pp=src;
  var generation=++_ig,image=new Image();
  image.onload=function(){
@@ -112,7 +128,8 @@ var _rlm=Object.create(null);function _rlr(item){var keys=_raks(item);for(var i=
  };
  image.onerror=function(){
   if(generation!==_ig)return;
-  _pp='';
+  _pp='';_ff[src]=true;
+  if(_sel&&_ak(_sel)===key)_up(_sel,_la);
  };
  image.src=src;
  if(image.complete&&image.naturalWidth>0&&_pp===src)image.onload();

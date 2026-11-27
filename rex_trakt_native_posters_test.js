@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.6.11 — Permanent manifest artwork, no renderer substitutions
+ * Version 3.6.14 — Permanent artwork using native renderer references
  *
  * Carries title logos through the documented backdropPaths array.
  * Transports the locked portrait as native poster and first backdrop entry; retains the real backdrop in the bundle.
@@ -62,7 +62,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.6.11",
+  version: "3.6.14",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -450,7 +450,7 @@ async function loadCachedRow(key, target, loader) {
   // The manifest version participates in the row-cache identity so a new
   // scheduled selection cannot be hidden by the module's old cached list.
   var manifest=await faceManifest();
-  key="locked-v3611:"+key;
+  key="locked-v3614:"+key;
   if(manifest&&manifest.generatedAt)key+=":"+manifest.generatedAt;
   var cached = startupCacheRead("row:" + key, CACHE_SECONDS);
   if (Array.isArray(cached) && cached.length === target) return cached;

@@ -197,15 +197,16 @@ function resolveArtworkRef(value, item) {
 function railArtworkBundle(item) {
  if(!item)return null;
  var p=Array.isArray(item.backdropPaths)?item.backdropPaths.map(artworkValue).filter(Boolean):[];
- var d=imageIdentity(item.backdropPath),n=imageIdentity(item.posterPath||item.coverUrl);
- if((p.length===2||p.length===3)&&d&&n&&d===n&&d===imageIdentity(p[0])&&/\.png$/i.test(imageIdentity(p[p.length-1]))){
-  return {poster:resolveArtworkRef(p[0],item),logo:resolveArtworkRef(p[p.length-1],item),verified:true};
- }
- return null;
+ // Native references can be opaque tokens. The module places the approved
+ // portrait first and the title logo last. No filename tests are needed.
+ if(p.length!==2&&p.length!==3)return null;
+ return {poster:p[0],logo:p[p.length-1],verified:true};
 }
 function verifiedRailSource(item) {
- var bundle=railArtworkBundle(item);
- return resolveArtworkRef(item.lockedPosterPath||item.faceSafePosterPath,item)||(bundle&&bundle.poster)||'';
+ if(!item)return '';
+ // Source v3.6.14 places the same approved image in every poster field.
+ // Rex's native poster reference is preferred over custom fields.
+ return artworkValue(item.posterPath)||artworkValue(item.coverUrl)||artworkValue(item.cleanPosterPath)||artworkValue(item.faceSafePosterPath)||artworkValue(item.detailPoster)||'';
 }
 var railArtTTL=4*60*60*1000; // title-logo cache only
 function railArtKeys(item){
@@ -262,13 +263,27 @@ function fixedRailSelection(item){
 }
 function confirmedArtwork(item) {
  if(!item||item.nativePosterOnly)return null;
- var src=verifiedRailSource(item),bundle=railArtworkBundle(item);
- if(!src)return null;
- return {poster:src,v:true,logo:resolveArtworkRef(item.titleLogoPath||item.titleLogoUrl||item.logoPath||(bundle&&bundle.logo)||'',item)};
+ var refs=[],bundle=railArtworkBundle(item);
+ // These are alternate reference forms of the same source-selected image,
+ // not different artwork. Never use the actual landscape backdrop.
+ [item.posterPath,item.coverUrl,item.cleanPosterPath,item.faceSafePosterPath,item.detailPoster].forEach(function(value){
+  var ref=artworkValue(value);
+  if(ref&&refs.indexOf(ref)<0)refs.push(ref);
+ });
+ if(!refs.length&&bundle&&bundle.poster)refs.push(bundle.poster);
+ if(!refs.length)return null;
+ return {poster:refs[0],refs:refs,v:true,logo:artworkValue(item.titleLogoPath||item.titleLogoUrl||item.logoPath)||(bundle&&bundle.logo)||''};
 }
 function lockArtwork(item) {
- // Keep the first authoritative selection for this card. No renderer overrides.
- if(lockedArtwork&&lockedArtwork.poster)return lockedArtwork;
+ if(lockedArtwork&&lockedArtwork.poster){
+  // If no image has loaded yet, newly supplied native references can be used.
+  // After a successful load, never replace the displayed image.
+  if(!displayedClean){
+   var incoming=confirmedArtwork(item);
+   if(incoming)incoming.refs.forEach(function(ref){if(lockedArtwork.refs.indexOf(ref)<0)lockedArtwork.refs.push(ref);});
+  }
+  return lockedArtwork;
+ }
  lockedArtwork=confirmedArtwork(item);
  return lockedArtwork;
 }
@@ -358,9 +373,10 @@ function syncPosterBrand(item,art){
  renderTitleLogo(railLogoCandidates(item,art),nameOf(item));
 }
 function updatePoster(item,art) {
- if(!art||!art.poster||displayedClean)return;
- var src=art.poster,key=titleKey(item);
- if(src===pendingPoster||src===displayedPoster)return;
+ if(!art||!art.poster||displayedClean||pendingPoster)return;
+ var refs=art.refs||[art.poster],src='',key=titleKey(item);
+ for(var i=0;i<refs.length;i++){if(!failedFallbacks[refs[i]]){src=refs[i];break;}}
+ if(!src)return;
  pendingPoster=src;
  var generation=++imageGeneration,image=new Image();
  image.onload=function(){
@@ -371,7 +387,8 @@ function updatePoster(item,art) {
  };
  image.onerror=function(){
   if(generation!==imageGeneration)return;
-  pendingPoster='';
+  pendingPoster='';failedFallbacks[src]=true;
+  if(selected&&titleKey(selected)===key)updatePoster(selected,lockedArtwork);
  };
  image.src=src;
  if(image.complete&&image.naturalWidth>0&&pendingPoster===src)image.onload();
