@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "revision": 4,
+  "revision": 5,
   "overrides": {
     "tv:244447": {
       "title": "The Hunting Wives",
@@ -22,10 +22,11 @@
       "strategy": "fixed",
       "posterPath": "/iXFOL9hCoCHFGACjJSIrY8eLlSY.jpg",
       "logoPath": "/dI3b6DHMYGZDyZMfSqq8hHNrFBi.png",
-      "revision": 2,
+      "revision": 3,
       "logoAlternates": [
         "/z0mhltWcY0kIpdRTPpdpTfD9Ks.png"
-      ]
+      ],
+      "autoLogo": true
     },
     "movie:9089": {
       "title": "Home for the Holidays",
