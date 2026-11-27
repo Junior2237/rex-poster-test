@@ -1,27 +1,27 @@
 {
   "schemaVersion": 1,
-  "revision": 9,
+  "revision": 8,
   "overrides": {
     "tv:244447": {
       "title": "The Hunting Wives",
-      "strategy": "fixed",
-      "posterPath": "/hsEcXCnzoalH3i0HowKbOpJRqD0.jpg",
       "logoPath": "/dT0HdklknEGQYkn1dNACIs4IeAt.png",
       "revision": 3,
-      "posterPaths": {
-        "top20": "/kg09RkDPfvz44TX7K3rmUv1dI02.jpg",
-        "trending": "/yzfW8fZvPQOZKAIRaPlf8WlU9yT.jpg"
-      },
       "logoAlternates": [
         "/vuIB3iTCnBXkSo4eYoCY8fZ3SXU.png",
         "/5qE6Fm2d9fbH8m72kDPi40msky9.png"
+      ]
+    },
+    "movie:13963": {
+      "title": "The Last Waltz",
+      "logoPath": "/dI3b6DHMYGZDyZMfSqq8hHNrFBi.png",
+      "revision": 3,
+      "logoAlternates": [
+        "/z0mhltWcY0kIpdRTPpdpTfD9Ks.png"
       ],
-      "combinedTrendingPosterPath": "/rnu5OUtv5X865QEmrdqYEmzZiT2.jpg"
+      "autoLogo": true
     },
     "movie:9089": {
       "title": "Home for the Holidays",
-      "strategy": "fixed",
-      "posterPath": "/s6ol3yUC7qTPwWoCM7b7rnSaeJl.jpg",
       "logoPath": "/AtMN8tMKMQ8PDo760zKoLkRl4LA.png",
       "revision": 2,
       "logoAlternates": [
@@ -32,18 +32,6 @@
     "movie:950237": {
       "title": "The 90s Club",
       "requireManualLogo": true,
-      "revision": 1
-    },
-    "movie:1597": {
-      "title": "Meet the Parents",
-      "strategy": "fixed",
-      "posterPath": "/t6Qs4qaANlikve2OmO0s3U1w9nv.jpg",
-      "revision": 1
-    },
-    "tv:225171": {
-      "title": "Pluribus",
-      "strategy": "fixed",
-      "posterPath": "/os1oQkTMZXiFP7KdEv3o03eshGC.jpg",
       "revision": 1
     }
   },

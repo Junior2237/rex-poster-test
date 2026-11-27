@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "algorithm": "yunet-ppocr-v5",
-  "generatedAt": "2026-11-27T04:13:27.622172+00:00",
+  "generatedAt": "2026-11-27T14:28:26.098141+00:00",
   "overrides": {
     "movie:2609": {
       "title": "Planes, Trains and Automobiles",
@@ -1520,6 +1520,20 @@
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
           "selection": "alternate"
+        },
+        "top20": {
+          "baseline": "/pv0NvyYW8sAVrFbOcnQgrGNMd0t.jpg",
+          "posterPath": "/pv0NvyYW8sAVrFbOcnQgrGNMd0t.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "width": 2000,
+          "height": 3000,
+          "selection": "confirmed"
         }
       }
     },
@@ -2090,6 +2104,20 @@
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
           "selection": "confirmed"
+        },
+        "top20": {
+          "baseline": "/8Ii10oSwzLQquPfXpwpK2vJwFxU.jpg",
+          "posterPath": "/kplxz3TwILtQ7fkvXS0lW9oe8dk.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate"
         }
       }
     },
@@ -2254,6 +2282,20 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "top20": {
+          "baseline": "/xm67vBnDwOxFgAyhCx4DtfvM2S5.jpg",
+          "posterPath": "/k1WZ8v7hUZ7QDseZH9TWVaAyTc0.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 5,
+          "faceAssessment": "overlap_within_limit",
+          "width": 729,
+          "height": 1094,
           "selection": "alternate"
         }
       }
@@ -2535,6 +2577,20 @@
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
           "selection": "alternate"
+        },
+        "top20": {
+          "baseline": "/xcWMs3eNj7mG3jPCwZCCAXNT6Rr.jpg",
+          "posterPath": "/uOsvjNjYYshi44tR5onbTGAiexS.jpg",
+          "before": 0.093,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 2,
+          "faceAssessment": "overlap_within_limit",
+          "width": 768,
+          "height": 1152,
+          "selection": "alternate"
         }
       }
     },
@@ -2780,6 +2836,16 @@
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
           "selection": "alternate"
+        },
+        "top20": {
+          "baseline": "/27U5WJd2vqUznevZg0iuqDEm3R3.jpg",
+          "posterPath": "/ajL4pxKtDe0ZSy40N3qxg1QE7NL.jpg",
+          "before": 0.791,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
         }
       }
     },
@@ -3009,6 +3075,20 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "top20": {
+          "baseline": "/iCyQc8cSSHkxUHbkvzbC77owALt.jpg",
+          "posterPath": "/rUqvfIc0tT3p15I1rDLUsII5269.jpg",
+          "before": 0.213,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "width": 2000,
+          "height": 3000,
           "selection": "alternate"
         }
       }
@@ -3262,21 +3342,675 @@
           "selection": "confirmed"
         }
       }
+    },
+    "movie:1597": {
+      "title": "Meet the Parents",
+      "layouts": {
+        "top20": {
+          "baseline": "/8P1zuBFVZjbJNP3xM2C91WNPohD.jpg",
+          "posterPath": "/t6Qs4qaANlikve2OmO0s3U1w9nv.jpg",
+          "before": 1,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/8P1zuBFVZjbJNP3xM2C91WNPohD.jpg",
+          "posterPath": "/t6Qs4qaANlikve2OmO0s3U1w9nv.jpg",
+          "before": 1,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:225171": {
+      "title": "Pluribus",
+      "layouts": {
+        "top20": {
+          "baseline": "/os1oQkTMZXiFP7KdEv3o03eshGC.jpg",
+          "posterPath": "/g6y5N9aTnvgrI092oflyoK82IGj.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/os1oQkTMZXiFP7KdEv3o03eshGC.jpg",
+          "posterPath": "/g6y5N9aTnvgrI092oflyoK82IGj.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:244447": {
+      "title": "The Hunting Wives",
+      "layouts": {
+        "top20": {
+          "baseline": "/rnu5OUtv5X865QEmrdqYEmzZiT2.jpg",
+          "posterPath": "/rnu5OUtv5X865QEmrdqYEmzZiT2.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/rnu5OUtv5X865QEmrdqYEmzZiT2.jpg",
+          "posterPath": "/rnu5OUtv5X865QEmrdqYEmzZiT2.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:322052": {
+      "title": "Wintertime",
+      "layouts": {
+        "top20": {
+          "baseline": "/lDKxuOXnlEullJvCpmbW1XJ8naZ.jpg",
+          "posterPath": "/lDKxuOXnlEullJvCpmbW1XJ8naZ.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/lDKxuOXnlEullJvCpmbW1XJ8naZ.jpg",
+          "posterPath": "/lDKxuOXnlEullJvCpmbW1XJ8naZ.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "movie:1400837": {
+      "title": "Other Mommy",
+      "layouts": {
+        "top20": {
+          "baseline": "/fGRNCssTRrhYZxNzykGGCoMsAVq.jpg",
+          "posterPath": "/zrGOYS3mKAaiyviBrCfzYi6qVlQ.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/fGRNCssTRrhYZxNzykGGCoMsAVq.jpg",
+          "posterPath": "/zrGOYS3mKAaiyviBrCfzYi6qVlQ.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:931285": {
+      "title": "Mortal Kombat II",
+      "layouts": {
+        "trending": {
+          "baseline": "/mUExj4VneG3S0Ysufxnj9JPZEHQ.jpg",
+          "posterPath": "/gzNDVSaIxZaBm6MCD1qnrpF8t70.jpg",
+          "before": 0.106,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "top20": {
+          "baseline": "/iILiJSRViTEcF23MHhGCbVm3mfW.jpg",
+          "posterPath": "/c7Qb0Z4j07UMQC7cW0H4No1jYiJ.jpg",
+          "before": 0.086,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:2758": {
+      "title": "Addams Family Values",
+      "layouts": {
+        "top20": {
+          "baseline": "/8znyj20O3EYLD2EzWnZQMnkE4zH.jpg",
+          "posterPath": "/oe2EmsNJ2Z5vx4tF0V8ZpdrIZmO.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 3,
+          "faceAssessment": "overlap_within_limit",
+          "width": 1065,
+          "height": 1427,
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/8znyj20O3EYLD2EzWnZQMnkE4zH.jpg",
+          "posterPath": "/oe2EmsNJ2Z5vx4tF0V8ZpdrIZmO.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 3,
+          "faceAssessment": "overlap_within_limit",
+          "width": 1065,
+          "height": 1427,
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:940721": {
+      "title": "Godzilla Minus One",
+      "layouts": {
+        "top20": {
+          "baseline": "/2E2WTX0TJEflAged6kzErwqX1kt.jpg",
+          "posterPath": "/uUm4oooZLRcuutZ6JOAj8WOBy7n.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/2E2WTX0TJEflAged6kzErwqX1kt.jpg",
+          "posterPath": "/uUm4oooZLRcuutZ6JOAj8WOBy7n.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:291507": {
+      "title": "The Body",
+      "layouts": {
+        "top20": {
+          "baseline": "/zleCYDRbW5mKwgZwVK4SNIrKXWx.jpg",
+          "posterPath": "/iAbat5mIHdWcnj0wZJ8847SOWVO.jpg",
+          "before": 0.229,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 2,
+          "faceAssessment": "overlap_within_limit",
+          "width": 618,
+          "height": 927,
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/zleCYDRbW5mKwgZwVK4SNIrKXWx.jpg",
+          "posterPath": "/iAbat5mIHdWcnj0wZJ8847SOWVO.jpg",
+          "before": 0.193,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 2,
+          "faceAssessment": "overlap_within_limit",
+          "width": 618,
+          "height": 927,
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:117488": {
+      "title": "Yellowjackets",
+      "layouts": {
+        "top20": {
+          "baseline": "/xRnGrn7Z7SC0KIBodocoU1QgDZF.jpg",
+          "posterPath": "/opFbPbD8eTv0rcuTj2Kp8yY16Xa.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/xRnGrn7Z7SC0KIBodocoU1QgDZF.jpg",
+          "posterPath": "/opFbPbD8eTv0rcuTj2Kp8yY16Xa.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:2190": {
+      "title": "South Park",
+      "layouts": {
+        "top20": {
+          "baseline": "/ka1ilKJLUkNvirukSAASEcufNFK.jpg",
+          "posterPath": "/la1aQtFQOXwOiyjo9yuTyIDucj7.jpg",
+          "before": 1,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "width": 1000,
+          "height": 1500,
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/ka1ilKJLUkNvirukSAASEcufNFK.jpg",
+          "posterPath": "/la1aQtFQOXwOiyjo9yuTyIDucj7.jpg",
+          "before": 0.771,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "width": 1000,
+          "height": 1500,
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:326247": {
+      "title": "Fool Night",
+      "layouts": {
+        "top20": {
+          "baseline": "/qZb0FSpnL1vJSNl742oupBOIE3Z.jpg",
+          "posterPath": "/yvnbT2cpGClfx6ktTxGrKKkGhG3.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 1,
+          "faceAssessment": "overlap_within_limit",
+          "width": 1200,
+          "height": 1800,
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/qZb0FSpnL1vJSNl742oupBOIE3Z.jpg",
+          "posterPath": "/yvnbT2cpGClfx6ktTxGrKKkGhG3.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 1,
+          "faceAssessment": "overlap_within_limit",
+          "width": 1200,
+          "height": 1800,
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:213562": {
+      "title": "Crystal Lake",
+      "layouts": {
+        "top20": {
+          "baseline": "/3ENhExiD2fcjk5FX0AcAXcvLu9N.jpg",
+          "posterPath": "/xYsP3FBkNzZiWf79yBQeLiHXnr2.jpg",
+          "before": 0.269,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/3ENhExiD2fcjk5FX0AcAXcvLu9N.jpg",
+          "posterPath": "/xYsP3FBkNzZiWf79yBQeLiHXnr2.jpg",
+          "before": 0.23,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:1765072": {
+      "title": "You Can See Everything",
+      "layouts": {
+        "top20": {
+          "baseline": "/mVh3qkw2NUFxWWyF0G1hg2Wh0K5.jpg",
+          "posterPath": "/cwLLPcaJ0Z7T5Wg2TIETXacOKDa.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/mVh3qkw2NUFxWWyF0G1hg2Wh0K5.jpg",
+          "posterPath": "/cwLLPcaJ0Z7T5Wg2TIETXacOKDa.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:1391021": {
+      "title": "Once Upon a Time in the Middle East",
+      "layouts": {
+        "top20": {
+          "baseline": "/t63fwPokECVgAULqpadKN3GQdDJ.jpg",
+          "posterPath": "/cXDHS6K6J6tfJCzBPAvTOWkTDT4.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/t63fwPokECVgAULqpadKN3GQdDJ.jpg",
+          "posterPath": "/cXDHS6K6J6tfJCzBPAvTOWkTDT4.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:1506401": {
+      "title": "The Child",
+      "layouts": {
+        "top20": {
+          "baseline": "/8YPJyLwChJrtC8TW1Ji0SlpCYWp.jpg",
+          "posterPath": "/8YPJyLwChJrtC8TW1Ji0SlpCYWp.jpg",
+          "before": 0.02,
+          "after": 0.02,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 1,
+          "faceAssessment": "overlap_within_limit",
+          "width": 2000,
+          "height": 3000,
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/8YPJyLwChJrtC8TW1Ji0SlpCYWp.jpg",
+          "posterPath": "/8YPJyLwChJrtC8TW1Ji0SlpCYWp.jpg",
+          "before": 0.02,
+          "after": 0.02,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 1,
+          "faceAssessment": "overlap_within_limit",
+          "width": 2000,
+          "height": 3000,
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:456": {
+      "title": "The Simpsons",
+      "layouts": {
+        "top20": {
+          "baseline": "/tf0CUEynk6GfmrlHIQKQ5mfFP5P.jpg",
+          "posterPath": "/a8VtXmtONbQcqvyddzrDPNl8gcL.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/tf0CUEynk6GfmrlHIQKQ5mfFP5P.jpg",
+          "posterPath": "/a8VtXmtONbQcqvyddzrDPNl8gcL.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:97546": {
+      "title": "Ted Lasso",
+      "layouts": {
+        "top20": {
+          "baseline": "/uRHsiw1wLxPHFXkkv4Ix1s0O6f4.jpg",
+          "posterPath": "/uqZjoWvpGMdQ6K9L8MsxngHBKy6.jpg",
+          "before": 0.491,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 1,
+          "faceAssessment": "overlap_within_limit",
+          "width": 816,
+          "height": 1224,
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/uRHsiw1wLxPHFXkkv4Ix1s0O6f4.jpg",
+          "posterPath": "/uqZjoWvpGMdQ6K9L8MsxngHBKy6.jpg",
+          "before": 0.4,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 1,
+          "faceAssessment": "overlap_within_limit",
+          "width": 816,
+          "height": 1224,
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:1439930": {
+      "title": "The Punisher: One Last Kill",
+      "layouts": {
+        "top20": {
+          "baseline": "/qQclTgLMDvGBuUBFGHRipxkEwWR.jpg",
+          "posterPath": "/dGsmBrsvU7U4ixRKnTXeyyQiltD.jpg",
+          "before": 0.56,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/qQclTgLMDvGBuUBFGHRipxkEwWR.jpg",
+          "posterPath": "/dGsmBrsvU7U4ixRKnTXeyyQiltD.jpg",
+          "before": 0.467,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:1265609": {
+      "title": "War Machine",
+      "layouts": {
+        "top20": {
+          "baseline": "/tlPgDzwIE7VYYIIAGCTUOnN4wI1.jpg",
+          "posterPath": "/sNcd70Q6sEBnF3YEd3kC9jIUO5E.jpg",
+          "before": 1,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 1,
+          "faceAssessment": "overlap_within_limit",
+          "width": 900,
+          "height": 1350,
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/tlPgDzwIE7VYYIIAGCTUOnN4wI1.jpg",
+          "posterPath": "/sNcd70Q6sEBnF3YEd3kC9jIUO5E.jpg",
+          "before": 1,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 1,
+          "faceAssessment": "overlap_within_limit",
+          "width": 900,
+          "height": 1350,
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:198178": {
+      "title": "Wonder Man",
+      "layouts": {
+        "top20": {
+          "baseline": "/qwSmwCEMzlUn9Y3XbBIx3CLMIAK.jpg",
+          "posterPath": "/gNk4kuXQdK7vGOVYtwTirekLqV1.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/qwSmwCEMzlUn9Y3XbBIx3CLMIAK.jpg",
+          "posterPath": "/gNk4kuXQdK7vGOVYtwTirekLqV1.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate"
+        }
+      }
     }
   },
   "textScreening": {
-    "clear": 85,
-    "text": 515,
+    "clear": 27,
+    "text": 1251,
     "unknown": 0
   },
   "unresolved": {
-    "movie:13479": {
-      "title": "A Charlie Brown Thanksgiving",
+    "movie:13963": {
+      "title": "The Last Waltz",
       "status": "unresolved",
       "mode": "excluded"
     },
-    "movie:351339": {
-      "title": "Anthropoid",
+    "movie:9089": {
+      "title": "Home for the Holidays",
+      "status": "unresolved",
+      "mode": "excluded"
+    },
+    "movie:13479": {
+      "title": "A Charlie Brown Thanksgiving",
       "status": "unresolved",
       "mode": "excluded"
     },
@@ -3290,13 +4024,13 @@
       "status": "unresolved",
       "mode": "excluded"
     },
-    "movie:360920": {
-      "title": "The Grinch",
-      "status": "partial",
+    "movie:13785": {
+      "title": "Best in Show",
+      "status": "unresolved",
       "mode": "excluded"
     },
-    "movie:940721": {
-      "title": "Godzilla Minus One",
+    "movie:351339": {
+      "title": "Anthropoid",
       "status": "unresolved",
       "mode": "excluded"
     },
@@ -3310,28 +4044,18 @@
       "status": "partial",
       "mode": "excluded"
     },
-    "tv:291507": {
-      "title": "The Body",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
-    "tv:117488": {
-      "title": "Yellowjackets",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
-    "tv:308007": {
-      "title": "The Altruists",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
-    "tv:2190": {
-      "title": "South Park",
+    "tv:45571": {
+      "title": "The Story of Film: An Odyssey",
       "status": "unresolved",
       "mode": "excluded"
     },
     "tv:213375": {
       "title": "VisionQuest",
+      "status": "unresolved",
+      "mode": "excluded"
+    },
+    "tv:308007": {
+      "title": "The Altruists",
       "status": "unresolved",
       "mode": "excluded"
     },
@@ -3345,63 +4069,8 @@
       "status": "unresolved",
       "mode": "excluded"
     },
-    "tv:275139": {
-      "title": "Phony",
-      "status": "partial",
-      "mode": "excluded"
-    },
-    "tv:213562": {
-      "title": "Crystal Lake",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
-    "tv:250923": {
-      "title": "Nobody Wants This",
-      "status": "partial",
-      "mode": "excluded"
-    },
-    "tv:326247": {
-      "title": "Fool Night",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
-    "movie:1765072": {
-      "title": "You Can See Everything",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
-    "tv:302837": {
-      "title": "Toos: The Van der Valk Kidnapping",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
-    "movie:1611767": {
-      "title": "Clashing Through the Snow",
-      "status": "partial",
-      "mode": "excluded"
-    },
-    "movie:1101412": {
-      "title": "Fall 2: Deadpoint",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
-    "tv:292044": {
-      "title": "The Story Untold",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
-    "movie:1457866": {
-      "title": "THE FURTHER MIS-ADVENTURES OF CLIFF BOOTH",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
-    "tv:313701": {
-      "title": "A Filipino Christmas",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
-    "movie:1643567": {
-      "title": "Ghosts: The Possession of Button House",
+    "movie:1480665": {
+      "title": "The Hunchback, Soul of Paris",
       "status": "unresolved",
       "mode": "excluded"
     },
@@ -3410,43 +4079,23 @@
       "status": "unresolved",
       "mode": "excluded"
     },
-    "movie:1400837": {
-      "title": "Other Mommy",
+    "tv:302837": {
+      "title": "Toos: The Van der Valk Kidnapping",
       "status": "unresolved",
+      "mode": "excluded"
+    },
+    "movie:1643567": {
+      "title": "Ghosts: The Possession of Button House",
+      "status": "unresolved",
+      "mode": "excluded"
+    },
+    "movie:1611767": {
+      "title": "Clashing Through the Snow",
+      "status": "partial",
       "mode": "excluded"
     },
     "movie:1084409": {
       "title": "A Talent for Murder",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
-    "tv:456": {
-      "title": "The Simpsons",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
-    "tv:30957": {
-      "title": "The Amazing Race",
-      "status": "partial",
-      "mode": "excluded"
-    },
-    "tv:97546": {
-      "title": "Ted Lasso",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
-    "movie:931285": {
-      "title": "Mortal Kombat II",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
-    "movie:1439930": {
-      "title": "The Punisher: One Last Kill",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
-    "movie:1265609": {
-      "title": "War Machine",
       "status": "unresolved",
       "mode": "excluded"
     },
@@ -3457,16 +4106,6 @@
     },
     "movie:1171145": {
       "title": "Crime 101",
-      "status": "partial",
-      "mode": "excluded"
-    },
-    "movie:1317288": {
-      "title": "Marty Supreme",
-      "status": "partial",
-      "mode": "excluded"
-    },
-    "tv:226637": {
-      "title": "High Potential",
       "status": "partial",
       "mode": "excluded"
     },
@@ -3492,11 +4131,6 @@
     },
     "tv:259731": {
       "title": "HIS & HERS",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
-    "tv:198178": {
-      "title": "Wonder Man",
       "status": "unresolved",
       "mode": "excluded"
     }
