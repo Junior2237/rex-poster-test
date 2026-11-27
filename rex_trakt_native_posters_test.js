@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.6.6 — Universal verified artwork selection and native delivery
+ * Version 3.6.7 — Persistent approved poster locks and native fallback
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -62,7 +62,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.6.6",
+  version: "3.6.7",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -834,14 +834,14 @@ async function applyArtworkOverride(artwork,mediaType,tmdbId,premiumPortrait){
 
 var faceManifestPromise=null,faceManifestMemory=null,faceManifestAt=0;
 function validFaceManifest(data){
-  if(!data||data.schemaVersion!==1||(data.algorithm!=="yunet-ppocr-v3"&&data.algorithm!=="yunet-ppocr-v2")||!data.overrides||typeof data.overrides!=="object")return null;
+  if(!data||data.schemaVersion!==1||(data.algorithm!=="yunet-ppocr-v4"&&data.algorithm!=="yunet-ppocr-v3"&&data.algorithm!=="yunet-ppocr-v2")||!data.overrides||typeof data.overrides!=="object")return null;
   if(!data.generatedAt)return data;
   var age=Date.now()-Date.parse(data.generatedAt);
-  return Number.isFinite(age)&&age>=-300000&&age<=72*3600000?data:null;
+  return Number.isFinite(age)&&age>=-300000&&(data.algorithm==="yunet-ppocr-v4"||age<=72*3600000)?data:null;
 }
 async function faceManifest(){
   if(faceManifestMemory&&Date.now()-faceManifestAt<300000)return faceManifestMemory;
-  var cached=validFaceManifest(startupCacheRead("face-manifest-v366",300));
+  var cached=validFaceManifest(startupCacheRead("face-manifest-v367",300));
   if(cached)return cached;
   if(faceManifestPromise)return faceManifestPromise;
   faceManifestPromise=(async function(){
@@ -849,8 +849,8 @@ async function faceManifest(){
     try{
       data=validFaceManifest(unwrap(await Widget.http.get("https://raw.githubusercontent.com/Junior2237/rex-poster-test/refs/heads/main/face_safe_posters.json",{headers:{Accept:"application/json"}})));
     }catch(e){}
-    if(data)startupCacheWrite("face-manifest-v366",data);
-    faceManifestMemory=data||validFaceManifest(startupCacheRead("face-manifest-v366",72*3600))||{overrides:{}};
+    if(data)startupCacheWrite("face-manifest-v367",data);
+    faceManifestMemory=data||validFaceManifest(startupCacheRead("face-manifest-v367",72*3600))||{overrides:{}};
     faceManifestAt=Date.now();
     return faceManifestMemory;
   })();
@@ -858,15 +858,17 @@ async function faceManifest(){
 }
 function applyFaceSafePoster(artwork,manifest,mediaType,tmdbId,premiumPortrait){
   if(!artwork||artwork.fixedRailPoster||!manifest||!manifest.overrides)return artwork;
-  var rule=manifest.overrides[mediaType+":"+tmdbId];
+  var key=mediaType+":"+tmdbId,rule=manifest.overrides[key];
   var choice=rule&&rule.layouts&&rule.layouts[premiumPortrait?"trending":"top20"];
+  var fallback=manifest.unresolved&&manifest.unresolved[key];
+  if(!choice&&manifest.algorithm==="yunet-ppocr-v4"&&fallback&&fallback.mode==="native"&&/^\/[A-Za-z0-9_-]+\.(jpg|jpeg|png|webp)$/i.test(fallback.posterPath||""))return Object.assign({},artwork,{cleanPoster:fallback.posterPath,standardPoster:fallback.posterPath,nativePosterOnly:true});
   if(!choice||choice.textCheck!=="clear"||choice.textModel!=="ppocrv3-en"||!/^\/[A-Za-z0-9_-]+\.(jpg|jpeg|png|webp)$/i.test(choice.posterPath||""))return artwork;
   if(!(typeof choice.after==="number"&&choice.after>=0&&choice.after<=.04))return artwork;
-  if(manifest.algorithm==="yunet-ppocr-v3"){
+  if(manifest.algorithm==="yunet-ppocr-v3"||manifest.algorithm==="yunet-ppocr-v4"){
     if(choice.faceCheck!=="clear"||(choice.selection!=="confirmed"&&choice.selection!=="alternate"))return artwork;
   }else if(!(Number(choice.before)>=.12&&Number(choice.before)-choice.after>=.10))return artwork;
   var changed=choice.posterPath!==artwork.cleanPoster;
-  return Object.assign({},artwork,{cleanPoster:choice.posterPath,verifiedPoster:choice.posterPath,faceSafePoster:changed||choice.selection==="alternate"?choice.posterPath:""});
+  return Object.assign({},artwork,{cleanPoster:choice.posterPath,verifiedPoster:choice.posterPath,faceSafePoster:choice.posterPath});
 }
 
 async function buildItem(
@@ -968,6 +970,7 @@ async function buildItem(
     if (!artwork.logo || !/^\/[A-Za-z0-9_-]+\.png$/i.test(artwork.logo)) return null;
     if (!artwork.standardPoster) artwork.standardPoster = tmdbPath(subject.poster_path || row.poster_path);
     assignPosterFields(item, artwork, premiumPortrait);
+    if(artwork.nativePosterOnly)item.nativePosterOnly=true;
     if(artwork.verifiedPoster||artwork.faceSafePoster){
       item.faceSafePosterPath=tmdbUrl(artwork.verifiedPoster||artwork.faceSafePoster);
       if(artwork.faceSafePoster)console.log("Face-safe applied: "+title+" "+artwork.faceSafePoster);
@@ -994,6 +997,7 @@ async function buildItem(
       item.backdropPath=artwork.cleanPoster;
       nativePaths=[artwork.cleanPoster,artwork.backdrop,artwork.logo];
     }
+    if(artwork.nativePosterOnly){item.backdropPath=artwork.cleanPoster;nativePaths=[artwork.cleanPoster,artwork.logo];}
     if (nativePaths.length) item.backdropPaths = nativePaths;
 
     if (artwork.logo) {
@@ -1304,14 +1308,14 @@ async function loadNativeList(
 
 async function loadNativeMovies(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("daily-movies-v366", MAX_ITEMS, function() {
+  return loadCachedRow("daily-movies-v367", MAX_ITEMS, function() {
     return loadNativeList("movie", MOVIES_LIST, params);
   });
 }
 
 async function loadNativeShows(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("daily-shows-v366", MAX_ITEMS, function() {
+  return loadCachedRow("daily-shows-v367", MAX_ITEMS, function() {
     return loadNativeList("tv", TV_LIST, params);
   });
 }
@@ -1385,25 +1389,25 @@ async function loadArtworkChart(mediaType, chart, params) {
 
 async function loadTrendingMovies(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("trending-movies-v366", CHART_TARGET, function() {
+  return loadCachedRow("trending-movies-v367", CHART_TARGET, function() {
     return loadArtworkChart("movie", "trending", params);
   });
 }
 async function loadTrendingShows(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("trending-shows-v366", CHART_TARGET, function() {
+  return loadCachedRow("trending-shows-v367", CHART_TARGET, function() {
     return loadArtworkChart("tv", "trending", params);
   });
 }
 async function loadPopularMovies(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("popular-movies-v366", CHART_TARGET, function() {
+  return loadCachedRow("popular-movies-v367", CHART_TARGET, function() {
     return loadArtworkChart("movie", "popular", params);
   });
 }
 async function loadPopularShows(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("popular-shows-v366", CHART_TARGET, function() {
+  return loadCachedRow("popular-shows-v367", CHART_TARGET, function() {
     return loadArtworkChart("tv", "popular", params);
   });
 }
@@ -1414,7 +1418,7 @@ async function loadPopularShows(params) {
  * Unlike active Trakt watcher counts, upcoming titles can qualify.
  */
 async function loadCombinedTrending(params) {
-  return loadCachedRow("combined-trending-v366", CHART_TARGET, function() {
+  return loadCachedRow("combined-trending-v367", CHART_TARGET, function() {
     return loadCombinedTrendingUncached(params);
   });
 }
