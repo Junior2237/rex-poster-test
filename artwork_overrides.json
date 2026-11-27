@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "revision": 5,
+  "revision": 6,
   "overrides": {
     "tv:244447": {
       "title": "The Hunting Wives",
@@ -42,6 +42,18 @@
     "movie:950237": {
       "title": "The 90s Club",
       "requireManualLogo": true,
+      "revision": 1
+    },
+    "movie:1597": {
+      "title": "Meet the Parents",
+      "strategy": "fixed",
+      "posterPath": "/t6Qs4qaANlikve2OmO0s3U1w9nv.jpg",
+      "revision": 1
+    },
+    "tv:225171": {
+      "title": "Pluribus",
+      "strategy": "fixed",
+      "posterPath": "/os1oQkTMZXiFP7KdEv3o03eshGC.jpg",
       "revision": 1
     }
   }
