@@ -977,13 +977,10 @@ async function buildItem(
     item.faceSafePosterPath=tmdbUrl(artwork.cleanPoster);
     if (artwork.releaseDate) item.releaseDate = artwork.releaseDate;
 
-    // Put the same approved portrait into every native primary artwork slot.
-    // Preserve the genuine backdrop only as the secondary bundle entry.
+    // Only one approved photograph is exposed to the native artwork pipeline.
+    // The PNG is a title logo, never a secondary poster candidate.
     item.backdropPath=artwork.cleanPoster;
-    var nativePaths=[artwork.cleanPoster];
-    if(artwork.backdrop&&artwork.backdrop!==artwork.cleanPoster)nativePaths.push(artwork.backdrop);
-    nativePaths.push(artwork.logo);
-    item.backdropPaths=nativePaths;
+    item.backdropPaths=[artwork.cleanPoster,artwork.logo];
 
     if (artwork.logo) {
       var logoUrl = tmdbUrl(artwork.logo);
