@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="rex-widget" content="type=rail; height=700; item-ratio=4:5">
-<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster,titleLogoAlternates,titleLogoRawPath,logoUrl">
+<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster,titleLogoAlternates,titleLogoRawPath,logoUrl,titleLogoPinned">
 <title>Rex Editorial — Consistent Artwork</title>
 <style>
 *{box-sizing:border-box}
@@ -39,12 +39,12 @@ html,body{
 }
 .brand{
  position:relative;width:100%;
- height:90px;margin-bottom:10px;
+ height:168px;margin-bottom:10px;
  flex-shrink:0
 }
 .logo{
  position:absolute;left:0;bottom:0;
- width:370px;max-width:75%;height:90px;
+ width:100%;max-width:100%;height:100%;
  object-fit:contain;object-position:left bottom;
  filter:drop-shadow(0 2px 6px rgba(0,0,0,.55))
 }
@@ -347,7 +347,7 @@ var railLogoMemory=Object.create(null);
 function railLogoRead(item){
  var keys=railArtKeys(item);
  for(var i=0;i<keys.length;i++){
-  var key=keys[i]+':logo356',entry=railLogoMemory[key];
+  var key=keys[i]+':logo359',entry=railLogoMemory[key];
   if(!entry){try{entry=JSON.parse(localStorage.getItem(key)||'null')}catch(e){}}
   if(entry&&entry.src&&Date.now()-entry.at>=0&&Date.now()-entry.at<railArtTTL)return entry.src;
  }
@@ -356,7 +356,7 @@ function railLogoRead(item){
 function railLogoRemember(item,src){
  if(!src)return;
  railArtKeys(item).forEach(function(k){
-  var key=k+':logo356',entry={src:src,at:Date.now()};railLogoMemory[key]=entry;
+  var key=k+':logo359',entry={src:src,at:Date.now()};railLogoMemory[key]=entry;
   try{localStorage.setItem(key,JSON.stringify(entry))}catch(e){}
  });
 }
@@ -365,11 +365,12 @@ function railLogoCandidates(item,art){
  var fixed=fixedRailRule(item),bundle=railArtworkBundle(item),result=[];
  function append(v){var src=artworkValue(v);if(src&&result.indexOf(src)<0)result.push(src);}
  function appendPath(path){fixedRailSources(item,path).forEach(append);}
- var remembered=railLogoRead(item);if(remembered)append(remembered);
+ 
  // Explicit native fields and the actual artwork bundle take priority.
  [item.titleLogoPath,item.titleLogoUrl,item.logoUrl,item.logoPath,item.titleLogoRawPath,bundle&&bundle.logo,art&&art.logo].forEach(function(v){
   var src=artworkValue(v);if(src.charAt(0)==='/')appendPath(src);append(src);
  });
+ var remembered=railLogoRead(item);if(remembered)append(remembered);
  if(Array.isArray(item.titleLogoAlternates))item.titleLogoAlternates.forEach(function(v){
   var src=artworkValue(v);if(src.charAt(0)==='/')appendPath(src);append(src);
  });
@@ -440,6 +441,37 @@ function updatePoster(item,art){
  if(image.complete&&image.naturalWidth>0&&pendingPoster===src)image.onload();
 }
 var logoRequest=0,logoKey='';
+var _lb=Object.create(null);
+function _bounds(im){
+var w=im.naturalWidth,h=im.naturalHeight,key=im.getAttribute('src')||im.src,b=[0,0,1,1];
+if(!w||!h)return b;
+if(_lb[key])return _lb[key];
+try{
+var c=document.createElement('canvas'),f=Math.min(1,256/Math.max(w,h));
+c.width=Math.max(1,Math.round(w*f));c.height=Math.max(1,Math.round(h*f));
+var x=c.getContext('2d'),W=c.width,H=c.height;
+x.drawImage(im,0,0,W,H);
+var a=x.getImageData(0,0,W,H).data,l=W,t=H,r=-1,d=-1;
+for(var j=0;j<H;j++)for(var i=0;i<W;i++)if(a[(j*W+i)*4+3]>8){l=Math.min(l,i);t=Math.min(t,j);r=Math.max(r,i);d=Math.max(d,j);}
+if(r>=l&&d>=t)b=[Math.max(0,l-1)/W,Math.max(0,t-1)/H,Math.min(W,r+2)/W,Math.min(H,d+2)/H];
+}catch(e){}
+return _lb[key]=b;
+}
+function _lg(W,H,nw,nh,b,center){
+var q=Math.min(W/nw,H/nh),w=nw*q,h=nh*q,x=center?(W-w)/2:0,y=H-h;
+var bw=w*(b[2]-b[0]),bh=h*(b[3]-b[1]),k=Math.min(4,W/bw,H/bh);
+return [k,(center?(W-bw*k)/2:0)-(x+w*b[0])*k,H-bh*k-(y+h*b[1])*k,bh*k/H];
+}
+function fitVisibleLogo(im,paint){
+ var logo=el('logo'),w=logo.clientWidth,h=logo.clientHeight;
+ if(!w||!h||!im.naturalWidth||!im.naturalHeight)return 1;
+ var a=_lg(w,h,im.naturalWidth,im.naturalHeight,_bounds(im),false);
+ if(paint){
+  logo.style.transformOrigin='0 0';
+  logo.style.transform='translate('+a[1]+'px,'+a[2]+'px) scale('+a[0]+')';
+ }
+ return a[3];
+}
 function renderTitleLogo(sources,name){
  var logo=el('logo'),title=el('title');
  title.textContent=name;logo.alt='';
@@ -447,10 +479,10 @@ function renderTitleLogo(sources,name){
  if(key===logoKey)return;
  logoKey=key;
  var request=++logoRequest,index=0,item=selected;
- var visible=logo.getAttribute('src');
+ var probed=false,visible=logo.getAttribute('src');
  // Keep a successfully displayed logo during metadata updates.
- if(visible&&!logo.hidden&&logo.complete&&logo.naturalWidth>0){title.hidden=true;return;}
- logo.hidden=true;title.hidden=false;
+ if(visible&&!logo.hidden&&logo.complete&&logo.naturalWidth>0){title.hidden=true;fitVisibleLogo(logo,true);return;}
+ logo.hidden=true;title.hidden=false;logo.style.transform='';
  logo.onload=null;logo.onerror=null;logo.removeAttribute('src');
  function next(){
   if(request!==logoRequest)return;
@@ -459,6 +491,30 @@ function renderTitleLogo(sources,name){
   function success(){
    if(request!==logoRequest||logo.getAttribute('src')!==src)return;
    logo.hidden=false;title.hidden=true;railLogoRemember(item,src);
+   var score=fitVisibleLogo(logo,true);
+   if(probed||score>=.34||!item||item.titleLogoPinned||fixedRailRule(item))return;
+   probed=true;
+   var seen=[imageIdentity(src)];
+   var alternatives=sources.filter(function(p){
+    var k=imageIdentity(p);if(seen.indexOf(k)>=0)return false;seen.push(k);return true;
+   }).slice(0,2);
+   function tryAlternative(){
+    if(request!==logoRequest||!selected||selected.id!==item.id||!alternatives.length)return;
+    var p=alternatives.shift(),im=new Image();
+    im.onerror=tryAlternative;
+    im.onload=function(){
+     if(request!==logoRequest||!selected||selected.id!==item.id)return;
+     if(fitVisibleLogo(im,false)<score+.12){tryAlternative();return;}
+     var old=src;src=p;
+     logo.onerror=function(){
+      if(request!==logoRequest)return;
+      src=old;logo.onerror=null;logo.setAttribute('src',old);
+     };
+     logo.setAttribute('src',p);
+    };
+    im.src=p;
+   }
+   tryAlternative();
   }
   logo.onload=success;
   logo.onerror=function(){if(request===logoRequest&&logo.getAttribute('src')===src)next();};
@@ -498,6 +554,7 @@ function clearTitleImages(){
  logoRequest++;logoKey='';el('logo').onload=null;el('logo').onerror=null;
  clearImage('poster');
  clearImage('logo');
+ el('logo').style.transform='';
  clearImage('platformLogo');
 
  el('title').hidden=true;
@@ -790,6 +847,9 @@ function updateLayout(){
 
  el('title').style.fontSize=
   Math.max(24,Math.min(36,width*.06))+'px';
+ var logo=el('logo');
+ logo.parentNode.style.height=Math.round(Math.min(168,(height>0?height:700)*.24,width*.4))+'px';
+ if(!logo.hidden&&logo.complete)fitVisibleLogo(logo,true);
 }
 
 function render(){
