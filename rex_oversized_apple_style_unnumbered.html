@@ -180,10 +180,20 @@ function artworkValue(v){
  if(v&&typeof v==='object')return artworkValue(v.url||v.src||v.path||v.file_path||v.imageUrl||v.backdropPath||'');
  return str(v).trim();
 }
-// v3.6.11: the source module alone selects the poster.
-function lockedArtworkURL(value) {
+// v3.6.12: use only source-supplied artwork references.
+function lockedArtworkURL(value, item) {
  var src=artworkValue(value);
- if (/^\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)$/i.test(src)) return 'https://image.tmdb.org/t/p/original'+src;
+ if(!src)return '';
+ // Only use URLs already supplied by Rex. Never construct an external URL.
+ if(!/^\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)$/i.test(src))return src;
+ var identity=imageIdentity(src);
+ var sources=item?[item.lockedPosterPath,item.faceSafePosterPath,item.cleanPosterPath,item.coverUrl,item.posterPath,item.detailPoster,item.backdropPath,item.titleLogoPath,item.titleLogoUrl,item.logoUrl,item.logoPath,item.titleLogoRawPath]:[];
+ if(item&&Array.isArray(item.backdropPaths))sources=sources.concat(item.backdropPaths);
+ for(var i=0;i<sources.length;i++){
+  var candidate=artworkValue(sources[i]);
+  if(candidate&&candidate!==src&&imageIdentity(candidate)===identity&&!/^\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)$/i.test(candidate))return candidate;
+ }
+ // Rex may provide a native relative image reference; keep it unchanged.
  return src;
 }
 function railArtworkBundle(item) {
@@ -191,13 +201,13 @@ function railArtworkBundle(item) {
  var p=Array.isArray(item.backdropPaths)?item.backdropPaths.map(artworkValue).filter(Boolean):[];
  var d=imageIdentity(item.backdropPath),n=imageIdentity(item.posterPath||item.coverUrl);
  if((p.length===2||p.length===3)&&d&&n&&d===n&&d===imageIdentity(p[0])&&/\.png$/i.test(imageIdentity(p[p.length-1]))){
-  return {poster:lockedArtworkURL(p[0]),logo:lockedArtworkURL(p[p.length-1]),verified:true};
+  return {poster:lockedArtworkURL(p[0],item),logo:lockedArtworkURL(p[p.length-1],item),verified:true};
  }
  return null;
 }
 function verifiedRailSource(item) {
  var bundle=railArtworkBundle(item);
- return lockedArtworkURL(item.lockedPosterPath||item.faceSafePosterPath)||(bundle&&bundle.poster)||'';
+ return lockedArtworkURL(item.lockedPosterPath||item.faceSafePosterPath,item)||(bundle&&bundle.poster)||'';
 }
 var railArtTTL=4*60*60*1000; // title-logo cache only
 function railArtKeys(item){
@@ -266,7 +276,7 @@ function confirmedArtwork(item) {
  if(!item||item.nativePosterOnly)return null;
  var src=verifiedRailSource(item),bundle=railArtworkBundle(item);
  if(!src)return null;
- return {poster:src,v:true,logo:lockedArtworkURL(item.titleLogoPath||item.titleLogoUrl||item.logoPath||(bundle&&bundle.logo)||'')};
+ return {poster:src,v:true,logo:lockedArtworkURL(item.titleLogoPath||item.titleLogoUrl||item.logoPath||(bundle&&bundle.logo)||'',item)};
 }
 function lockArtwork(item) {
  // Keep the first authoritative selection for this card. No renderer overrides.

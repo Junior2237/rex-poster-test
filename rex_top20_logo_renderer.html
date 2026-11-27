@@ -49,10 +49,20 @@ html,body{margin:0;padding:0;width:100%;height:100%;background:transparent;color
 <a class="open" id="open" href="#" role="button" tabindex="0" aria-label="Open title"></a>
 </div>
 <script>
-(function(){'use strict';var api=window.RexWidget;function el(id){return document.getElementById(id)}function str(v){return v==null?'':String(v)}function norm(v){var s=str(v).toLowerCase().replace(/[\u2018\u2019'`]/g,'');if(typeof s.normalize==='function')s=s.normalize('NFD').replace(/[\u0300-\u036f]/g,'');return s.replace(/[^a-z0-9]+/g,' ').trim();}var card=el('card'),link=el('open'),_sel=null,_lo=0;var _cak='',_ig=0,_dp='',_pp='',_la=null;var _dc=false,_fcp='',_fa='',_ff=Object.create(null);if(!api){el('status').textContent='Preview in Rex Widget Workshop';return}function _av(v){if(v&&typeof v==='object')return _av(v.url||v.src||v.path||v.file_path||v.imageUrl||v.backdropPath||'');return str(v).trim();}function _si(node,value){var src=_av(value);node.hidden=!src;if(src){if(node.getAttribute('src')!==src)node.setAttribute('src',src)}else node.removeAttribute('src')}// v3.6.11: the source module alone selects the poster.
-function lockedArtworkURL(value) {
+(function(){'use strict';var api=window.RexWidget;function el(id){return document.getElementById(id)}function str(v){return v==null?'':String(v)}function norm(v){var s=str(v).toLowerCase().replace(/[\u2018\u2019'`]/g,'');if(typeof s.normalize==='function')s=s.normalize('NFD').replace(/[\u0300-\u036f]/g,'');return s.replace(/[^a-z0-9]+/g,' ').trim();}var card=el('card'),link=el('open'),_sel=null,_lo=0;var _cak='',_ig=0,_dp='',_pp='',_la=null;var _dc=false,_fcp='',_fa='',_ff=Object.create(null);if(!api){el('status').textContent='Preview in Rex Widget Workshop';return}function _av(v){if(v&&typeof v==='object')return _av(v.url||v.src||v.path||v.file_path||v.imageUrl||v.backdropPath||'');return str(v).trim();}function _si(node,value){var src=_av(value);node.hidden=!src;if(src){if(node.getAttribute('src')!==src)node.setAttribute('src',src)}else node.removeAttribute('src')}// v3.6.12: use only source-supplied artwork references.
+function lockedArtworkURL(value, item) {
  var src=_av(value);
- if (/^\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)$/i.test(src)) return 'https://image.tmdb.org/t/p/original'+src;
+ if(!src)return '';
+ // Only use URLs already supplied by Rex. Never construct an external URL.
+ if(!/^\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)$/i.test(src))return src;
+ var identity=_iid(src);
+ var sources=item?[item.lockedPosterPath,item.faceSafePosterPath,item.cleanPosterPath,item.coverUrl,item.posterPath,item.detailPoster,item.backdropPath,item.titleLogoPath,item.titleLogoUrl,item.logoUrl,item.logoPath,item.titleLogoRawPath]:[];
+ if(item&&Array.isArray(item.backdropPaths))sources=sources.concat(item.backdropPaths);
+ for(var i=0;i<sources.length;i++){
+  var candidate=_av(sources[i]);
+  if(candidate&&candidate!==src&&_iid(candidate)===identity&&!/^\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)$/i.test(candidate))return candidate;
+ }
+ // Rex may provide a native relative image reference; keep it unchanged.
  return src;
 }
 function _rab(item) {
@@ -60,20 +70,20 @@ function _rab(item) {
  var p=Array.isArray(item.backdropPaths)?item.backdropPaths.map(_av).filter(Boolean):[];
  var d=_iid(item.backdropPath),n=_iid(item.posterPath||item.coverUrl);
  if((p.length===2||p.length===3)&&d&&n&&d===n&&d===_iid(p[0])&&/\.png$/i.test(_iid(p[p.length-1]))){
-  return {poster:lockedArtworkURL(p[0]),logo:lockedArtworkURL(p[p.length-1]),verified:true};
+  return {poster:lockedArtworkURL(p[0],item),logo:lockedArtworkURL(p[p.length-1],item),verified:true};
  }
  return null;
 }
 function _vs(item) {
  var bundle=_rab(item);
- return lockedArtworkURL(item.lockedPosterPath||item.faceSafePosterPath)||(bundle&&bundle.poster)||'';
+ return lockedArtworkURL(item.lockedPosterPath||item.faceSafePosterPath,item)||(bundle&&bundle.poster)||'';
 }
 var _rat=4*60*60*1000; /* title-logo cache only */function _raks(item){if(!item||item.id==null||item.id==='')return [];var id=String(item.id).trim(),title=String(item.title||'').trim().toLowerCase().replace(/\s+/g,' ');var type=String(item.mediaType||item.contentType||'').toLowerCase();if(type==='show'||type==='series'||type==='television')type='tv';var base='rex.editorial480.clean.367:';var keys=[];if(type)keys.push(base+type+':'+id);if(title)keys.push(base+'idtitle:'+id+':'+title);return keys;}
 function _iid(value){var src=_av(value);try{src=decodeURIComponent(src)}catch(e){}var matches=src.match(/\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)(?=$|[?#&/])/ig);return matches&&matches.length?matches[matches.length-1].toLowerCase():src;}var _fra={"1597":{title:"meet the parents",poster:"/t6Qs4qaANlikve2OmO0s3U1w9nv.jpg"},"225171":{title:"pluribus",poster:"/os1oQkTMZXiFP7KdEv3o03eshGC.jpg"},"9089":{title:"home for the holidays",poster:"/s6ol3yUC7qTPwWoCM7b7rnSaeJl.jpg",logo:"/AtMN8tMKMQ8PDo760zKoLkRl4LA.png",logoAlternates:["/gkbavCi5ubuVp9XleopJDuWPplT.png","/buEFy3l1eKjoM5PfxUuuEhiHKLS.png"]},"13963":{title:"the last waltz",poster:"/iXFOL9hCoCHFGACjJSIrY8eLlSY.jpg",logo:"/dI3b6DHMYGZDyZMfSqq8hHNrFBi.png",logoAlternates:["/z0mhltWcY0kIpdRTPpdpTfD9Ks.png"]},"244447":{title:"the hunting wives",poster:"/kg09RkDPfvz44TX7K3rmUv1dI02.jpg",logo:"/dT0HdklknEGQYkn1dNACIs4IeAt.png",logoAlternates:["/vuIB3iTCnBXkSo4eYoCY8fZ3SXU.png","/5qE6Fm2d9fbH8m72kDPi40msky9.png"]}};function _frr(item){if(!item)return null;var id=String(item.tmdbId||item.id||'').replace(/^(?:tv|movie)[.:]/,'');var title=_nm(item).toLowerCase().replace(/\s*\((?:19|20)\d{2}\)\s*$/,'').trim();var rule=_fra[id];if(rule&&rule.title===title)return rule;for(var k in _fra){if(_fra[k].title===title)return _fra[k];}return null;}function _rs(item){var values=[item.cleanPosterPath,item.titleLogoPath,item.titleLogoUrl,item.logoUrl,item.logoPath,item.titleLogoRawPath,item.detailPoster,item.backdropPath,item.posterPath,item.coverUrl];if(Array.isArray(item.backdropPaths))values=values.concat(item.backdropPaths);return values.map(_av).filter(Boolean);}function _frs(item,path){var _srcs=_rs(item),identity=_iid(path),result=[];function add(src){if(src&&result.indexOf(src)<0)result.push(src);}if(!path)return result;for(var i=0;i<_srcs.length;i++){if(_iid(_srcs[i])===identity&&_srcs[i].charAt(0)!=='/')add(_srcs[i]);}for(var i=0;i<_srcs.length;i++){var source=_srcs[i];if(/^https?:\/\/image\.tmdb\.org\/t\/p\/(?:original|[wh]\d+)\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)(?:[?#].*)?$/i.test(source)){add(source.replace(/\/t\/p\/(?:original|[wh]\d+)\/[^?#]+(?:[?#].*)?$/i,'/t/p/original'+path));}}for(var i=0;i<_srcs.length;i++){if(_iid(_srcs[i])===identity)add(_srcs[i]);}return result;}function _frsel(item){var rule=_frr(item);if(!rule)return null;var posters=_frs(item,rule.poster),logos=_frs(item,rule.logo);return posters.length?{poster:posters[0],posters:posters,logo:logos[0]||'',manual:true}:null;}function _ca(item) {
  if(!item||item.nativePosterOnly)return null;
  var src=_vs(item),bundle=_rab(item);
  if(!src)return null;
- return {poster:src,v:true,logo:lockedArtworkURL(item.titleLogoPath||item.titleLogoUrl||item.logoPath||(bundle&&bundle.logo)||'')};
+ return {poster:src,v:true,logo:lockedArtworkURL(item.titleLogoPath||item.titleLogoUrl||item.logoPath||(bundle&&bundle.logo)||'',item)};
 }
 function _lock(item) {
  // Keep the first authoritative selection for this card. No renderer overrides.
