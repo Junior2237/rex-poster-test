@@ -1,76 +1,85 @@
 {
   "schemaVersion": 1,
   "algorithm": "yunet-ppocr-v5",
-  "qualityVersion": 2,
-  "qualityUpgrades": [],
-  "qualityExclusions": [
+  "qualityVersion": 3,
+  "minimumOriginalResolution": {
+    "width": 2000,
+    "height": 3000
+  },
+  "targetOriginalResolution": {
+    "width": 2560,
+    "height": 3840
+  },
+  "qualityUpgrades": [
     {
-      "title": "High Potential",
+      "title": "Wicker",
+      "layout": "top20",
+      "from": "/18U1TLC154qmWPXuiMt8PiFi83v.jpg",
+      "to": "/pZ6rf4h2c4HyMEgDPudOIjzdAfB.jpg",
+      "oldScore": 76.218,
+      "newScore": 85.332
+    },
+    {
+      "title": "Wicker",
       "layout": "trending",
-      "posterPath": "/6ozHJmqt7VbPsTrCkhT0DOYW4vn.jpg"
+      "from": "/18U1TLC154qmWPXuiMt8PiFi83v.jpg",
+      "to": "/pZ6rf4h2c4HyMEgDPudOIjzdAfB.jpg",
+      "oldScore": 76.218,
+      "newScore": 85.332
     },
     {
-      "title": "High Potential",
+      "title": "Teenage Sex and Death at Camp Miasma",
       "layout": "top20",
-      "posterPath": "/k1WZ8v7hUZ7QDseZH9TWVaAyTc0.jpg"
+      "from": "/mYAorRMCxzKBNeQTIYPuP76TR8c.jpg",
+      "to": "/dltbAtWg4xNRugU8HQH6BrhdcKN.jpg",
+      "oldScore": 71.297,
+      "newScore": 62.064
     },
     {
-      "title": "Nobody Wants This",
+      "title": "Coyote vs. Acme",
       "layout": "top20",
-      "posterPath": "/uOsvjNjYYshi44tR5onbTGAiexS.jpg"
+      "from": "/7wKuuZvEh54r5LACiRLkCEAiKjp.jpg",
+      "to": "/pCGmYACTqMqF5ZSchYNXoXi037h.jpg",
+      "oldScore": 60.143,
+      "newScore": 85.332
     },
     {
-      "title": "Addams Family Values",
-      "layout": "top20",
-      "posterPath": "/oe2EmsNJ2Z5vx4tF0V8ZpdrIZmO.jpg"
-    },
-    {
-      "title": "Addams Family Values",
+      "title": "Coyote vs. Acme",
       "layout": "trending",
-      "posterPath": "/oe2EmsNJ2Z5vx4tF0V8ZpdrIZmO.jpg"
-    },
-    {
-      "title": "The Body",
-      "layout": "top20",
-      "posterPath": "/iAbat5mIHdWcnj0wZJ8847SOWVO.jpg"
-    },
-    {
-      "title": "The Body",
-      "layout": "trending",
-      "posterPath": "/iAbat5mIHdWcnj0wZJ8847SOWVO.jpg"
-    },
-    {
-      "title": "South Park",
-      "layout": "top20",
-      "posterPath": "/la1aQtFQOXwOiyjo9yuTyIDucj7.jpg"
-    },
-    {
-      "title": "South Park",
-      "layout": "trending",
-      "posterPath": "/la1aQtFQOXwOiyjo9yuTyIDucj7.jpg"
-    },
-    {
-      "title": "Ted Lasso",
-      "layout": "top20",
-      "posterPath": "/uqZjoWvpGMdQ6K9L8MsxngHBKy6.jpg"
-    },
-    {
-      "title": "Ted Lasso",
-      "layout": "trending",
-      "posterPath": "/uqZjoWvpGMdQ6K9L8MsxngHBKy6.jpg"
-    },
-    {
-      "title": "War Machine",
-      "layout": "top20",
-      "posterPath": "/sNcd70Q6sEBnF3YEd3kC9jIUO5E.jpg"
-    },
-    {
-      "title": "War Machine",
-      "layout": "trending",
-      "posterPath": "/sNcd70Q6sEBnF3YEd3kC9jIUO5E.jpg"
+      "from": "/7wKuuZvEh54r5LACiRLkCEAiKjp.jpg",
+      "to": "/pCGmYACTqMqF5ZSchYNXoXi037h.jpg",
+      "oldScore": 60.143,
+      "newScore": 85.332
     }
   ],
-  "generatedAt": "2026-11-27T15:18:31.505367+00:00",
+  "qualityExclusions": [
+    {
+      "title": "Crime 101",
+      "layout": "trending",
+      "posterPath": "/nLacDm0Oq0cZnf8EhqXHsi9TQXm.jpg"
+    },
+    {
+      "title": "Madden",
+      "layout": "top20",
+      "posterPath": "/poP4sBdJcT2IuemmsQQIKD1zRSO.jpg"
+    },
+    {
+      "title": "Madden",
+      "layout": "trending",
+      "posterPath": "/poP4sBdJcT2IuemmsQQIKD1zRSO.jpg"
+    },
+    {
+      "title": "Fool Night",
+      "layout": "top20",
+      "posterPath": "/yvnbT2cpGClfx6ktTxGrKKkGhG3.jpg"
+    },
+    {
+      "title": "Fool Night",
+      "layout": "trending",
+      "posterPath": "/yvnbT2cpGClfx6ktTxGrKKkGhG3.jpg"
+    }
+  ],
+  "generatedAt": "2026-11-27T16:31:44.042634+00:00",
   "overrides": {
     "movie:2609": {
       "title": "Planes, Trains and Automobiles",
@@ -853,7 +862,18 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 3,
+          "qualityScore": 83.8,
+          "resolutionClass": "native-high-resolution",
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 1.0,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.3253,
+          "voteAverage": 2.278,
+          "voteCount": 3,
+          "qualityAuditVersion": 3
         },
         "trending": {
           "baseline": "/LqIboqIkbEJ0LXcfrY9Tk5uawL.jpg",
@@ -863,7 +883,18 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 3,
+          "qualityScore": 83.8,
+          "resolutionClass": "native-high-resolution",
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 1.0,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.3253,
+          "voteAverage": 2.278,
+          "voteCount": 3,
+          "qualityAuditVersion": 3
         }
       }
     },
@@ -946,24 +977,54 @@
       "title": "Wicker",
       "layouts": {
         "top20": {
-          "baseline": "/18U1TLC154qmWPXuiMt8PiFi83v.jpg",
-          "posterPath": "/18U1TLC154qmWPXuiMt8PiFi83v.jpg",
+          "baseline": "/5sVi66aTT9X2uMldmIwu9JW3hZ2.jpg",
+          "posterPath": "/pZ6rf4h2c4HyMEgDPudOIjzdAfB.jpg",
           "before": 0.0,
           "after": 0.0,
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "selection": "alternate",
+          "qualityVersion": 3,
+          "qualityScore": 85.332,
+          "resolutionClass": "native-high-resolution",
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 1.0,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.3819,
+          "voteAverage": 0,
+          "voteCount": 0,
+          "qualityAuditVersion": 3,
+          "qualityPreviousPath": "/18U1TLC154qmWPXuiMt8PiFi83v.jpg",
+          "qualityPreviousScore": 76.218
         },
         "trending": {
-          "baseline": "/18U1TLC154qmWPXuiMt8PiFi83v.jpg",
-          "posterPath": "/18U1TLC154qmWPXuiMt8PiFi83v.jpg",
+          "baseline": "/5sVi66aTT9X2uMldmIwu9JW3hZ2.jpg",
+          "posterPath": "/pZ6rf4h2c4HyMEgDPudOIjzdAfB.jpg",
           "before": 0.0,
           "after": 0.0,
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "selection": "alternate",
+          "qualityVersion": 3,
+          "qualityScore": 85.332,
+          "resolutionClass": "native-high-resolution",
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 1.0,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.3819,
+          "voteAverage": 0,
+          "voteCount": 0,
+          "qualityAuditVersion": 3,
+          "qualityPreviousPath": "/18U1TLC154qmWPXuiMt8PiFi83v.jpg",
+          "qualityPreviousScore": 76.218
         }
       }
     },
@@ -1128,7 +1189,18 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 3,
+          "qualityScore": 84.915,
+          "resolutionClass": "native-high-resolution",
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 1.0,
+          "edgeEvidence": true,
+          "edgeDefinition": 2.3147,
+          "voteAverage": 3.334,
+          "voteCount": 1,
+          "qualityAuditVersion": 3
         },
         "top20": {
           "baseline": "/eiU7F1MBfY88EQRxp5ykLWqqnTx.jpg",
@@ -1138,7 +1210,18 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 3,
+          "qualityScore": 83.696,
+          "resolutionClass": "native-high-resolution",
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 0.9729,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.2015,
+          "voteAverage": 3.334,
+          "voteCount": 1,
+          "qualityAuditVersion": 3
         }
       }
     },
@@ -1243,7 +1326,18 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "selection": "confirmed",
+          "qualityVersion": 3,
+          "qualityScore": 84.915,
+          "resolutionClass": "native-high-resolution",
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 1.0,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.3234,
+          "voteAverage": 3.334,
+          "voteCount": 1,
+          "qualityAuditVersion": 3
         },
         "top20": {
           "baseline": "/4RLhArdnymkf2WpQ5R2RxbUC21e.jpg",
@@ -1253,7 +1347,18 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 3,
+          "qualityScore": 83.939,
+          "resolutionClass": "native-high-resolution",
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 1.0,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.4779,
+          "voteAverage": 1.75,
+          "voteCount": 2,
+          "qualityAuditVersion": 3
         }
       }
     },
@@ -1817,7 +1922,18 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 3,
+          "qualityScore": 81.504,
+          "resolutionClass": "native-high-resolution",
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 0.9459,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.1732,
+          "voteAverage": 1.75,
+          "voteCount": 2,
+          "qualityAuditVersion": 3
         },
         "trending": {
           "baseline": "/701aTHRSfEm2IHchyMXoZt4T1yV.jpg",
@@ -1827,7 +1943,18 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 3,
+          "qualityScore": 81.504,
+          "resolutionClass": "native-high-resolution",
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 0.9459,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.1732,
+          "voteAverage": 1.75,
+          "voteCount": 2,
+          "qualityAuditVersion": 3
         }
       }
     },
@@ -1937,7 +2064,18 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "selection": "confirmed",
+          "qualityVersion": 3,
+          "qualityScore": 84.124,
+          "resolutionClass": "native-high-resolution",
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 0.9226,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.1487,
+          "voteAverage": 8.034,
+          "voteCount": 5,
+          "qualityAuditVersion": 3
         },
         "trending": {
           "baseline": "/pcTweebSCQYIbdpjbN3r0Tw8iI2.jpg",
@@ -1947,7 +2085,18 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "selection": "confirmed",
+          "qualityVersion": 3,
+          "qualityScore": 84.124,
+          "resolutionClass": "native-high-resolution",
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 0.9226,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.1487,
+          "voteAverage": 8.034,
+          "voteCount": 5,
+          "qualityAuditVersion": 3
         }
       }
     },
@@ -2057,7 +2206,18 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "selection": "confirmed",
+          "qualityVersion": 3,
+          "qualityScore": 84.915,
+          "resolutionClass": "native-high-resolution",
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 1.0,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.2888,
+          "voteAverage": 3.334,
+          "voteCount": 1,
+          "qualityAuditVersion": 3
         },
         "trending": {
           "baseline": "/e7lx2JxRSia7uYHjdoEieQpcAVW.jpg",
@@ -2067,7 +2227,18 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "selection": "confirmed",
+          "qualityVersion": 3,
+          "qualityScore": 84.915,
+          "resolutionClass": "native-high-resolution",
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 1.0,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.2888,
+          "voteAverage": 3.334,
+          "voteCount": 1,
+          "qualityAuditVersion": 3
         }
       }
     },
@@ -2127,7 +2298,18 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 3,
+          "qualityScore": 84.915,
+          "resolutionClass": "native-high-resolution",
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 1.0,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.3261,
+          "voteAverage": 3.334,
+          "voteCount": 1,
+          "qualityAuditVersion": 3
         },
         "top20": {
           "baseline": "/imYNnIA5FcP6d3hrS60uXlbE13o.jpg",
@@ -2137,7 +2319,18 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 3,
+          "qualityScore": 84.915,
+          "resolutionClass": "native-high-resolution",
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 1.0,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.3261,
+          "voteAverage": 3.334,
+          "voteCount": 1,
+          "qualityAuditVersion": 3
         }
       }
     },
@@ -2177,7 +2370,18 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 3,
+          "qualityScore": 75.793,
+          "resolutionClass": "native-high-resolution",
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 0.8158,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.0366,
+          "voteAverage": 0,
+          "voteCount": 1,
+          "qualityAuditVersion": 3
         }
       }
     },
@@ -2248,21 +2452,6 @@
           "baseline": "/5TnrqeO3pniOGBTEhNiMi98LmNU.jpg",
           "posterPath": "/8PTIEKIK9QkffYsbmn0EozCkE39.jpg",
           "before": 0.0,
-          "after": 0.0,
-          "textCheck": "clear",
-          "textModel": "ppocrv3-en",
-          "faceCheck": "clear",
-          "selection": "alternate"
-        }
-      }
-    },
-    "movie:1171145": {
-      "title": "Crime 101",
-      "layouts": {
-        "trending": {
-          "baseline": "/sGWwEfFxIsSfhDxuAXhIDGKa7B6.jpg",
-          "posterPath": "/nLacDm0Oq0cZnf8EhqXHsi9TQXm.jpg",
-          "before": 0.307,
           "after": 0.0,
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
@@ -2895,31 +3084,6 @@
         }
       }
     },
-    "movie:1131943": {
-      "title": "Madden",
-      "layouts": {
-        "top20": {
-          "baseline": "/cvqsGcQUf9b33nxpAiJ3NU7OD94.jpg",
-          "posterPath": "/poP4sBdJcT2IuemmsQQIKD1zRSO.jpg",
-          "before": 0.0,
-          "after": 0.0,
-          "textCheck": "clear",
-          "textModel": "ppocrv3-en",
-          "faceCheck": "clear",
-          "selection": "alternate"
-        },
-        "trending": {
-          "baseline": "/cvqsGcQUf9b33nxpAiJ3NU7OD94.jpg",
-          "posterPath": "/poP4sBdJcT2IuemmsQQIKD1zRSO.jpg",
-          "before": 0.0,
-          "after": 0.0,
-          "textCheck": "clear",
-          "textModel": "ppocrv3-en",
-          "faceCheck": "clear",
-          "selection": "alternate"
-        }
-      }
-    },
     "movie:950028": {
       "title": "The Invite",
       "layouts": {
@@ -3171,17 +3335,43 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 3,
+          "qualityScore": 83.939,
+          "resolutionClass": "native-high-resolution",
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 1.0,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.2897,
+          "voteAverage": 1.75,
+          "voteCount": 2,
+          "qualityAuditVersion": 3
         },
         "top20": {
-          "baseline": "/dltbAtWg4xNRugU8HQH6BrhdcKN.jpg",
-          "posterPath": "/mYAorRMCxzKBNeQTIYPuP76TR8c.jpg",
-          "before": null,
+          "baseline": "/jcGvB76v8p1sqYXXkBetWASV0uM.jpg",
+          "posterPath": "/dltbAtWg4xNRugU8HQH6BrhdcKN.jpg",
+          "before": 0.221,
           "after": 0.0,
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "selection": "alternate",
+          "qualityVersion": 3,
+          "qualityScore": 62.064,
+          "resolutionClass": "native-high-resolution",
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 0.4922,
+          "edgeEvidence": true,
+          "edgeDefinition": 0.6968,
+          "voteAverage": 3.334,
+          "voteCount": 1,
+          "qualityAuditVersion": 3,
+          "qualityPreviousPath": "/mYAorRMCxzKBNeQTIYPuP76TR8c.jpg",
+          "qualityPreviousScore": 71.297
         }
       }
     },
@@ -3393,24 +3583,54 @@
       "title": "Coyote vs. Acme",
       "layouts": {
         "top20": {
-          "baseline": "/4uKCk1L5pVWxjwCxMsbfhxWesGd.jpg",
-          "posterPath": "/7wKuuZvEh54r5LACiRLkCEAiKjp.jpg",
-          "before": null,
+          "baseline": "/kYDCl2y0VPvhT5eYWbMRInPoB03.jpg",
+          "posterPath": "/pCGmYACTqMqF5ZSchYNXoXi037h.jpg",
+          "before": 0.0,
           "after": 0.0,
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "selection": "alternate",
+          "qualityVersion": 3,
+          "qualityScore": 85.332,
+          "resolutionClass": "native-high-resolution",
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 1.0,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.3741,
+          "voteAverage": 0,
+          "voteCount": 0,
+          "qualityAuditVersion": 3,
+          "qualityPreviousPath": "/7wKuuZvEh54r5LACiRLkCEAiKjp.jpg",
+          "qualityPreviousScore": 60.143
         },
         "trending": {
-          "baseline": "/4uKCk1L5pVWxjwCxMsbfhxWesGd.jpg",
-          "posterPath": "/7wKuuZvEh54r5LACiRLkCEAiKjp.jpg",
-          "before": null,
+          "baseline": "/kYDCl2y0VPvhT5eYWbMRInPoB03.jpg",
+          "posterPath": "/pCGmYACTqMqF5ZSchYNXoXi037h.jpg",
+          "before": 0.0,
           "after": 0.0,
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "selection": "alternate",
+          "qualityVersion": 3,
+          "qualityScore": 85.332,
+          "resolutionClass": "native-high-resolution",
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 1.0,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.3741,
+          "voteAverage": 0,
+          "voteCount": 0,
+          "qualityAuditVersion": 3,
+          "qualityPreviousPath": "/7wKuuZvEh54r5LACiRLkCEAiKjp.jpg",
+          "qualityPreviousScore": 60.143
         }
       }
     },
@@ -3475,7 +3695,18 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "selection": "confirmed",
+          "qualityVersion": 3,
+          "qualityScore": 83.165,
+          "resolutionClass": "native-high-resolution",
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 1.0,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.6499,
+          "voteAverage": 1.75,
+          "voteCount": 4,
+          "qualityAuditVersion": 3
         },
         "top20": {
           "baseline": "/dzOnDgSDZ0NMGGRwq0I0CyxCdsI.jpg",
@@ -3485,7 +3716,18 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 3,
+          "qualityScore": 62.782,
+          "resolutionClass": "native-high-resolution",
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 0.4989,
+          "edgeEvidence": true,
+          "edgeDefinition": 0.7038,
+          "voteAverage": 0,
+          "voteCount": 0,
+          "qualityAuditVersion": 3
         }
       }
     },
@@ -3500,7 +3742,18 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "selection": "confirmed",
+          "qualityVersion": 3,
+          "qualityScore": 84.915,
+          "resolutionClass": "native-high-resolution",
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 1.0,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.4955,
+          "voteAverage": 3.334,
+          "voteCount": 1,
+          "qualityAuditVersion": 3
         },
         "trending": {
           "baseline": "/p9abmxhlhTGRsEyPSDMRfKAs1vM.jpg",
@@ -3510,7 +3763,18 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "selection": "confirmed",
+          "qualityVersion": 3,
+          "qualityScore": 84.915,
+          "resolutionClass": "native-high-resolution",
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 1.0,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.4955,
+          "voteAverage": 3.334,
+          "voteCount": 1,
+          "qualityAuditVersion": 3
         }
       }
     },
@@ -3759,55 +4023,6 @@
         }
       }
     },
-    "tv:326247": {
-      "title": "Fool Night",
-      "layouts": {
-        "top20": {
-          "baseline": "/qZb0FSpnL1vJSNl742oupBOIE3Z.jpg",
-          "posterPath": "/yvnbT2cpGClfx6ktTxGrKKkGhG3.jpg",
-          "before": 0.0,
-          "after": 0.0,
-          "textCheck": "clear",
-          "textModel": "ppocrv3-en",
-          "faceCheck": "clear",
-          "faceCount": 1,
-          "faceAssessment": "overlap_within_limit",
-          "width": 1200,
-          "height": 1800,
-          "selection": "alternate",
-          "qualityVersion": 2,
-          "qualityScore": 79.082,
-          "sharpness": 1.0,
-          "edgeEvidence": true,
-          "edgeDefinition": 1.7054,
-          "voteAverage": 0,
-          "voteCount": 0,
-          "qualityAuditVersion": 2
-        },
-        "trending": {
-          "baseline": "/qZb0FSpnL1vJSNl742oupBOIE3Z.jpg",
-          "posterPath": "/yvnbT2cpGClfx6ktTxGrKKkGhG3.jpg",
-          "before": 0.0,
-          "after": 0.0,
-          "textCheck": "clear",
-          "textModel": "ppocrv3-en",
-          "faceCheck": "clear",
-          "faceCount": 1,
-          "faceAssessment": "overlap_within_limit",
-          "width": 1200,
-          "height": 1800,
-          "selection": "alternate",
-          "qualityVersion": 2,
-          "qualityScore": 79.082,
-          "sharpness": 1.0,
-          "edgeEvidence": true,
-          "edgeDefinition": 1.7054,
-          "voteAverage": 0,
-          "voteCount": 0,
-          "qualityAuditVersion": 2
-        }
-      }
-    },
     "tv:213562": {
       "title": "Crystal Lake",
       "layouts": {
@@ -4041,44 +4256,29 @@
     }
   },
   "textScreening": {
-    "clear": 22,
-    "text": 925,
+    "clear": 24,
+    "text": 904,
     "unknown": 0
   },
   "unresolved": {
-    "tv:291507": {
-      "title": "The Body",
+    "tv:326247": {
+      "title": "Fool Night",
       "status": "unresolved",
       "mode": "excluded"
     },
-    "tv:226637": {
-      "title": "High Potential",
+    "movie:1131943": {
+      "title": "Madden",
       "status": "unresolved",
       "mode": "excluded"
     },
-    "tv:250923": {
-      "title": "Nobody Wants This",
+    "movie:1171145": {
+      "title": "Crime 101",
+      "status": "unresolved",
+      "mode": "excluded"
+    },
+    "movie:1236153": {
+      "title": "Mercy",
       "status": "partial",
-      "mode": "excluded"
-    },
-    "tv:97546": {
-      "title": "Ted Lasso",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
-    "movie:1265609": {
-      "title": "War Machine",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
-    "tv:2190": {
-      "title": "South Park",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
-    "movie:2758": {
-      "title": "Addams Family Values",
-      "status": "unresolved",
       "mode": "excluded"
     },
     "movie:13963": {
@@ -4111,6 +4311,11 @@
       "status": "unresolved",
       "mode": "excluded"
     },
+    "movie:2758": {
+      "title": "Addams Family Values",
+      "status": "unresolved",
+      "mode": "excluded"
+    },
     "movie:351339": {
       "title": "Anthropoid",
       "status": "unresolved",
@@ -4126,8 +4331,18 @@
       "status": "partial",
       "mode": "excluded"
     },
+    "tv:291507": {
+      "title": "The Body",
+      "status": "unresolved",
+      "mode": "excluded"
+    },
     "tv:45571": {
       "title": "The Story of Film: An Odyssey",
+      "status": "unresolved",
+      "mode": "excluded"
+    },
+    "tv:2190": {
+      "title": "South Park",
       "status": "unresolved",
       "mode": "excluded"
     },
@@ -4149,6 +4364,11 @@
     "tv:298852": {
       "title": "WAR",
       "status": "unresolved",
+      "mode": "excluded"
+    },
+    "tv:250923": {
+      "title": "Nobody Wants This",
+      "status": "partial",
       "mode": "excluded"
     },
     "movie:1480665": {
@@ -4191,14 +4411,19 @@
       "status": "unresolved",
       "mode": "excluded"
     },
-    "movie:1236153": {
-      "title": "Mercy",
-      "status": "partial",
+    "tv:97546": {
+      "title": "Ted Lasso",
+      "status": "unresolved",
       "mode": "excluded"
     },
-    "movie:1171145": {
-      "title": "Crime 101",
-      "status": "partial",
+    "movie:1265609": {
+      "title": "War Machine",
+      "status": "unresolved",
+      "mode": "excluded"
+    },
+    "tv:226637": {
+      "title": "High Potential",
+      "status": "unresolved",
       "mode": "excluded"
     },
     "tv:273240": {
