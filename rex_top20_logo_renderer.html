@@ -67,7 +67,7 @@ function _av(v){
 if(v&&typeof v==='object')return _av(v.url||v.src||v.path||v.file_path||v.imageUrl||v.backdropPath||'');
 return str(v).trim();
 }
-function setImage(node,value){var src=_av(value);node.hidden=!src;if(src){if(node.getAttribute('src')!==src)node.setAttribute('src',src)}else node.removeAttribute('src')}
+function _si(node,value){var src=_av(value);node.hidden=!src;if(src){if(node.getAttribute('src')!==src)node.setAttribute('src',src)}else node.removeAttribute('src')}
 function _rab(item){
 if(!item)return null;
 var paths=Array.isArray(item.backdropPaths)?item.backdropPaths.map(_av).filter(Boolean):[];
@@ -192,12 +192,12 @@ _dp='';
 _pp='';
 _la=null;
 _dc=false;_fcp='';_fa='';_ff=Object.create(null);
-setImage(el('poster'),'');
+_si(el('poster'),'');
 _lreq++;
 _lk='';
 var logo=el('logo');
 logo.onload=null;logo.onerror=null;logo.style.transform='';
-setImage(logo,'');
+_si(logo,'');
 el('title').hidden=true;
 }
 function _fp(item){
@@ -232,15 +232,15 @@ function _rlc(item,art){
 if(!item)return [];
 var fixed=_frr(item),bundle=_rab(item),result=[];
 function append(v){var src=_av(v);if(src&&result.indexOf(src)<0)result.push(src);}
-function appendPath(path){_frs(item,path).forEach(append);}
+function _ap(path){_frs(item,path).forEach(append);}
 [item.titleLogoPath,item.titleLogoUrl,item.logoUrl,item.logoPath,item.titleLogoRawPath,bundle&&bundle.logo,art&&art.logo].forEach(function(v){
-var src=_av(v);if(src.charAt(0)==='/')appendPath(src);append(src);
+var src=_av(v);if(src.charAt(0)==='/')_ap(src);append(src);
 });
 var remembered=_rlr(item);if(remembered)append(remembered);
 if(Array.isArray(item.titleLogoAlternates))item.titleLogoAlternates.forEach(function(v){
-var src=_av(v);if(src.charAt(0)==='/')appendPath(src);append(src);
+var src=_av(v);if(src.charAt(0)==='/')_ap(src);append(src);
 });
-if(fixed){appendPath(fixed.logo);(fixed.logoAlternates||[]).forEach(appendPath);}
+if(fixed){_ap(fixed.logo);(fixed.logoAlternates||[]).forEach(_ap);}
 var paths=Array.isArray(item.backdropPaths)?item.backdropPaths.map(_av).filter(Boolean):[];
 var excluded=[item.backdropPath,item.posterPath,item.coverUrl,item.detailPoster,item.cleanPosterPath,art&&art.poster,bundle&&bundle.poster].map(_iid).filter(Boolean);
 for(var i=paths.length-1;i>=0;i--){
@@ -277,7 +277,7 @@ image.onload=function(){
 if(generation!==_ig||key!==_cak||!_sel||_ak(_sel)!==key)return;
 _pp='';
 _dp=src;_dc=useClean;
-setImage(el('poster'),src);
+_si(el('poster'),src);
 _spb(_sel,_la);
 };
 image.onerror=function(){
@@ -424,7 +424,7 @@ var HUNGER_GAMES=[
 /^(?:the )?hunger games the ballad of songbirds and snakes$/,
 /^(?:the )?ballad of songbirds and snakes$/
 ];
-function knownGenres(item){
+function _kg(item){
 var key=_tk(item);
 if(key==='nocturne'){
 var type=mediaType(item);
@@ -448,15 +448,15 @@ var ALIASES={
 'biography':'Biography','soap':'Soap','talk':'Talk',
 'action adventure':'Action','action and adventure':'Action'
 };
-function canonical(v){return ALIASES[norm(v)]||''}
+function _cn(v){return ALIASES[norm(v)]||''}
 function label(v){
 if(typeof v==='string')return v;
 if(!v||typeof v!=='object')return '';
 return str(v.title||v.name||v.label||v.genreTitle||'');
 }
-function splitGenres(value){
+function _sg(value){
 var raw=label(value),out=[];if(!raw)return out;
-function add(v){var g=canonical(v);if(g&&out.indexOf(g)<0)out.push(g)}
+function add(v){var g=_cn(v);if(g&&out.indexOf(g)<0)out.push(g)}
 var parts=raw.split(/[·•|,\/;]+/);
 for(var i=0;i<parts.length;i++){
 var s=norm(parts[i]);
@@ -465,14 +465,14 @@ if(s==='sci fi and fantasy'||s==='science fiction and fantasy'){add('Sci-Fi');ad
 if(s==='mystery and thriller'){add('Mystery');add('Thriller');continue}
 if(s==='kids and family'){add('Family');continue}
 var pair=s.split(/\s+and\s+/);
-if(pair.length===2&&canonical(pair[0])&&canonical(pair[1])){add(pair[0]);add(pair[1]);continue}
+if(pair.length===2&&_cn(pair[0])&&_cn(pair[1])){add(pair[0]);add(pair[1]);continue}
 add(s);
 }
 return out;
 }
-function collectGenres(item){
+function _cg2(item){
 var out=[];
-function add(v){var list=splitGenres(v);for(var i=0;i<list.length;i++)if(out.indexOf(list[i])<0)out.push(list[i])}
+function add(v){var list=_sg(v);for(var i=0;i<list.length;i++)if(out.indexOf(list[i])<0)out.push(list[i])}
 var arrays=[item.genreItems,item.genres,item.genreList,item.categories,item.tags];
 for(var a=0;a<arrays.length;a++){
 if(Array.isArray(arrays[a]))for(var b=0;b<arrays[a].length;b++)add(arrays[a][b]);
@@ -485,18 +485,18 @@ if(Array.isArray(item.metadata.genres))for(var m=0;m<item.metadata.genres.length
 }
 return out;
 }
-function explicitPrimary(item){
+function _ep(item){
 var fields=[item.primaryGenre,item.mainGenre,item.dominantGenre];
-for(var i=0;i<fields.length;i++){var x=splitGenres(fields[i]);if(x.length===1)return x[0]}
+for(var i=0;i<fields.length;i++){var x=_sg(fields[i]);if(x.length===1)return x[0]}
 if(Array.isArray(item.genreItems))for(var j=0;j<item.genreItems.length;j++){
 var g=item.genreItems[j];if(g&&(g.isPrimary===true||g.primary===true)){
-var y=splitGenres(g);if(y.length===1)return y[0];
+var y=_sg(g);if(y.length===1)return y[0];
 }
 }
 return '';
 }
-function synopsis(item){
-var fields=[item.description,item.overview,item.summary,item.synopsis,item.plot,item.tagline],out=[];
+function _sy(item){
+var fields=[item.description,item.overview,item.summary,item._sy,item.plot,item.tagline],out=[];
 for(var i=0;i<fields.length;i++)if(typeof fields[i]==='string'){
 var s=fields[i].trim();if(s&&out.indexOf(s)<0)out.push(s);
 }
@@ -520,12 +520,12 @@ var EVIDENCE={
 'Western':[/\b(?:wild west|western drama|frontier town)\b/gi,/\b(?:cowboy|rancher|sheriff|rodeo)\b/gi],
 'Sports':[/\b(?:sports team|professional athlete|championship season)\b/gi,/\b(?:soccer|football|basketball|athlete)\b/gi]
 };
-function evidence(g,story){var p=EVIDENCE[g];if(!p||!story)return 0;var strong=story.match(p[0])||[],weak=story.match(p[1])||[];return Math.min(strong.length,2)*4+Math.min(weak.length,2)*1.5}
-function classifyGenres(item){
+function _ev(g,story){var p=EVIDENCE[g];if(!p||!story)return 0;var strong=story.match(p[0])||[],weak=story.match(p[1])||[];return Math.min(strong.length,2)*4+Math.min(weak.length,2)*1.5}
+function _cgs(item){
 if(!item)return [];
-var known=knownGenres(item);
+var known=_kg(item);
 if(known.length)return known;
-var source=collectGenres(item),primary=explicitPrimary(item),story=synopsis(item);
+var source=_cg2(item),primary=_ep(item),story=_sy(item);
 if(primary){source=source.filter(function(v){return v!==primary});source.unshift(primary)}
 if(source.indexOf('Anime')>=0)return ['Anime'].concat(source.filter(function(v){return v!=='Anime'}));
 if(source.indexOf('Animation')>=0)return ['Animation'].concat(source.filter(function(v){return v!=='Animation'}));
@@ -535,7 +535,7 @@ return [/\banime\b/i.test(story)?'Anime':'Animation'].concat(source);
 if(!source.length){
 var evidenceList=[];
 for(var k in EVIDENCE)if(Object.prototype.hasOwnProperty.call(EVIDENCE,k)){
-var n=evidence(k,story);if(n>=4)evidenceList.push({genre:k,score:n});
+var n=_ev(k,story);if(n>=4)evidenceList.push({genre:k,score:n});
 }
 evidenceList.sort(function(a,b){return b.score-a.score});
 if(evidenceList.length===0)return [];
@@ -543,7 +543,7 @@ if(evidenceList.length>1&&evidenceList[0].score-evidenceList[1].score<1.5)return
 return [evidenceList[0].genre];
 }
 if(primary||source.length===1)return source;
-var scores=source.map(function(g){return {genre:g,score:evidence(g,story)}});
+var scores=source.map(function(g){return {genre:g,score:_ev(g,story)}});
 scores.sort(function(a,b){return b.score-a.score});
 if(scores[0].score>=4&&scores[0].score-scores[1].score>=1.5){
 var winner=scores[0].genre;return [winner].concat(source.filter(function(v){return v!==winner}));
@@ -555,14 +555,14 @@ var preferred=source[i];return [preferred].concat(source.filter(function(v){retu
 }
 return source;
 }
-function typeLabel(item){
+function _tl(item){
 var type=mediaType(item);
 if(/^(?:movie|film|cinema)$/.test(type))return 'Movie';
 if(/^(?:tv|show|series|tv show|tv series|television)$/.test(type))return 'TV Show';
 return '';
 }
 function _il(item){
-var parts=[],type=typeLabel(item),genres=classifyGenres(item);
+var parts=[],type=_tl(item),genres=_cgs(item);
 if(type)parts.push(type);
 for(var i=0;i<genres.length&&i<2;i++)if(genres[i]&&parts.indexOf(genres[i])<0)parts.push(genres[i]);
 return parts.join(' · ');
@@ -577,7 +577,7 @@ return {name:n.name||n.title||n.networkName||'',logo:n.logoPath||n.logoUrl||n.lo
 }
 function _sn(item){
 var n=_fn(item),name=n&&n.name||'',logo=n&&n.logo||item&&(item.originalNetworkLogoPath||item.originalNetworkLogo||item.networkLogoPath||item.networkLogoUrl)||'';
-setImage(el('platformLogo'),logo);el('platformLogo').alt=name;
+_si(el('platformLogo'),logo);el('platformLogo').alt=name;
 el('platformName').hidden=!!logo||!name;el('platformName').textContent=name;
 return !!(logo||name);
 }
@@ -626,17 +626,17 @@ var info=_il(item);el('metaText').textContent=info;el('metaText').hidden=!info;
 var network=_sn(item);el('meta').hidden=!(network||info);el('details').hidden=false;el('status').hidden=true;
 link.tabIndex=0;link.setAttribute('aria-label','Open '+name);_ul();
 }
-function openSelected(){
+function _os(){
 if(!_sel)return;var now=Date.now();if(now-_lo<350)return;
 var id=_sel.id;if(id==null||id==='')return;
 if(typeof api.canOpen==='function'&&!api.canOpen('item',id))return;
 _lo=now;
 try{var result=api.open('item',id);if(result&&typeof result.catch==='function')result.catch(function(){})}catch(e){}
 }
-link.addEventListener('click',function(e){e.preventDefault();openSelected()});
+link.addEventListener('click',function(e){e.preventDefault();_os()});
 link.addEventListener('focus',function(){card.classList.add('focused')});
 link.addEventListener('blur',function(){card.classList.remove('focused')});
-link.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key==='Select'||e.key===' '||e.keyCode===13||e.keyCode===23){e.preventDefault();openSelected()}});
+link.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key==='Select'||e.key===' '||e.keyCode===13||e.keyCode===23){e.preventDefault();_os()}});
 if(typeof ResizeObserver!=='undefined')new ResizeObserver(_ul).observe(card);
 window.addEventListener('resize',_ul);
 api.onContentChanged(render);api.onLayoutChanged(_ul);render();
