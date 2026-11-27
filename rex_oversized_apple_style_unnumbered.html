@@ -197,7 +197,7 @@ function railArtKeys(item){
  // allowing the native mediaType field to disappear or change on navigation.
  var type=String(item.mediaType||item.contentType||'').toLowerCase();
  if(type==='show'||type==='series'||type==='television')type='tv';
- var base='rex.editorial700.clean.353:';
+ var base='rex.editorial700.clean.363:';
  var keys=[];
  if(type)keys.push(base+type+':'+id);
  if(title)keys.push(base+'idtitle:'+id+':'+title);
@@ -274,6 +274,8 @@ function confirmedArtwork(item){
  if(manual)return manual;
  // Never trust old automatic artwork for a title with an explicit override.
  if(fixedRailRule(item))return null;
+ var safe=artworkValue(item.faceSafePosterPath);
+ if(safe)return {poster:safe,logo:artworkValue(item.titleLogoPath)||artworkValue(item.titleLogoUrl)||artworkValue(item.logoPath)};
  var cached=railArtFor(item);
  if(cached&&!item.faceSafePosterPath)return cached;
  var bundle=railArtworkBundle(item),clean=artworkValue(item.faceSafePosterPath)||artworkValue(item.cleanPosterPath);
@@ -298,6 +300,7 @@ function lockArtwork(item){
   return lockedArtwork;
  }
  if(fixedRailRule(item))return null;
+ if(lockedArtwork&&item.faceSafePosterPath&&imageIdentity(lockedArtwork.poster)!==imageIdentity(item.faceSafePosterPath)){lockedArtwork=null;displayedClean=false;failedCleanPoster='';pendingPoster='';imageGeneration++;}
  if(lockedArtwork)return lockedArtwork;
  var art=confirmedArtwork(item);
  if(!art)return null;
