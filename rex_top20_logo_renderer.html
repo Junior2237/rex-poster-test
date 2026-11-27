@@ -56,595 +56,562 @@ var api=window.RexWidget;
 function el(id){return document.getElementById(id)}
 function str(v){return v==null?'':String(v)}
 function norm(v){
-  var s=str(v).toLowerCase().replace(/[\u2018\u2019'`]/g,'');
-  if(typeof s.normalize==='function')s=s.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-  return s.replace(/[^a-z0-9]+/g,' ').trim();
+var s=str(v).toLowerCase().replace(/[\u2018\u2019'`]/g,'');
+if(typeof s.normalize==='function')s=s.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+return s.replace(/[^a-z0-9]+/g,' ').trim();
 }
 var card=el('card'),link=el('open'),selected=null,lastOpen=0;
-var currentArtworkKey='',imageGeneration=0,displayedPoster='',pendingPoster='',lockedArtwork=null;
-var displayedClean=false,failedCleanPoster='',fallbackArtwork='',failedFallbacks=Object.create(null);
-
+var _cak='',_ig=0,_dp='',_pp='',_la=null;
+var _dc=false,_fcp='',_fa='',_ff=Object.create(null);
 if(!api){el('status').textContent='Preview in Rex Widget Workshop';return}
 function artworkValue(v){
- if(v&&typeof v==='object')return artworkValue(v.url||v.src||v.path||v.file_path||v.imageUrl||v.backdropPath||'');
- return str(v).trim();
+if(v&&typeof v==='object')return artworkValue(v.url||v.src||v.path||v.file_path||v.imageUrl||v.backdropPath||'');
+return str(v).trim();
 }
 function setImage(node,value){var src=artworkValue(value);node.hidden=!src;if(src){if(node.getAttribute('src')!==src)node.setAttribute('src',src)}else node.removeAttribute('src')}
-function railArtworkBundle(item){
- if(!item)return null;
- var paths=Array.isArray(item.backdropPaths)?item.backdropPaths.map(artworkValue).filter(Boolean):[];
- var backdrop=artworkValue(item.backdropPath);
- // Our module sends [genuine backdrop, textless artwork, title logo].
- if(paths.length===3&&paths[0]!==paths[1]&&paths[1]!==paths[2]&&paths[0]!==paths[2]&&
-    (!backdrop||imageIdentity(paths[0])===imageIdentity(backdrop)))return {poster:paths[1],logo:paths[2]};
- return null;
+function _rab(item){
+if(!item)return null;
+var paths=Array.isArray(item.backdropPaths)?item.backdropPaths.map(artworkValue).filter(Boolean):[];
+var backdrop=artworkValue(item.backdropPath);
+if(paths.length===3&&paths[0]!==paths[1]&&paths[1]!==paths[2]&&paths[0]!==paths[2]&&
+(!backdrop||_iid(paths[0])===_iid(backdrop)))return {poster:paths[1],logo:paths[2]};
+return null;
 }
-var railArtMemory=Object.create(null),railArtTTL=4*60*60*1000;
-function railArtKeys(item){
- if(!item||item.id==null||item.id==='')return [];
- var id=String(item.id).trim(),title=String(item.title||'').trim().toLowerCase().replace(/\s+/g,' ');
- // Title and id together avoid collisions between movies and series while
- // allowing the native mediaType field to disappear or change on navigation.
- var type=String(item.mediaType||item.contentType||'').toLowerCase();
- if(type==='show'||type==='series'||type==='television')type='tv';
- var base='rex.editorial480.clean.353:';
- var keys=[];
- if(type)keys.push(base+type+':'+id);
- if(title)keys.push(base+'idtitle:'+id+':'+title);
- return keys;
+var _ram=Object.create(null),_rat=4*60*60*1000;
+function _raks(item){
+if(!item||item.id==null||item.id==='')return [];
+var id=String(item.id).trim(),title=String(item.title||'').trim().toLowerCase().replace(/\s+/g,' ');
+var type=String(item.mediaType||item.contentType||'').toLowerCase();
+if(type==='show'||type==='series'||type==='television')type='tv';
+var base='rex.editorial480.clean.353:';
+var keys=[];
+if(type)keys.push(base+type+':'+id);
+if(title)keys.push(base+'idtitle:'+id+':'+title);
+return keys;
 }
-function railArtKey(item){return railArtKeys(item)[0]||''}
-function railArtRead(key){
- if(!key)return null;
- var data=railArtMemory[key];
- if(!data){try{data=JSON.parse(localStorage.getItem(key)||'null')}catch(e){}}
- if(!data||typeof data.at!=='number'||Date.now()-data.at<0||Date.now()-data.at>=railArtTTL||!data.poster)return null;
- railArtMemory[key]=data;return data;
+function _rar(key){
+if(!key)return null;
+var data=_ram[key];
+if(!data){try{data=JSON.parse(localStorage.getItem(key)||'null')}catch(e){}}
+if(!data||typeof data.at!=='number'||Date.now()-data.at<0||Date.now()-data.at>=_rat||!data.poster)return null;
+_ram[key]=data;return data;
 }
-function railArtFor(item){
- var keys=railArtKeys(item);
- for(var i=0;i<keys.length;i++){var data=railArtRead(keys[i]);if(data)return data}
- return null;
+function _raf(item){
+var keys=_raks(item);
+for(var i=0;i<keys.length;i++){var data=_rar(keys[i]);if(data)return data}
+return null;
 }
-function railArtRemember(item,poster,logo){
- if(!poster)return;
- var data={poster:poster,logo:logo||'',at:Date.now()};
- railArtKeys(item).forEach(function(key){railArtMemory[key]=data;try{localStorage.setItem(key,JSON.stringify(data))}catch(e){}});
+function _raw(item,poster,logo){
+if(!poster)return;
+var data={poster:poster,logo:logo||'',at:Date.now()};
+_raks(item).forEach(function(key){_ram[key]=data;try{localStorage.setItem(key,JSON.stringify(data))}catch(e){}});
 }
-function imageIdentity(value){
- var src=artworkValue(value);
- try{src=decodeURIComponent(src)}catch(e){}
- // Compare the source filename rather than the proxy's size or URL wrapper.
- var matches=src.match(/\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)(?=$|[?#&/])/ig);
- return matches&&matches.length?matches[matches.length-1].toLowerCase():src;
+function _iid(value){
+var src=artworkValue(value);
+try{src=decodeURIComponent(src)}catch(e){}
+var matches=src.match(/\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)(?=$|[?#&/])/ig);
+return matches&&matches.length?matches[matches.length-1].toLowerCase():src;
 }
-var fixedRailArtwork={"9089":{"title":"home for the holidays","poster":"/s6ol3yUC7qTPwWoCM7b7rnSaeJl.jpg","logo":"/AtMN8tMKMQ8PDo760zKoLkRl4LA.png","logoAlternates":["/gkbavCi5ubuVp9XleopJDuWPplT.png","/buEFy3l1eKjoM5PfxUuuEhiHKLS.png"]},"13963":{"title":"the last waltz","poster":"/iXFOL9hCoCHFGACjJSIrY8eLlSY.jpg","logo":"/dI3b6DHMYGZDyZMfSqq8hHNrFBi.png","logoAlternates":["/z0mhltWcY0kIpdRTPpdpTfD9Ks.png"]},"244447":{"title":"the hunting wives","poster":"/kg09RkDPfvz44TX7K3rmUv1dI02.jpg","logo":"/dT0HdklknEGQYkn1dNACIs4IeAt.png","logoAlternates":["/vuIB3iTCnBXkSo4eYoCY8fZ3SXU.png","/5qE6Fm2d9fbH8m72kDPi40msky9.png"]}};
-function fixedRailRule(item){
- if(!item)return null;
- var id=String(item.tmdbId||item.id||'').replace(/^(?:tv|movie)[.:]/,'');
- var title=nameOf(item).toLowerCase().replace(/\s*\((?:19|20)\d{2}\)\s*$/,'').trim();
- var rule=fixedRailArtwork[id];
- if(rule&&rule.title===title)return rule;
- for(var k in fixedRailArtwork){if(fixedRailArtwork[k].title===title)return fixedRailArtwork[k];}
- return null;
+var _fra={"9089":{"title":"home for the holidays","poster":"/s6ol3yUC7qTPwWoCM7b7rnSaeJl.jpg","logo":"/AtMN8tMKMQ8PDo760zKoLkRl4LA.png","logoAlternates":["/gkbavCi5ubuVp9XleopJDuWPplT.png","/buEFy3l1eKjoM5PfxUuuEhiHKLS.png"]},"13963":{"title":"the last waltz","poster":"/iXFOL9hCoCHFGACjJSIrY8eLlSY.jpg","logo":"/dI3b6DHMYGZDyZMfSqq8hHNrFBi.png","logoAlternates":["/z0mhltWcY0kIpdRTPpdpTfD9Ks.png"]},"244447":{"title":"the hunting wives","poster":"/kg09RkDPfvz44TX7K3rmUv1dI02.jpg","logo":"/dT0HdklknEGQYkn1dNACIs4IeAt.png","logoAlternates":["/vuIB3iTCnBXkSo4eYoCY8fZ3SXU.png","/5qE6Fm2d9fbH8m72kDPi40msky9.png"]}};
+function _frr(item){
+if(!item)return null;
+var id=String(item.tmdbId||item.id||'').replace(/^(?:tv|movie)[.:]/,'');
+var title=nameOf(item).toLowerCase().replace(/\s*\((?:19|20)\d{2}\)\s*$/,'').trim();
+var rule=_fra[id];
+if(rule&&rule.title===title)return rule;
+for(var k in _fra){if(_fra[k].title===title)return _fra[k];}
+return null;
 }
-function railSources(item){
- var values=[item.cleanPosterPath,item.titleLogoPath,item.titleLogoUrl,item.logoUrl,item.logoPath,item.titleLogoRawPath,item.detailPoster,item.backdropPath,item.posterPath,item.coverUrl];
- if(Array.isArray(item.backdropPaths))values=values.concat(item.backdropPaths);
- return values.map(artworkValue).filter(Boolean);
+function _rs(item){
+var values=[item.cleanPosterPath,item.titleLogoPath,item.titleLogoUrl,item.logoUrl,item.logoPath,item.titleLogoRawPath,item.detailPoster,item.backdropPath,item.posterPath,item.coverUrl];
+if(Array.isArray(item.backdropPaths))values=values.concat(item.backdropPaths);
+return values.map(artworkValue).filter(Boolean);
 }
-function fixedRailSources(item,path){
- var sources=railSources(item),identity=imageIdentity(path),result=[];
- function add(src){if(src&&result.indexOf(src)<0)result.push(src);}
- if(!path)return result;
- // Exact native resource tokens are preferable to bare TMDB paths.
- for(var i=0;i<sources.length;i++){
-  if(imageIdentity(sources[i])===identity&&sources[i].charAt(0)!=='/')add(sources[i]);
- }
- // If Rex already delivered a TMDB CDN URL, use the same source family.
- for(var i=0;i<sources.length;i++){
-  var source=sources[i];
-  if(/^https?:\/\/image\.tmdb\.org\/t\/p\/(?:original|[wh]\d+)\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)(?:[?#].*)?$/i.test(source)){
-   add(source.replace(/\/t\/p\/(?:original|[wh]\d+)\/[^?#]+(?:[?#].*)?$/i,'/t/p/original'+path));
-  }
- }
- for(var i=0;i<sources.length;i++){if(imageIdentity(sources[i])===identity)add(sources[i]);}
- return result;
+function _frs(item,path){
+var sources=_rs(item),identity=_iid(path),result=[];
+function add(src){if(src&&result.indexOf(src)<0)result.push(src);}
+if(!path)return result;
+for(var i=0;i<sources.length;i++){
+if(_iid(sources[i])===identity&&sources[i].charAt(0)!=='/')add(sources[i]);
 }
-function fixedRailSource(item,path){return fixedRailSources(item,path)[0]||'';}
-function fixedRailSelection(item){
- var rule=fixedRailRule(item);
- if(!rule)return null;
- var posters=fixedRailSources(item,rule.poster),logos=fixedRailSources(item,rule.logo);
- return posters.length?{poster:posters[0],posters:posters,logo:logos[0]||'',manual:true}:null;
+for(var i=0;i<sources.length;i++){
+var source=sources[i];
+if(/^https?:\/\/image\.tmdb\.org\/t\/p\/(?:original|[wh]\d+)\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)(?:[?#].*)?$/i.test(source)){
+add(source.replace(/\/t\/p\/(?:original|[wh]\d+)\/[^?#]+(?:[?#].*)?$/i,'/t/p/original'+path));
 }
-function confirmedArtwork(item){
- if(!item)return null;
- var manual=fixedRailSelection(item);
- if(manual)return manual;
- // Never trust old automatic artwork for a title with an explicit override.
- if(fixedRailRule(item))return null;
- var cached=railArtFor(item);
- if(cached)return cached;
- var bundle=railArtworkBundle(item),clean=artworkValue(item.cleanPosterPath);
- var nativePoster=artworkValue(item.posterPath)||artworkValue(item.coverUrl);
- // Do not treat changing native detail art as verified textless artwork.
- var poster=(clean&&imageIdentity(clean)!==imageIdentity(nativePoster)?clean:'')||(bundle&&bundle.poster);
- if(!poster)return null;
- return {poster:poster,logo:(bundle&&bundle.logo)||artworkValue(item.titleLogoPath)||
-  artworkValue(item.titleLogoUrl)||artworkValue(item.logoPath)};
 }
-
+for(var i=0;i<sources.length;i++){if(_iid(sources[i])===identity)add(sources[i]);}
+return result;
+}
+function _frsel(item){
+var rule=_frr(item);
+if(!rule)return null;
+var posters=_frs(item,rule.poster),logos=_frs(item,rule.logo);
+return posters.length?{poster:posters[0],posters:posters,logo:logos[0]||'',manual:true}:null;
+}
+function _ca(item){
+if(!item)return null;
+var manual=_frsel(item);
+if(manual)return manual;
+if(_frr(item))return null;
+var cached=_raf(item);
+if(cached)return cached;
+var bundle=_rab(item),clean=artworkValue(item.cleanPosterPath);
+var nativePoster=artworkValue(item.posterPath)||artworkValue(item.coverUrl);
+var poster=(clean&&_iid(clean)!==_iid(nativePoster)?clean:'')||(bundle&&bundle.poster);
+if(!poster)return null;
+return {poster:poster,logo:(bundle&&bundle.logo)||artworkValue(item.titleLogoPath)||
+artworkValue(item.titleLogoUrl)||artworkValue(item.logoPath)};
+}
 function lockArtwork(item){
- var manual=fixedRailSelection(item);
- if(manual){
-  if(!lockedArtwork||imageIdentity(lockedArtwork.poster)!==imageIdentity(manual.poster)){
-   if(lockedArtwork){displayedClean=false;failedCleanPoster='';pendingPoster='';imageGeneration++;}
-   lockedArtwork=manual;
-  }else{
-   if(manual.logo)lockedArtwork.logo=manual.logo;
-   lockedArtwork.posters=manual.posters;
-  }
-  return lockedArtwork;
- }
- if(fixedRailRule(item))return null;
- if(lockedArtwork)return lockedArtwork;
- var art=confirmedArtwork(item);
- if(!art)return null;
- // Lock the source for the entire assignment of this rail cell.
- lockedArtwork={poster:art.poster,logo:art.logo||''};
- railArtRemember(item,lockedArtwork.poster,lockedArtwork.logo);
- return lockedArtwork;
+var manual=_frsel(item);
+if(manual){
+if(!_la||_iid(_la.poster)!==_iid(manual.poster)){
+if(_la){_dc=false;_fcp='';_pp='';_ig++;}
+_la=manual;
+}else{
+if(manual.logo)_la.logo=manual.logo;
+_la.posters=manual.posters;
 }
-
-function artworkKey(item){
- if(!item)return '';
- return String(item.id==null?'':item.id)+'|'+nameOf(item).trim().toLowerCase();
+return _la;
 }
-function resetArtwork(){
- imageGeneration++;
- displayedPoster='';
- pendingPoster='';
- lockedArtwork=null;
- displayedClean=false;failedCleanPoster='';fallbackArtwork='';failedFallbacks=Object.create(null);
- setImage(el('poster'),'');
- logoRequest++;
- logoKey='';
- var logo=el('logo');
- logo.onload=null;logo.onerror=null;
- setImage(logo,'');
- el('title').hidden=true;
+if(_frr(item))return null;
+if(_la)return _la;
+var art=_ca(item);
+if(!art)return null;
+_la={poster:art.poster,logo:art.logo||''};
+_raw(item,_la.poster,_la.logo);
+return _la;
 }
-function fallbackPoster(item){
- if(fallbackArtwork&&!failedFallbacks[fallbackArtwork])return fallbackArtwork;
- var candidates=[item.posterPath,item.coverUrl,item.detailPoster,item.backdropPath];
- for(var i=0;i<candidates.length;i++){
-  var src=artworkValue(candidates[i]);
-  if(src&&!failedFallbacks[src]&&src!==failedCleanPoster){
-   fallbackArtwork=src;return src;
-  }
- }
- return '';
+function _ak(item){
+if(!item)return '';
+return String(item.id==null?'':item.id)+'|'+nameOf(item).trim().toLowerCase();
 }
-var railLogoMemory=Object.create(null);
-function railLogoRead(item){
- var keys=railArtKeys(item);
- for(var i=0;i<keys.length;i++){
-  var key=keys[i]+':logo356',entry=railLogoMemory[key];
-  if(!entry){try{entry=JSON.parse(localStorage.getItem(key)||'null')}catch(e){}}
-  if(entry&&entry.src&&Date.now()-entry.at>=0&&Date.now()-entry.at<railArtTTL)return entry.src;
- }
- return '';
+function _reset(){
+_ig++;
+_dp='';
+_pp='';
+_la=null;
+_dc=false;_fcp='';_fa='';_ff=Object.create(null);
+setImage(el('poster'),'');
+_lreq++;
+_lk='';
+var logo=el('logo');
+logo.onload=null;logo.onerror=null;
+setImage(logo,'');
+el('title').hidden=true;
 }
-function railLogoRemember(item,src){
- if(!src)return;
- railArtKeys(item).forEach(function(k){
-  var key=k+':logo356',entry={src:src,at:Date.now()};railLogoMemory[key]=entry;
-  try{localStorage.setItem(key,JSON.stringify(entry))}catch(e){}
- });
+function _fp(item){
+if(_fa&&!_ff[_fa])return _fa;
+var candidates=[item.posterPath,item.coverUrl,item.detailPoster,item.backdropPath];
+for(var i=0;i<candidates.length;i++){
+var src=artworkValue(candidates[i]);
+if(src&&!_ff[src]&&src!==_fcp){
+_fa=src;return src;
 }
-function railLogoCandidates(item,art){
- if(!item)return [];
- var fixed=fixedRailRule(item),bundle=railArtworkBundle(item),result=[];
- function append(v){var src=artworkValue(v);if(src&&result.indexOf(src)<0)result.push(src);}
- function appendPath(path){fixedRailSources(item,path).forEach(append);}
- var remembered=railLogoRead(item);if(remembered)append(remembered);
- // Explicit native fields and the actual artwork bundle take priority.
- [item.titleLogoPath,item.titleLogoUrl,item.logoUrl,item.logoPath,item.titleLogoRawPath,bundle&&bundle.logo,art&&art.logo].forEach(function(v){
-  var src=artworkValue(v);if(src.charAt(0)==='/')appendPath(src);append(src);
- });
- if(Array.isArray(item.titleLogoAlternates))item.titleLogoAlternates.forEach(function(v){
-  var src=artworkValue(v);if(src.charAt(0)==='/')appendPath(src);append(src);
- });
- if(fixed){appendPath(fixed.logo);(fixed.logoAlternates||[]).forEach(appendPath);}
- var paths=Array.isArray(item.backdropPaths)?item.backdropPaths.map(artworkValue).filter(Boolean):[];
- var excluded=[item.backdropPath,item.posterPath,item.coverUrl,item.detailPoster,item.cleanPosterPath,art&&art.poster,bundle&&bundle.poster].map(imageIdentity).filter(Boolean);
- // Recover valid PNG title logos even when native refresh changes array length.
- for(var i=paths.length-1;i>=0;i--){
-  var p=paths[i],identity=imageIdentity(p);
-  if(excluded.indexOf(identity)<0&&/\.png(?:$|[?#&/])/i.test(identity))append(p);
- }
- if(fixed&&paths.length===3&&excluded.indexOf(imageIdentity(paths[2]))<0)append(paths[2]);
- return result;
 }
-function nativeFixedPosterIsUsable(item,art){
- if(!fixedRailRule(item)||!displayedPoster)return false;
- // Explicitly reject known original printed posters, when Rex retains the filename.
- var printed=['/2K7CFH0AIHnGrA4yQjPCoIB5CmQ.jpg','/3zqlKdOttWyExzopVxglz50Vjxq.jpg','/iKL02GmejLCGBJr7XHU82vvqA1C.jpg'];
- var actual=imageIdentity(displayedPoster);
- for(var i=0;i<printed.length;i++){if(actual===imageIdentity(printed[i]))return false;}
- // v3.5.4 assigns the selected clean image to the native poster fields.
- // Rex may serve it as an opaque token, so the filename is not required.
- var native=[item.posterPath,item.coverUrl,item.detailPoster,item.backdropPath].map(artworkValue);
- return displayedClean||native.some(function(v){return v&&imageIdentity(v)===actual;});
+return '';
 }
-function syncPosterBrand(item,art){
- if(!item)return;
- // Branding must not depend on the poster being classified as clean.
- // Always attempt the real title logo, then display a readable title.
- renderTitleLogo(railLogoCandidates(item,art),nameOf(item));
+var _rlm=Object.create(null);
+function _rlr(item){
+var keys=_raks(item);
+for(var i=0;i<keys.length;i++){
+var key=keys[i]+':logo356',entry=_rlm[key];
+if(!entry){try{entry=JSON.parse(localStorage.getItem(key)||'null')}catch(e){}}
+if(entry&&entry.src&&Date.now()-entry.at>=0&&Date.now()-entry.at<_rat)return entry.src;
 }
-function updatePoster(item,art){
- // Keep confirmed artwork locked; allow a single upgrade from a provisional
- // native poster when confirmed textless artwork becomes available.
- if(displayedClean)return;
- var clean=art&&art.poster||'';
- if(art&&art.manual){
-  var available=art.posters||[clean];
-  clean='';
-  for(var i=0;i<available.length;i++){if(!failedFallbacks[available[i]]){clean=available[i];break;}}
- }
- var useClean=!!clean&&clean!==failedCleanPoster;
- if(!useClean&&displayedPoster)return;
- var src=useClean?clean:fallbackPoster(item),key=artworkKey(item);
- if(!src||src===pendingPoster)return;
- if(src===displayedPoster){
-  if(useClean){displayedClean=true;syncPosterBrand(item,art);}
-  return;
- }
- pendingPoster=src;
- var generation=++imageGeneration;
- var image=new Image();
- image.onload=function(){
-  if(generation!==imageGeneration||key!==currentArtworkKey||!selected||artworkKey(selected)!==key)return;
-  pendingPoster='';
-  displayedPoster=src;displayedClean=useClean;
-  setImage(el('poster'),src);
-  syncPosterBrand(selected,lockedArtwork);
- };
- image.onerror=function(){
-  if(generation!==imageGeneration)return;
-  pendingPoster='';
-  if(useClean&&art&&art.manual){failedFallbacks[src]=true;}
-  else if(useClean)failedCleanPoster=src;else failedFallbacks[src]=true;
-  if(selected&&artworkKey(selected)===key)updatePoster(selected,lockedArtwork);
- };
- image.src=src;
- if(image.complete&&image.naturalWidth>0&&pendingPoster===src)image.onload();
+return '';
 }
-var logoRequest=0,logoKey='';
-function renderTitleLogo(sources,name){
- var logo=el('logo'),title=el('title');
- title.textContent=name;logo.alt='';
- var key=JSON.stringify([selected&&selected.id,sources]);
- if(key===logoKey)return;
- logoKey=key;
- var request=++logoRequest,index=0,item=selected;
- var visible=logo.getAttribute('src');
- // Keep a successfully displayed logo during metadata updates.
- if(visible&&!logo.hidden&&logo.complete&&logo.naturalWidth>0){title.hidden=true;return;}
- logo.hidden=true;title.hidden=false;
- logo.onload=null;logo.onerror=null;logo.removeAttribute('src');
- function next(){
-  if(request!==logoRequest)return;
-  if(index>=sources.length){logo.hidden=true;title.hidden=false;logo.removeAttribute('src');return;}
-  var src=sources[index++];
-  function success(){
-   if(request!==logoRequest||logo.getAttribute('src')!==src)return;
-   logo.hidden=false;title.hidden=true;railLogoRemember(item,src);
-  }
-  logo.onload=success;
-  logo.onerror=function(){if(request===logoRequest&&logo.getAttribute('src')===src)next();};
-  logo.setAttribute('src',src);
-  if(logo.complete&&logo.naturalWidth>0)success();
- }
- next();
+function _rlw(item,src){
+if(!src)return;
+_raks(item).forEach(function(k){
+var key=k+':logo356',entry={src:src,at:Date.now()};_rlm[key]=entry;
+try{localStorage.setItem(key,JSON.stringify(entry))}catch(e){}
+});
+}
+function _rlc(item,art){
+if(!item)return [];
+var fixed=_frr(item),bundle=_rab(item),result=[];
+function append(v){var src=artworkValue(v);if(src&&result.indexOf(src)<0)result.push(src);}
+function appendPath(path){_frs(item,path).forEach(append);}
+var remembered=_rlr(item);if(remembered)append(remembered);
+[item.titleLogoPath,item.titleLogoUrl,item.logoUrl,item.logoPath,item.titleLogoRawPath,bundle&&bundle.logo,art&&art.logo].forEach(function(v){
+var src=artworkValue(v);if(src.charAt(0)==='/')appendPath(src);append(src);
+});
+if(Array.isArray(item.titleLogoAlternates))item.titleLogoAlternates.forEach(function(v){
+var src=artworkValue(v);if(src.charAt(0)==='/')appendPath(src);append(src);
+});
+if(fixed){appendPath(fixed.logo);(fixed.logoAlternates||[]).forEach(appendPath);}
+var paths=Array.isArray(item.backdropPaths)?item.backdropPaths.map(artworkValue).filter(Boolean):[];
+var excluded=[item.backdropPath,item.posterPath,item.coverUrl,item.detailPoster,item.cleanPosterPath,art&&art.poster,bundle&&bundle.poster].map(_iid).filter(Boolean);
+for(var i=paths.length-1;i>=0;i--){
+var p=paths[i],identity=_iid(p);
+if(excluded.indexOf(identity)<0&&/\.png(?:$|[?#&/])/i.test(identity))append(p);
+}
+if(fixed&&paths.length===3&&excluded.indexOf(_iid(paths[2]))<0)append(paths[2]);
+return result;
+}
+function _spb(item,art){
+if(!item)return;
+_rtl(_rlc(item,art),nameOf(item));
+}
+function _up(item,art){
+if(_dc)return;
+var clean=art&&art.poster||'';
+if(art&&art.manual){
+var available=art.posters||[clean];
+clean='';
+for(var i=0;i<available.length;i++){if(!_ff[available[i]]){clean=available[i];break;}}
+}
+var useClean=!!clean&&clean!==_fcp;
+if(!useClean&&_dp)return;
+var src=useClean?clean:_fp(item),key=_ak(item);
+if(!src||src===_pp)return;
+if(src===_dp){
+if(useClean){_dc=true;_spb(item,art);}
+return;
+}
+_pp=src;
+var generation=++_ig;
+var image=new Image();
+image.onload=function(){
+if(generation!==_ig||key!==_cak||!selected||_ak(selected)!==key)return;
+_pp='';
+_dp=src;_dc=useClean;
+setImage(el('poster'),src);
+_spb(selected,_la);
+};
+image.onerror=function(){
+if(generation!==_ig)return;
+_pp='';
+if(useClean&&art&&art.manual){_ff[src]=true;}
+else if(useClean)_fcp=src;else _ff[src]=true;
+if(selected&&_ak(selected)===key)_up(selected,_la);
+};
+image.src=src;
+if(image.complete&&image.naturalWidth>0&&_pp===src)image.onload();
+}
+var _lreq=0,_lk='';
+function _rtl(sources,name){
+var logo=el('logo'),title=el('title');
+title.textContent=name;logo.alt='';
+var key=JSON.stringify([selected&&selected.id,sources]);
+if(key===_lk)return;
+_lk=key;
+var request=++_lreq,index=0,item=selected;
+var visible=logo.getAttribute('src');
+if(visible&&!logo.hidden&&logo.complete&&logo.naturalWidth>0){title.hidden=true;return;}
+logo.hidden=true;title.hidden=false;
+logo.onload=null;logo.onerror=null;logo.removeAttribute('src');
+function next(){
+if(request!==_lreq)return;
+if(index>=sources.length){logo.hidden=true;title.hidden=false;logo.removeAttribute('src');return;}
+var src=sources[index++];
+function success(){
+if(request!==_lreq||logo.getAttribute('src')!==src)return;
+logo.hidden=false;title.hidden=true;_rlw(item,src);
+}
+logo.onload=success;
+logo.onerror=function(){if(request===_lreq&&logo.getAttribute('src')===src)next();};
+logo.setAttribute('src',src);
+if(logo.complete&&logo.naturalWidth>0)success();
+}
+next();
 }
 function nameOf(item){return str(item&&(item.title||item.name)||'Untitled').replace(/^\s*#?\s*(?:20|1[0-9]|[1-9])\s*[.\-:)]+\s+/,'')}
 function titleKey(item){return norm(nameOf(item)).replace(/\s+(?:19|20)\d{2}$/,'').trim()}
 function mediaType(item){return norm(item&&(item.mediaType||item.type||item.contentType||item.kind)||'')}
 function yearOf(item){var fields=[item.year,item.releaseYear,item.releaseDate,item.firstAirDate,item.premiered,nameOf(item)];for(var i=0;i<fields.length;i++){var m=str(fields[i]).match(/\b(19\d{2}|20\d{2})\b/);if(m)return +m[1]}return null}
-
 /* Curated titles are a fallback when a Rex module supplies NO genre.
-   Apple TV's editorial categories may vary by region. */
+Apple TV's editorial categories may vary by region. */
 var CURATED={
- 'frieren beyond journeys end':['Anime','Fantasy'],
- 'frieren':['Anime','Fantasy'],
- 'the good bad mother':['Drama'],
- 'the chosen':['Drama','History'],
- 'among us':['Animation','Comedy'],
- 'teach you a lesson':['Drama','Action'],
- 'when life gives you tangerines':['Romance','Drama'],
- 'widows bay':['Mystery','Thriller'],
- 'lanterns':['Sci-Fi','Action'],
- 'black doves':['Action','Thriller'],
- 'yellowjackets':['Thriller','Drama'],
- 'steps':['Animation','Fantasy'],
- 'percy jackson and the olympians':['Adventure','Fantasy'],
- 'the lord of the rings the rings of power':['Fantasy'],
- 'the rings of power':['Fantasy'],
- 'slow horses':['Thriller','Drama'],
- 'ted lasso':['Comedy'],
- 'breaking bad':['Crime','Drama'],
- 'better call saul':['Crime','Drama'],
- 'stranger things':['Sci-Fi','Mystery'],
- 'the last of us':['Drama','Sci-Fi'],
- 'severance':['Thriller','Sci-Fi'],
- 'game of thrones':['Fantasy','Drama'],
- 'house of the dragon':['Fantasy','Drama'],
- 'the mandalorian':['Sci-Fi','Action'],
- 'andor':['Sci-Fi','Drama'],
- 'silo':['Sci-Fi','Thriller'],
- 'fallout':['Sci-Fi','Action'],
- 'the bear':['Drama','Comedy'],
- 'the white lotus':['Drama','Comedy'],
- 'the boys':['Action','Sci-Fi'],
- 'the office':['Comedy'],
- 'friends':['Comedy'],
- 'brooklyn nine nine':['Comedy'],
- 'only murders in the building':['Mystery','Comedy'],
- 'the night agent':['Thriller','Action'],
- 'reacher':['Action','Thriller'],
- 'squid game':['Thriller','Drama'],
- 'black mirror':['Sci-Fi','Drama'],
- 'the walking dead':['Horror','Drama'],
- 'yellowstone':['Western','Drama'],
- 'the crown':['Drama','History'],
- 'bridgerton':['Romance','Drama'],
- 'the penguin':['Crime','Drama'],
- 'peaky blinders':['Crime','Drama'],
- 'shogun':['Drama','History'],
- 'the witcher':['Fantasy','Action'],
- 'the umbrella academy':['Sci-Fi','Action'],
- 'the good place':['Comedy','Fantasy'],
- 'the last kingdom':['Drama','History'],
- 'dune':['Sci-Fi','Adventure'],
- 'dune part two':['Sci-Fi','Adventure'],
- 'interstellar':['Sci-Fi','Drama'],
- 'inception':['Sci-Fi','Action'],
- 'john wick':['Action','Thriller'],
- 'top gun maverick':['Action','Drama'],
- 'barbie':['Comedy','Fantasy'],
- 'oppenheimer':['Drama','History'],
- 'arcane':['Animation','Action'],
- 'invincible':['Animation','Action'],
- 'bojack horseman':['Animation','Comedy'],
- 'blue eye samurai':['Animation','Action'],
- 'inside out 2':['Animation','Comedy'],
- 'kpop demon hunters':['Animation','Fantasy'],
- 'the wild robot':['Animation','Adventure'],
- 'the mentalist':['Crime','Drama'],
- 'one piece':['Anime','Adventure'],
- 'attack on titan':['Anime','Action'],
- 'demon slayer':['Anime','Action'],
- 'jujutsu kaisen':['Anime','Action'],
- 'solo leveling':['Anime','Fantasy'],
- 'the last of us season 2':['Drama','Sci-Fi']
+'frieren beyond journeys end':['Anime','Fantasy'],
+'frieren':['Anime','Fantasy'],
+'the good bad mother':['Drama'],
+'the chosen':['Drama','History'],
+'among us':['Animation','Comedy'],
+'teach you a lesson':['Drama','Action'],
+'when life gives you tangerines':['Romance','Drama'],
+'widows bay':['Mystery','Thriller'],
+'lanterns':['Sci-Fi','Action'],
+'black doves':['Action','Thriller'],
+'yellowjackets':['Thriller','Drama'],
+'steps':['Animation','Fantasy'],
+'percy jackson and the olympians':['Adventure','Fantasy'],
+'the lord of the rings the rings of power':['Fantasy'],
+'the rings of power':['Fantasy'],
+'slow horses':['Thriller','Drama'],
+'ted lasso':['Comedy'],
+'breaking bad':['Crime','Drama'],
+'better call saul':['Crime','Drama'],
+'stranger things':['Sci-Fi','Mystery'],
+'the last of us':['Drama','Sci-Fi'],
+'severance':['Thriller','Sci-Fi'],
+'game of thrones':['Fantasy','Drama'],
+'house of the dragon':['Fantasy','Drama'],
+'the mandalorian':['Sci-Fi','Action'],
+'andor':['Sci-Fi','Drama'],
+'silo':['Sci-Fi','Thriller'],
+'fallout':['Sci-Fi','Action'],
+'the bear':['Drama','Comedy'],
+'the white lotus':['Drama','Comedy'],
+'the boys':['Action','Sci-Fi'],
+'the office':['Comedy'],
+'friends':['Comedy'],
+'brooklyn nine nine':['Comedy'],
+'only murders in the building':['Mystery','Comedy'],
+'the night agent':['Thriller','Action'],
+'reacher':['Action','Thriller'],
+'squid game':['Thriller','Drama'],
+'black mirror':['Sci-Fi','Drama'],
+'the walking dead':['Horror','Drama'],
+'yellowstone':['Western','Drama'],
+'the crown':['Drama','History'],
+'bridgerton':['Romance','Drama'],
+'the penguin':['Crime','Drama'],
+'peaky blinders':['Crime','Drama'],
+'shogun':['Drama','History'],
+'the witcher':['Fantasy','Action'],
+'the umbrella academy':['Sci-Fi','Action'],
+'the good place':['Comedy','Fantasy'],
+'the last kingdom':['Drama','History'],
+'dune':['Sci-Fi','Adventure'],
+'dune part two':['Sci-Fi','Adventure'],
+'interstellar':['Sci-Fi','Drama'],
+'inception':['Sci-Fi','Action'],
+'john wick':['Action','Thriller'],
+'top gun maverick':['Action','Drama'],
+'barbie':['Comedy','Fantasy'],
+'oppenheimer':['Drama','History'],
+'arcane':['Animation','Action'],
+'invincible':['Animation','Action'],
+'bojack horseman':['Animation','Comedy'],
+'blue eye samurai':['Animation','Action'],
+'inside out 2':['Animation','Comedy'],
+'kpop demon hunters':['Animation','Fantasy'],
+'the wild robot':['Animation','Adventure'],
+'the mentalist':['Crime','Drama'],
+'one piece':['Anime','Adventure'],
+'attack on titan':['Anime','Action'],
+'demon slayer':['Anime','Action'],
+'jujutsu kaisen':['Anime','Action'],
+'solo leveling':['Anime','Fantasy'],
+'the last of us season 2':['Drama','Sci-Fi']
 };
 var HUNGER_GAMES=[
- /^(?:the )?hunger games$/,
- /^(?:the )?hunger games catching fire$/,
- /^(?:the )?hunger games mockingjay part (?:1|2|one|two|i|ii)$/,
- /^(?:the )?hunger games the ballad of songbirds and snakes$/,
- /^(?:the )?ballad of songbirds and snakes$/
+/^(?:the )?hunger games$/,
+/^(?:the )?hunger games catching fire$/,
+/^(?:the )?hunger games mockingjay part (?:1|2|one|two|i|ii)$/,
+/^(?:the )?hunger games the ballad of songbirds and snakes$/,
+/^(?:the )?ballad of songbirds and snakes$/
 ];
 function knownGenres(item){
- var key=titleKey(item);
- if(key==='nocturne'){
-   var type=mediaType(item);
-   return yearOf(item)===2020||type==='movie'||type==='film'?[]:['Crime','Thriller'];
- }
- for(var i=0;i<HUNGER_GAMES.length;i++)if(HUNGER_GAMES[i].test(key))return ['Action','Sci-Fi'];
- return Object.prototype.hasOwnProperty.call(CURATED,key)?CURATED[key].slice():[];
+var key=titleKey(item);
+if(key==='nocturne'){
+var type=mediaType(item);
+return yearOf(item)===2020||type==='movie'||type==='film'?[]:['Crime','Thriller'];
+}
+for(var i=0;i<HUNGER_GAMES.length;i++)if(HUNGER_GAMES[i].test(key))return ['Action','Sci-Fi'];
+return Object.prototype.hasOwnProperty.call(CURATED,key)?CURATED[key].slice():[];
 }
 var ALIASES={
- 'action':'Action','adventure':'Adventure','fantasy':'Fantasy',
- 'science fiction':'Sci-Fi','sci fi':'Sci-Fi','scifi':'Sci-Fi','sci fi fantasy':'Sci-Fi',
- 'comedy':'Comedy','drama':'Drama','crime':'Crime','thriller':'Thriller',
- 'suspense':'Thriller','psychological thriller':'Thriller',
- 'mystery':'Mystery','horror':'Horror','romance':'Romance','romantic':'Romance',
- 'documentary':'Documentary','docuseries':'Documentary',
- 'animation':'Animation','animated':'Animation','anime':'Anime','japanese anime':'Anime',
- 'family':'Family','kids':'Family','children':'Family',
- 'western':'Western','war':'War','history':'History','historical':'History',
- 'reality':'Reality','reality tv':'Reality',
- 'music':'Music','musical':'Musical','sports':'Sports','sport':'Sports',
- 'biography':'Biography','soap':'Soap','talk':'Talk',
- 'action adventure':'Action','action and adventure':'Action'
+'action':'Action','adventure':'Adventure','fantasy':'Fantasy',
+'science fiction':'Sci-Fi','sci fi':'Sci-Fi','scifi':'Sci-Fi','sci fi fantasy':'Sci-Fi',
+'comedy':'Comedy','drama':'Drama','crime':'Crime','thriller':'Thriller',
+'suspense':'Thriller','psychological thriller':'Thriller',
+'mystery':'Mystery','horror':'Horror','romance':'Romance','romantic':'Romance',
+'documentary':'Documentary','docuseries':'Documentary',
+'animation':'Animation','animated':'Animation','anime':'Anime','japanese anime':'Anime',
+'family':'Family','kids':'Family','children':'Family',
+'western':'Western','war':'War','history':'History','historical':'History',
+'reality':'Reality','reality tv':'Reality',
+'music':'Music','musical':'Musical','sports':'Sports','sport':'Sports',
+'biography':'Biography','soap':'Soap','talk':'Talk',
+'action adventure':'Action','action and adventure':'Action'
 };
 function canonical(v){return ALIASES[norm(v)]||''}
 function label(v){
- if(typeof v==='string')return v;
- if(!v||typeof v!=='object')return '';
- return str(v.title||v.name||v.label||v.genreTitle||'');
+if(typeof v==='string')return v;
+if(!v||typeof v!=='object')return '';
+return str(v.title||v.name||v.label||v.genreTitle||'');
 }
 function splitGenres(value){
- var raw=label(value),out=[];if(!raw)return out;
- function add(v){var g=canonical(v);if(g&&out.indexOf(g)<0)out.push(g)}
- var parts=raw.split(/[·•|,\/;]+/);
- for(var i=0;i<parts.length;i++){
-   var s=norm(parts[i]);
-   if(!s||/^(?:global rank|streaming trend rank)\s*\d+$/.test(s)||s==='trending worldwide')continue;
-   if(s==='sci fi and fantasy'||s==='science fiction and fantasy'){add('Sci-Fi');add('Fantasy');continue}
-   if(s==='mystery and thriller'){add('Mystery');add('Thriller');continue}
-   if(s==='kids and family'){add('Family');continue}
-   var pair=s.split(/\s+and\s+/);
-   if(pair.length===2&&canonical(pair[0])&&canonical(pair[1])){add(pair[0]);add(pair[1]);continue}
-   add(s);
- }
- return out;
+var raw=label(value),out=[];if(!raw)return out;
+function add(v){var g=canonical(v);if(g&&out.indexOf(g)<0)out.push(g)}
+var parts=raw.split(/[·•|,\/;]+/);
+for(var i=0;i<parts.length;i++){
+var s=norm(parts[i]);
+if(!s||/^(?:global rank|streaming trend rank)\s*\d+$/.test(s)||s==='trending worldwide')continue;
+if(s==='sci fi and fantasy'||s==='science fiction and fantasy'){add('Sci-Fi');add('Fantasy');continue}
+if(s==='mystery and thriller'){add('Mystery');add('Thriller');continue}
+if(s==='kids and family'){add('Family');continue}
+var pair=s.split(/\s+and\s+/);
+if(pair.length===2&&canonical(pair[0])&&canonical(pair[1])){add(pair[0]);add(pair[1]);continue}
+add(s);
+}
+return out;
 }
 function collectGenres(item){
- var out=[];
- function add(v){var list=splitGenres(v);for(var i=0;i<list.length;i++)if(out.indexOf(list[i])<0)out.push(list[i])}
- var arrays=[item.genreItems,item.genres,item.genreList,item.categories,item.tags];
- for(var a=0;a<arrays.length;a++){
-   if(Array.isArray(arrays[a]))for(var b=0;b<arrays[a].length;b++)add(arrays[a][b]);
-   else add(arrays[a]);
- }
- add(item.genreTitle);add(item.genreName);add(item.genre);add(item.category);
- if(item.metadata&&typeof item.metadata==='object'){
-   add(item.metadata.genreTitle);add(item.metadata.genre);
-   if(Array.isArray(item.metadata.genres))for(var m=0;m<item.metadata.genres.length;m++)add(item.metadata.genres[m]);
- }
- return out;
+var out=[];
+function add(v){var list=splitGenres(v);for(var i=0;i<list.length;i++)if(out.indexOf(list[i])<0)out.push(list[i])}
+var arrays=[item.genreItems,item.genres,item.genreList,item.categories,item.tags];
+for(var a=0;a<arrays.length;a++){
+if(Array.isArray(arrays[a]))for(var b=0;b<arrays[a].length;b++)add(arrays[a][b]);
+else add(arrays[a]);
+}
+add(item.genreTitle);add(item.genreName);add(item.genre);add(item.category);
+if(item.metadata&&typeof item.metadata==='object'){
+add(item.metadata.genreTitle);add(item.metadata.genre);
+if(Array.isArray(item.metadata.genres))for(var m=0;m<item.metadata.genres.length;m++)add(item.metadata.genres[m]);
+}
+return out;
 }
 function explicitPrimary(item){
- var fields=[item.primaryGenre,item.mainGenre,item.dominantGenre];
- for(var i=0;i<fields.length;i++){var x=splitGenres(fields[i]);if(x.length===1)return x[0]}
- if(Array.isArray(item.genreItems))for(var j=0;j<item.genreItems.length;j++){
-   var g=item.genreItems[j];if(g&&(g.isPrimary===true||g.primary===true)){
-     var y=splitGenres(g);if(y.length===1)return y[0];
-   }
- }
- return '';
+var fields=[item.primaryGenre,item.mainGenre,item.dominantGenre];
+for(var i=0;i<fields.length;i++){var x=splitGenres(fields[i]);if(x.length===1)return x[0]}
+if(Array.isArray(item.genreItems))for(var j=0;j<item.genreItems.length;j++){
+var g=item.genreItems[j];if(g&&(g.isPrimary===true||g.primary===true)){
+var y=splitGenres(g);if(y.length===1)return y[0];
+}
+}
+return '';
 }
 function synopsis(item){
- var fields=[item.description,item.overview,item.summary,item.synopsis,item.plot,item.tagline],out=[];
- for(var i=0;i<fields.length;i++)if(typeof fields[i]==='string'){
-   var s=fields[i].trim();if(s&&out.indexOf(s)<0)out.push(s);
- }
- return out.join(' ');
+var fields=[item.description,item.overview,item.summary,item.synopsis,item.plot,item.tagline],out=[];
+for(var i=0;i<fields.length;i++)if(typeof fields[i]==='string'){
+var s=fields[i].trim();if(s&&out.indexOf(s)<0)out.push(s);
+}
+return out.join(' ');
 }
 /* Only use synopsis patterns if Rex provides usable text. */
 var EVIDENCE={
- 'Animation':[/\b(?:animated film|animated series|animated movie|animated feature|cartoon series)\b/gi,/\b(?:animated|animation|cartoon)\b/gi],
- 'Anime':[/\b(?:anime series|japanese anime|anime adaptation)\b/gi,/\b(?:anime|manga)\b/gi],
- 'Crime':[/\b(?:organized crime|murder investigation|criminal empire|crime syndicate|homicide detective|serial murders)\b/gi,/\b(?:detective|criminal|police|homicide|heist|gangster)\b/gi],
- 'Thriller':[/\b(?:psychological thriller|survival thriller|spy thriller|espionage|deadly conspiracy|political conspiracy)\b/gi,/\b(?:thriller|suspense|hostage|paranoia)\b/gi],
- 'Mystery':[/\b(?:unsolved case|missing person|mysterious disappearance|unexplained deaths)\b/gi,/\b(?:mystery|clues|investigation|secrets)\b/gi],
- 'Fantasy':[/\b(?:magical world|ancient prophecy|wizard|sorcery|dragons|mythical realm)\b/gi,/\b(?:magic|mythology|demigod|spell)\b/gi],
- 'Sci-Fi':[/\b(?:science fiction|time travel|alien invasion|artificial intelligence|parallel universe|space exploration)\b/gi,/\b(?:dystopia|spaceship|extraterrestrial|robots|futuristic)\b/gi],
- 'Romance':[/\b(?:love story|falling in love|romantic relationship|love triangle)\b/gi,/\b(?:romantic|lovers|courtship|first love)\b/gi],
- 'Action':[/\b(?:martial arts|action packed|gunfight|deadly combat)\b/gi,/\b(?:vigilante|combat|fighter|battle)\b/gi],
- 'Adventure':[/\b(?:epic quest|treasure hunt|dangerous expedition|epic adventure)\b/gi,/\b(?:quest|exploration|voyage|journey)\b/gi],
- 'Comedy':[/\b(?:sitcom|romantic comedy|dark comedy|workplace comedy)\b/gi,/\b(?:comedic|hilarious|witty|humor)\b/gi],
- 'Drama':[/\b(?:family drama|historical drama|character driven|complex relationships)\b/gi,/\b(?:grief|family conflict|emotional struggle)\b/gi],
- 'Horror':[/\b(?:haunted house|demonic possession|slasher|zombie apocalypse)\b/gi,/\b(?:horror|haunted|zombie|nightmare)\b/gi],
- 'Documentary':[/\b(?:documentary|docuseries|archival footage|nonfiction series)\b/gi,/\b(?:real life|interviews|true events)\b/gi],
- 'Western':[/\b(?:wild west|western drama|frontier town)\b/gi,/\b(?:cowboy|rancher|sheriff|rodeo)\b/gi],
- 'Sports':[/\b(?:sports team|professional athlete|championship season)\b/gi,/\b(?:soccer|football|basketball|athlete)\b/gi]
+'Animation':[/\b(?:animated film|animated series|animated movie|animated feature|cartoon series)\b/gi,/\b(?:animated|animation|cartoon)\b/gi],
+'Anime':[/\b(?:anime series|japanese anime|anime adaptation)\b/gi,/\b(?:anime|manga)\b/gi],
+'Crime':[/\b(?:organized crime|murder investigation|criminal empire|crime syndicate|homicide detective|serial murders)\b/gi,/\b(?:detective|criminal|police|homicide|heist|gangster)\b/gi],
+'Thriller':[/\b(?:psychological thriller|survival thriller|spy thriller|espionage|deadly conspiracy|political conspiracy)\b/gi,/\b(?:thriller|suspense|hostage|paranoia)\b/gi],
+'Mystery':[/\b(?:unsolved case|missing person|mysterious disappearance|unexplained deaths)\b/gi,/\b(?:mystery|clues|investigation|secrets)\b/gi],
+'Fantasy':[/\b(?:magical world|ancient prophecy|wizard|sorcery|dragons|mythical realm)\b/gi,/\b(?:magic|mythology|demigod|spell)\b/gi],
+'Sci-Fi':[/\b(?:science fiction|time travel|alien invasion|artificial intelligence|parallel universe|space exploration)\b/gi,/\b(?:dystopia|spaceship|extraterrestrial|robots|futuristic)\b/gi],
+'Romance':[/\b(?:love story|falling in love|romantic relationship|love triangle)\b/gi,/\b(?:romantic|lovers|courtship|first love)\b/gi],
+'Action':[/\b(?:martial arts|action packed|gunfight|deadly combat)\b/gi,/\b(?:vigilante|combat|fighter|battle)\b/gi],
+'Adventure':[/\b(?:epic quest|treasure hunt|dangerous expedition|epic adventure)\b/gi,/\b(?:quest|exploration|voyage|journey)\b/gi],
+'Comedy':[/\b(?:sitcom|romantic comedy|dark comedy|workplace comedy)\b/gi,/\b(?:comedic|hilarious|witty|humor)\b/gi],
+'Drama':[/\b(?:family drama|historical drama|character driven|complex relationships)\b/gi,/\b(?:grief|family conflict|emotional struggle)\b/gi],
+'Horror':[/\b(?:haunted house|demonic possession|slasher|zombie apocalypse)\b/gi,/\b(?:horror|haunted|zombie|nightmare)\b/gi],
+'Documentary':[/\b(?:documentary|docuseries|archival footage|nonfiction series)\b/gi,/\b(?:real life|interviews|true events)\b/gi],
+'Western':[/\b(?:wild west|western drama|frontier town)\b/gi,/\b(?:cowboy|rancher|sheriff|rodeo)\b/gi],
+'Sports':[/\b(?:sports team|professional athlete|championship season)\b/gi,/\b(?:soccer|football|basketball|athlete)\b/gi]
 };
 function evidence(g,story){var p=EVIDENCE[g];if(!p||!story)return 0;var strong=story.match(p[0])||[],weak=story.match(p[1])||[];return Math.min(strong.length,2)*4+Math.min(weak.length,2)*1.5}
 function classifyGenres(item){
- if(!item)return [];
- var known=knownGenres(item);
- if(known.length)return known;
- var source=collectGenres(item),primary=explicitPrimary(item),story=synopsis(item);
- if(primary){source=source.filter(function(v){return v!==primary});source.unshift(primary)}
- if(source.indexOf('Anime')>=0)return ['Anime'].concat(source.filter(function(v){return v!=='Anime'}));
- if(source.indexOf('Animation')>=0)return ['Animation'].concat(source.filter(function(v){return v!=='Animation'}));
- if(/\b(?:animated film|animated movie|animated series|anime series)\b/i.test(story)){
-   return [/\banime\b/i.test(story)?'Anime':'Animation'].concat(source);
- }
- if(!source.length){
-   var evidenceList=[];
-   for(var k in EVIDENCE)if(Object.prototype.hasOwnProperty.call(EVIDENCE,k)){
-     var n=evidence(k,story);if(n>=4)evidenceList.push({genre:k,score:n});
-   }
-   evidenceList.sort(function(a,b){return b.score-a.score});
-   if(evidenceList.length===0)return [];
-   if(evidenceList.length>1&&evidenceList[0].score-evidenceList[1].score<1.5)return [];
-   return [evidenceList[0].genre];
- }
- if(primary||source.length===1)return source;
- var scores=source.map(function(g){return {genre:g,score:evidence(g,story)}});
- scores.sort(function(a,b){return b.score-a.score});
- if(scores[0].score>=4&&scores[0].score-scores[1].score>=1.5){
-   var winner=scores[0].genre;return [winner].concat(source.filter(function(v){return v!==winner}));
- }
- for(var i=0;i<source.length;i++){
-   if(source[i]!=='Drama'&&source[i]!=='Family'){
-     var preferred=source[i];return [preferred].concat(source.filter(function(v){return v!==preferred}));
-   }
- }
- return source;
+if(!item)return [];
+var known=knownGenres(item);
+if(known.length)return known;
+var source=collectGenres(item),primary=explicitPrimary(item),story=synopsis(item);
+if(primary){source=source.filter(function(v){return v!==primary});source.unshift(primary)}
+if(source.indexOf('Anime')>=0)return ['Anime'].concat(source.filter(function(v){return v!=='Anime'}));
+if(source.indexOf('Animation')>=0)return ['Animation'].concat(source.filter(function(v){return v!=='Animation'}));
+if(/\b(?:animated film|animated movie|animated series|anime series)\b/i.test(story)){
+return [/\banime\b/i.test(story)?'Anime':'Animation'].concat(source);
+}
+if(!source.length){
+var evidenceList=[];
+for(var k in EVIDENCE)if(Object.prototype.hasOwnProperty.call(EVIDENCE,k)){
+var n=evidence(k,story);if(n>=4)evidenceList.push({genre:k,score:n});
+}
+evidenceList.sort(function(a,b){return b.score-a.score});
+if(evidenceList.length===0)return [];
+if(evidenceList.length>1&&evidenceList[0].score-evidenceList[1].score<1.5)return [];
+return [evidenceList[0].genre];
+}
+if(primary||source.length===1)return source;
+var scores=source.map(function(g){return {genre:g,score:evidence(g,story)}});
+scores.sort(function(a,b){return b.score-a.score});
+if(scores[0].score>=4&&scores[0].score-scores[1].score>=1.5){
+var winner=scores[0].genre;return [winner].concat(source.filter(function(v){return v!==winner}));
+}
+for(var i=0;i<source.length;i++){
+if(source[i]!=='Drama'&&source[i]!=='Family'){
+var preferred=source[i];return [preferred].concat(source.filter(function(v){return v!==preferred}));
+}
+}
+return source;
 }
 function typeLabel(item){
- var type=mediaType(item);
- if(/^(?:movie|film|cinema)$/.test(type))return 'Movie';
- if(/^(?:tv|show|series|tv show|tv series|television)$/.test(type))return 'TV Show';
- return '';
+var type=mediaType(item);
+if(/^(?:movie|film|cinema)$/.test(type))return 'Movie';
+if(/^(?:tv|show|series|tv show|tv series|television)$/.test(type))return 'TV Show';
+return '';
 }
 function infoLabel(item){
- var parts=[],type=typeLabel(item),genres=classifyGenres(item);
- if(type)parts.push(type);
- for(var i=0;i<genres.length&&i<2;i++)if(genres[i]&&parts.indexOf(genres[i])<0)parts.push(genres[i]);
- return parts.join(' · ');
+var parts=[],type=typeLabel(item),genres=classifyGenres(item);
+if(type)parts.push(type);
+for(var i=0;i<genres.length&&i<2;i++)if(genres[i]&&parts.indexOf(genres[i])<0)parts.push(genres[i]);
+return parts.join(' · ');
 }
 function firstNetwork(item){
- if(!item)return null;
- var n=item.originalNetwork||item.originalNetworkName||item.originalNetworks||item.networks||item.network||item.productionNetwork||item.originNetwork;
- if(Array.isArray(n))n=n[0];if(!n)return null;
- if(typeof n==='string')return {name:n,logo:''};
- if(typeof n!=='object')return null;
- return {name:n.name||n.title||n.networkName||'',logo:n.logoPath||n.logoUrl||n.logo||n.image||''};
+if(!item)return null;
+var n=item.originalNetwork||item.originalNetworkName||item.originalNetworks||item.networks||item.network||item.productionNetwork||item.originNetwork;
+if(Array.isArray(n))n=n[0];if(!n)return null;
+if(typeof n==='string')return {name:n,logo:''};
+if(typeof n!=='object')return null;
+return {name:n.name||n.title||n.networkName||'',logo:n.logoPath||n.logoUrl||n.logo||n.image||''};
 }
 function showNetwork(item){
- var n=firstNetwork(item),name=n&&n.name||'',logo=n&&n.logo||item&&(item.originalNetworkLogoPath||item.originalNetworkLogo||item.networkLogoPath||item.networkLogoUrl)||'';
- setImage(el('platformLogo'),logo);el('platformLogo').alt=name;
- el('platformName').hidden=!!logo||!name;el('platformName').textContent=name;
- return !!(logo||name);
+var n=firstNetwork(item),name=n&&n.name||'',logo=n&&n.logo||item&&(item.originalNetworkLogoPath||item.originalNetworkLogo||item.networkLogoPath||item.networkLogoUrl)||'';
+setImage(el('platformLogo'),logo);el('platformLogo').alt=name;
+el('platformName').hidden=!!logo||!name;el('platformName').textContent=name;
+return !!(logo||name);
 }
 function validRank(v){
- if(v==null||v==='')return null;
- var s=str(v).trim().toLowerCase(),words=['one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen','twenty'];
- var i=words.indexOf(s);if(i>=0)return i+1;
- return /^(?:[1-9]|1[0-9]|20)$/.test(s)?+s:null;
+if(v==null||v==='')return null;
+var s=str(v).trim().toLowerCase(),words=['one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen','twenty'];
+var i=words.indexOf(s);if(i>=0)return i+1;
+return /^(?:[1-9]|1[0-9]|20)$/.test(s)?+s:null;
 }
 function getRank(item,layout){
- if(!item)return null;
- var fields=[item.rank,item.chartRank,item.trendingRank,item.rankNumber,item.position];
- for(var i=0;i<fields.length;i++){var r=validRank(fields[i]);if(r!==null)return r}
- var m=str(item.title).match(/^\s*#?\s*(20|1[0-9]|[1-9])\s*[.\-:)]+\s+/);if(m)return validRank(m[1]);
- m=(str(item.genreTitle)+' '+str(item.description)).match(/(?:GLOBAL\s+RANK|streaming\s+trend\s+rank|\brank)\s*[#:]*\s*(20|1[0-9]|[1-9])\b/i);
- if(m)return validRank(m[1]);
- if(layout&&layout.index!=null){var n=Number(layout.index);if(Number.isInteger(n)&&n>=0&&n<20)return n+1}
- return null;
+if(!item)return null;
+var fields=[item.rank,item.chartRank,item.trendingRank,item.rankNumber,item.position];
+for(var i=0;i<fields.length;i++){var r=validRank(fields[i]);if(r!==null)return r}
+var m=str(item.title).match(/^\s*#?\s*(20|1[0-9]|[1-9])\s*[.\-:)]+\s+/);if(m)return validRank(m[1]);
+m=(str(item.genreTitle)+' '+str(item.description)).match(/(?:GLOBAL\s+RANK|streaming\s+trend\s+rank|\brank)\s*[#:]*\s*(20|1[0-9]|[1-9])\b/i);
+if(m)return validRank(m[1]);
+if(layout&&layout.index!=null){var n=Number(layout.index);if(Number.isInteger(n)&&n>=0&&n<20)return n+1}
+return null;
 }
 function updateRank(){
- var node=el('rank');if(!selected){node.hidden=true;return}
- var rank=getRank(selected,api.layout);
- if(rank===null){node.hidden=true;node.setAttribute('data-digit','');return}
- node.hidden=false;node.setAttribute('data-digit',String(rank));
- var width=card.getBoundingClientRect().width||card.clientWidth||400;
- node.style.setProperty('--rank-size',Math.max(36,Math.min(90,width*.23)).toFixed(2)+'px');
+var node=el('rank');if(!selected){node.hidden=true;return}
+var rank=getRank(selected,api.layout);
+if(rank===null){node.hidden=true;node.setAttribute('data-digit','');return}
+node.hidden=false;node.setAttribute('data-digit',String(rank));
+var width=card.getBoundingClientRect().width||card.clientWidth||400;
+node.style.setProperty('--rank-size',Math.max(36,Math.min(90,width*.23)).toFixed(2)+'px');
 }
 function updateLayout(){
- var layout=api.layout||{},height=Number(layout.height);
- if(Number.isFinite(height)&&height>0)card.style.height=height+'px';
- var width=card.getBoundingClientRect().width||card.clientWidth||400;
- el('title').style.fontSize=Math.max(21,Math.min(34,width*.075))+'px';
- updateRank();
+var layout=api.layout||{},height=Number(layout.height);
+if(Number.isFinite(height)&&height>0)card.style.height=height+'px';
+var width=card.getBoundingClientRect().width||card.clientWidth||400;
+el('title').style.fontSize=Math.max(21,Math.min(34,width*.075))+'px';
+updateRank();
 }
 function render(){
- var content=api.content;if(!content)return;
- var item=(content.items||[])[0]||null;
- if(!item){if(selected||displayedPoster||pendingPoster){if(pendingPoster){imageGeneration++;pendingPoster='';}selected=null;link.tabIndex=-1;return;}currentArtworkKey='';resetArtwork();el('details').hidden=true;el('status').hidden=false;el('status').textContent='No titles available';link.tabIndex=-1;updateLayout();return;}
- var key=artworkKey(item);if(key!==currentArtworkKey){currentArtworkKey=key;resetArtwork();}
- selected=item;var name=nameOf(item),art=lockArtwork(item);updatePoster(item,art);
- if(art&&!art.logo&&!fixedRailRule(item)){art.logo=artworkValue(item.titleLogoPath)||artworkValue(item.titleLogoUrl)||artworkValue(item.logoPath);if(art.logo)railArtRemember(item,art.poster,art.logo);}
- syncPosterBrand(item,art);
- var info=infoLabel(item);el('metaText').textContent=info;el('metaText').hidden=!info;
- var network=showNetwork(item);el('meta').hidden=!(network||info);el('details').hidden=false;el('status').hidden=true;
- link.tabIndex=0;link.setAttribute('aria-label','Open '+name);updateLayout();
+var content=api.content;if(!content)return;
+var item=(content.items||[])[0]||null;
+if(!item){if(selected||_dp||_pp){if(_pp){_ig++;_pp='';}selected=null;link.tabIndex=-1;return;}_cak='';_reset();el('details').hidden=true;el('status').hidden=false;el('status').textContent='No titles available';link.tabIndex=-1;updateLayout();return;}
+var key=_ak(item);if(key!==_cak){_cak=key;_reset();}
+selected=item;var name=nameOf(item),art=lockArtwork(item);_up(item,art);
+if(art&&!art.logo&&!_frr(item)){art.logo=artworkValue(item.titleLogoPath)||artworkValue(item.titleLogoUrl)||artworkValue(item.logoPath);if(art.logo)_raw(item,art.poster,art.logo);}
+_spb(item,art);
+var info=infoLabel(item);el('metaText').textContent=info;el('metaText').hidden=!info;
+var network=showNetwork(item);el('meta').hidden=!(network||info);el('details').hidden=false;el('status').hidden=true;
+link.tabIndex=0;link.setAttribute('aria-label','Open '+name);updateLayout();
 }
 function openSelected(){
- if(!selected)return;var now=Date.now();if(now-lastOpen<350)return;
- var id=selected.id;if(id==null||id==='')return;
- if(typeof api.canOpen==='function'&&!api.canOpen('item',id))return;
- lastOpen=now;
- try{var result=api.open('item',id);if(result&&typeof result.catch==='function')result.catch(function(){})}catch(e){}
+if(!selected)return;var now=Date.now();if(now-lastOpen<350)return;
+var id=selected.id;if(id==null||id==='')return;
+if(typeof api.canOpen==='function'&&!api.canOpen('item',id))return;
+lastOpen=now;
+try{var result=api.open('item',id);if(result&&typeof result.catch==='function')result.catch(function(){})}catch(e){}
 }
 link.addEventListener('click',function(e){e.preventDefault();openSelected()});
 link.addEventListener('focus',function(){card.classList.add('focused')});
