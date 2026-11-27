@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.5.9 — Adaptive visible-logo sizing and pinned logo preferences
+ * Version 3.6.0 — Balanced logo sizing and automatic alternatives
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -62,7 +62,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.5.9",
+  version: "3.6.0",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -365,9 +365,9 @@ function logoFit(record){
  if(!(w>0&&h>0))return -1;
  // A representative Top 20 logo region: 230 x 92 logical pixels.
  // Balance visible width and height; don't equate pixel count with legibility.
- var r=w/h,target=2.5;
+ var r=w/h,target=3.2;
  var fill=Math.min(r/target,target/r);
- var resolution=Math.min(1,w/460,h/184);
+ var resolution=Math.min(1,w/460,h/144);
  return 0.85*fill+0.15*resolution;
 }
 
@@ -462,7 +462,7 @@ async function loadCachedRow(key, target, loader) {
 }
 
 async function getArtwork(mediaType, tmdbId, title, premiumPortrait) {
-  var key = "art:" + mediaType + ":" + tmdbId + ":" + (premiumPortrait ? "premium" : "standard-logo358");
+  var key = "art:" + mediaType + ":" + tmdbId + ":" + (premiumPortrait ? "premium" : "standard-logo360");
   var cached = startupCacheRead(key, ARTWORK_CACHE_SECONDS);
   if (cached && cached.logo && cached.cleanPoster && Array.isArray(cached.genres)) return cached;
   var artwork = await getArtworkUncached(mediaType, tmdbId, title, premiumPortrait);
@@ -762,17 +762,17 @@ function selectHuntingWivesStill(episode, excluded){
 
 var artworkRegistryPromise=null;
 async function artworkRegistry(){
-  var cached=startupCacheRead("registry-v357",300);
+  var cached=startupCacheRead("registry-v360",300);
   if(cached&&cached.schemaVersion===1&&cached.overrides)return cached.overrides;
   if(artworkRegistryPromise)return artworkRegistryPromise;
   artworkRegistryPromise=(async function(){
     try{
       var data=unwrap(await Widget.http.get("https://raw.githubusercontent.com/Junior2237/rex-poster-test/refs/heads/main/artwork_overrides.json",{headers:{Accept:"application/json"}}));
       if(data&&data.schemaVersion===1&&data.overrides&&typeof data.overrides==="object"){
-        startupCacheWrite("registry-v357",data);return data.overrides;
+        startupCacheWrite("registry-v360",data);return data.overrides;
       }
     }catch(e){}
-    return cached&&cached.overrides||{"tv:244447":{"title":"The Hunting Wives","strategy":"fixed","posterPath":"/hsEcXCnzoalH3i0HowKbOpJRqD0.jpg","logoPath":"/dT0HdklknEGQYkn1dNACIs4IeAt.png","revision":3,"posterPaths":{"top20":"/kg09RkDPfvz44TX7K3rmUv1dI02.jpg","trending":"/yzfW8fZvPQOZKAIRaPlf8WlU9yT.jpg"},"logoAlternates":["/vuIB3iTCnBXkSo4eYoCY8fZ3SXU.png","/5qE6Fm2d9fbH8m72kDPi40msky9.png"]},"movie:13963":{"title":"The Last Waltz","strategy":"fixed","posterPath":"/iXFOL9hCoCHFGACjJSIrY8eLlSY.jpg","logoPath":"/dI3b6DHMYGZDyZMfSqq8hHNrFBi.png","revision":2,"logoAlternates":["/z0mhltWcY0kIpdRTPpdpTfD9Ks.png"]},"movie:9089":{"title":"Home for the Holidays","strategy":"fixed","posterPath":"/s6ol3yUC7qTPwWoCM7b7rnSaeJl.jpg","logoPath":"/AtMN8tMKMQ8PDo760zKoLkRl4LA.png","revision":2,"logoAlternates":["/gkbavCi5ubuVp9XleopJDuWPplT.png","/buEFy3l1eKjoM5PfxUuuEhiHKLS.png"]},"movie:950237":{"title":"The 90s Club","requireManualLogo":true,"revision":1}};
+    return cached&&cached.overrides||{"tv:244447":{"title":"The Hunting Wives","strategy":"fixed","posterPath":"/hsEcXCnzoalH3i0HowKbOpJRqD0.jpg","logoPath":"/dT0HdklknEGQYkn1dNACIs4IeAt.png","revision":3,"posterPaths":{"top20":"/kg09RkDPfvz44TX7K3rmUv1dI02.jpg","trending":"/yzfW8fZvPQOZKAIRaPlf8WlU9yT.jpg"},"logoAlternates":["/vuIB3iTCnBXkSo4eYoCY8fZ3SXU.png","/5qE6Fm2d9fbH8m72kDPi40msky9.png"]},"movie:13963":{"title":"The Last Waltz","strategy":"fixed","posterPath":"/iXFOL9hCoCHFGACjJSIrY8eLlSY.jpg","logoPath":"/dI3b6DHMYGZDyZMfSqq8hHNrFBi.png","revision":3,"logoAlternates":["/z0mhltWcY0kIpdRTPpdpTfD9Ks.png"],"autoLogo":true},"movie:9089":{"title":"Home for the Holidays","strategy":"fixed","posterPath":"/s6ol3yUC7qTPwWoCM7b7rnSaeJl.jpg","logoPath":"/AtMN8tMKMQ8PDo760zKoLkRl4LA.png","revision":2,"logoAlternates":["/gkbavCi5ubuVp9XleopJDuWPplT.png","/buEFy3l1eKjoM5PfxUuuEhiHKLS.png"]},"movie:950237":{"title":"The 90s Club","requireManualLogo":true,"revision":1}};
   })();
   try{return await artworkRegistryPromise;}finally{artworkRegistryPromise=null;}
 }
@@ -809,11 +809,11 @@ async function applyArtworkOverride(artwork,mediaType,tmdbId,premiumPortrait){
   if(alternate)startupCacheWrite(key,alternate);
   if(!alternate&&!logo)return artwork;
   var logoPaths = [];
-  [logo,artwork.logo].concat(Array.isArray(rule.logoAlternates)?rule.logoAlternates:[],artwork.logos||[]).forEach(function(p){
+  (rule.autoLogo ? [artwork.logo].concat(artwork.logos||[],[logo],rule.logoAlternates||[]) : [logo,artwork.logo].concat(Array.isArray(rule.logoAlternates)?rule.logoAlternates:[],artwork.logos||[])).forEach(function(p){
     p=safePath(p);
     if(p&&/\.png$/i.test(p)&&logoPaths.indexOf(p)<0)logoPaths.push(p);
   });
-  return Object.assign({},artwork,alternate?{cleanPoster:alternate,fixedRailPoster:true}:{},logoPaths.length?{logo:logoPaths[0],logos:logoPaths,titleLogoPinned:!!logo}:{});
+  return Object.assign({},artwork,alternate?{cleanPoster:alternate,fixedRailPoster:true}:{},logoPaths.length?{logo:logoPaths[0],logos:logoPaths,titleLogoPinned:!!logo&&!rule.autoLogo}:{});
 }
 
 async function buildItem(
@@ -1235,14 +1235,14 @@ async function loadNativeList(
 
 async function loadNativeMovies(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("daily-movies-v359", MAX_ITEMS, function() {
+  return loadCachedRow("daily-movies-v360", MAX_ITEMS, function() {
     return loadNativeList("movie", MOVIES_LIST, params);
   });
 }
 
 async function loadNativeShows(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("daily-shows-v359", MAX_ITEMS, function() {
+  return loadCachedRow("daily-shows-v360", MAX_ITEMS, function() {
     return loadNativeList("tv", TV_LIST, params);
   });
 }
@@ -1316,25 +1316,25 @@ async function loadArtworkChart(mediaType, chart, params) {
 
 async function loadTrendingMovies(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("trending-movies-v357", CHART_TARGET, function() {
+  return loadCachedRow("trending-movies-v360", CHART_TARGET, function() {
     return loadArtworkChart("movie", "trending", params);
   });
 }
 async function loadTrendingShows(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("trending-shows-v357", CHART_TARGET, function() {
+  return loadCachedRow("trending-shows-v360", CHART_TARGET, function() {
     return loadArtworkChart("tv", "trending", params);
   });
 }
 async function loadPopularMovies(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("popular-movies-v357", CHART_TARGET, function() {
+  return loadCachedRow("popular-movies-v360", CHART_TARGET, function() {
     return loadArtworkChart("movie", "popular", params);
   });
 }
 async function loadPopularShows(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("popular-shows-v357", CHART_TARGET, function() {
+  return loadCachedRow("popular-shows-v360", CHART_TARGET, function() {
     return loadArtworkChart("tv", "popular", params);
   });
 }
@@ -1345,7 +1345,7 @@ async function loadPopularShows(params) {
  * Unlike active Trakt watcher counts, upcoming titles can qualify.
  */
 async function loadCombinedTrending(params) {
-  return loadCachedRow("combined-trending-v357", CHART_TARGET, function() {
+  return loadCachedRow("combined-trending-v360", CHART_TARGET, function() {
     return loadCombinedTrendingUncached(params);
   });
 }
