@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="rex-widget" content="type=rail; height=700; item-ratio=4:5">
-<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster,titleLogoAlternates,titleLogoRawPath,logoUrl,titleLogoPinned,faceSafePosterPath">
+<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster,titleLogoAlternates,titleLogoRawPath,logoUrl,titleLogoPinned,faceSafePosterPath,nativePosterOnly">
 <title>Rex Editorial — Consistent Artwork</title>
 <style>
 *{box-sizing:border-box}
@@ -183,7 +183,7 @@ function artworkValue(v){
 function railArtworkBundle(item){
 if(!item)return null;
 var p=Array.isArray(item.backdropPaths)?item.backdropPaths.map(artworkValue).filter(Boolean):[],d=imageIdentity(item.backdropPath),n=imageIdentity(item.posterPath||item.coverUrl);
-if(p.length!==3||imageIdentity(p[0])===imageIdentity(p[1])||! /\.png$/i.test(imageIdentity(p[2])))return null;
+if(p.length===2&&d&&d===n&&d===imageIdentity(p[0])&&/\.png$/i.test(imageIdentity(p[1])))return {poster:p[0],n:1};if(p.length!==3||imageIdentity(p[0])===imageIdentity(p[1])||!/\.png$/i.test(imageIdentity(p[2])))return null;
 if(d&&d===imageIdentity(p[0])&&n===d)return {poster:p[0],logo:p[2],verified:true};
 if(!d||d===imageIdentity(p[0]))return {poster:p[1],logo:p[2]};
 return null;
@@ -197,7 +197,7 @@ function railArtKeys(item){
  // allowing the native mediaType field to disappear or change on navigation.
  var type=String(item.mediaType||item.contentType||'').toLowerCase();
  if(type==='show'||type==='series'||type==='television')type='tv';
- var base='rex.editorial700.clean.366:';
+ var base='rex.editorial700.clean.367:';
  var keys=[];
  if(type)keys.push(base+type+':'+id);
  if(title)keys.push(base+'idtitle:'+id+':'+title);
@@ -216,9 +216,9 @@ function railArtFor(item){
  for(var i=0;i<keys.length;i++){var data=railArtRead(keys[i]);if(data)return data}
  return null;
 }
-function railArtRemember(item,poster,logo){
+function railArtRemember(item,poster,logo,v){
  if(!poster)return;
- var data={poster:poster,logo:logo||'',at:Date.now()};
+ var data={poster:poster,logo:logo||'',at:Date.now(),v:!!v};
  railArtKeys(item).forEach(function(key){railArtMemory[key]=data;try{localStorage.setItem(key,JSON.stringify(data))}catch(e){}});
 }
 function imageIdentity(value){
@@ -275,7 +275,7 @@ function confirmedArtwork(item){
  // Never trust old automatic artwork for a title with an explicit override.
  if(fixedRailRule(item))return null;
  var safe=verifiedRailSource(item);
- if(safe)return {poster:safe,logo:artworkValue(item.titleLogoPath)||artworkValue(item.titleLogoUrl)||artworkValue(item.logoPath)};
+ if(safe)return {poster:safe,v:1,logo:artworkValue(item.titleLogoPath)};var nb=railArtworkBundle(item);if(item.nativePosterOnly||nb&&nb.n)return {poster:artworkValue(item.posterPath||item.coverUrl)||nb&&nb.poster,n:1};
  var cached=railArtFor(item);
  if(cached&&!item.faceSafePosterPath)return cached;
  var bundle=railArtworkBundle(item),clean=artworkValue(item.faceSafePosterPath)||artworkValue(item.cleanPosterPath);
@@ -300,14 +300,8 @@ function lockArtwork(item){
   return lockedArtwork;
  }
  if(fixedRailRule(item))return null;
- if(lockedArtwork&&verifiedRailSource(item)&&imageIdentity(lockedArtwork.poster)!==imageIdentity(verifiedRailSource(item))){lockedArtwork=null;displayedClean=false;failedCleanPoster='';pendingPoster='';imageGeneration++;}
- if(lockedArtwork)return lockedArtwork;
- var art=confirmedArtwork(item);
- if(!art)return null;
- // Lock the source for the entire assignment of this rail cell.
- lockedArtwork={poster:art.poster,logo:art.logo||''};
- railArtRemember(item,lockedArtwork.poster,lockedArtwork.logo);
- return lockedArtwork;
+ if(lockedArtwork&&lockedArtwork.v)return lockedArtwork;
+ var art=confirmedArtwork(item);if(lockedArtwork&&(!art||!art.v&&!art.n))return lockedArtwork;if(!art||!art.poster)return lockedArtwork;if(lockedArtwork&&imageIdentity(lockedArtwork.poster)!==imageIdentity(art.poster)){displayedClean=false;failedCleanPoster='';pendingPoster='';imageGeneration++;}lockedArtwork=art;if(!art.n)railArtRemember(item,art.poster,art.logo,art.v);return lockedArtwork;
 }
 
 function networkLogoOf(item){
@@ -400,7 +394,7 @@ function nativeFixedPosterIsUsable(item,art){
  return displayedClean||native.some(function(v){return v&&imageIdentity(v)===actual;});
 }
 function syncPosterBrand(item,art){
- if(!item)return;
+ if(!item)return;if(art&&art.n){logoRequest++;logoKey='';el('logo').hidden=el('title').hidden=true;el('logo').removeAttribute('src');return;}
  // Branding must not depend on the poster being classified as clean.
  // Always attempt the real title logo, then display a readable title.
  renderTitleLogo(railLogoCandidates(item,art),nameOf(item));
