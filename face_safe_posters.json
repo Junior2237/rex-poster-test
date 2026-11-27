@@ -1,9 +1,76 @@
 {
   "schemaVersion": 1,
   "algorithm": "yunet-ppocr-v5",
-  "qualityVersion": 1,
+  "qualityVersion": 2,
   "qualityUpgrades": [],
-  "generatedAt": "2026-11-27T15:01:12.615851+00:00",
+  "qualityExclusions": [
+    {
+      "title": "High Potential",
+      "layout": "trending",
+      "posterPath": "/6ozHJmqt7VbPsTrCkhT0DOYW4vn.jpg"
+    },
+    {
+      "title": "High Potential",
+      "layout": "top20",
+      "posterPath": "/k1WZ8v7hUZ7QDseZH9TWVaAyTc0.jpg"
+    },
+    {
+      "title": "Nobody Wants This",
+      "layout": "top20",
+      "posterPath": "/uOsvjNjYYshi44tR5onbTGAiexS.jpg"
+    },
+    {
+      "title": "Addams Family Values",
+      "layout": "top20",
+      "posterPath": "/oe2EmsNJ2Z5vx4tF0V8ZpdrIZmO.jpg"
+    },
+    {
+      "title": "Addams Family Values",
+      "layout": "trending",
+      "posterPath": "/oe2EmsNJ2Z5vx4tF0V8ZpdrIZmO.jpg"
+    },
+    {
+      "title": "The Body",
+      "layout": "top20",
+      "posterPath": "/iAbat5mIHdWcnj0wZJ8847SOWVO.jpg"
+    },
+    {
+      "title": "The Body",
+      "layout": "trending",
+      "posterPath": "/iAbat5mIHdWcnj0wZJ8847SOWVO.jpg"
+    },
+    {
+      "title": "South Park",
+      "layout": "top20",
+      "posterPath": "/la1aQtFQOXwOiyjo9yuTyIDucj7.jpg"
+    },
+    {
+      "title": "South Park",
+      "layout": "trending",
+      "posterPath": "/la1aQtFQOXwOiyjo9yuTyIDucj7.jpg"
+    },
+    {
+      "title": "Ted Lasso",
+      "layout": "top20",
+      "posterPath": "/uqZjoWvpGMdQ6K9L8MsxngHBKy6.jpg"
+    },
+    {
+      "title": "Ted Lasso",
+      "layout": "trending",
+      "posterPath": "/uqZjoWvpGMdQ6K9L8MsxngHBKy6.jpg"
+    },
+    {
+      "title": "War Machine",
+      "layout": "top20",
+      "posterPath": "/sNcd70Q6sEBnF3YEd3kC9jIUO5E.jpg"
+    },
+    {
+      "title": "War Machine",
+      "layout": "trending",
+      "posterPath": "/sNcd70Q6sEBnF3YEd3kC9jIUO5E.jpg"
+    }
+  ],
+  "generatedAt": "2026-11-27T15:18:31.505367+00:00",
   "overrides": {
     "movie:2609": {
       "title": "Planes, Trains and Automobiles",
@@ -66,7 +133,17 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "selection": "confirmed",
+          "qualityVersion": 2,
+          "qualityScore": 77.746,
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 0.688,
+          "edgeEvidence": true,
+          "edgeDefinition": 0.9024,
+          "voteAverage": 3.334,
+          "voteCount": 2,
+          "qualityAuditVersion": 2
         },
         "trending": {
           "baseline": "/ffDlu6T4f3sxJqKzuzf0N5DFhBg.jpg",
@@ -76,7 +153,17 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "selection": "confirmed",
+          "qualityVersion": 2,
+          "qualityScore": 77.746,
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 0.688,
+          "edgeEvidence": true,
+          "edgeDefinition": 0.9024,
+          "voteAverage": 3.334,
+          "voteCount": 2,
+          "qualityAuditVersion": 2
         }
       }
     },
@@ -1805,7 +1892,17 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 2,
+          "qualityScore": 65.493,
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 0.4308,
+          "edgeEvidence": true,
+          "edgeDefinition": 0.6324,
+          "voteAverage": 1.75,
+          "voteCount": 2,
+          "qualityAuditVersion": 2
         },
         "trending": {
           "baseline": "/7NVnp7XHiW99nYLqEH5A63uPSJN.jpg",
@@ -1815,7 +1912,17 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 2,
+          "qualityScore": 65.493,
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 0.4308,
+          "edgeEvidence": true,
+          "edgeDefinition": 0.6324,
+          "voteAverage": 1.75,
+          "voteCount": 2,
+          "qualityAuditVersion": 2
         }
       }
     },
@@ -1905,7 +2012,17 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "selection": "confirmed",
+          "qualityVersion": 2,
+          "qualityScore": 94.846,
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 1.0,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.5662,
+          "voteAverage": 7.542,
+          "voteCount": 8,
+          "qualityAuditVersion": 2
         },
         "trending": {
           "baseline": "/9WyCDqi6ogIWYCnlCLJfvNuR9dF.jpg",
@@ -1915,7 +2032,17 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "confirmed"
+          "selection": "confirmed",
+          "qualityVersion": 2,
+          "qualityScore": 94.846,
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 1.0,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.5662,
+          "voteAverage": 7.542,
+          "voteCount": 8,
+          "qualityAuditVersion": 2
         }
       }
     },
@@ -1955,7 +2082,17 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 2,
+          "qualityScore": 86.15,
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 0.9078,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.1332,
+          "voteAverage": 2.066,
+          "voteCount": 5,
+          "qualityAuditVersion": 2
         },
         "trending": {
           "baseline": "/4D5k1Cs9hA0REwXN6w5Lxxlhba5.jpg",
@@ -1965,7 +2102,17 @@
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate"
+          "selection": "alternate",
+          "qualityVersion": 2,
+          "qualityScore": 86.15,
+          "width": 2000,
+          "height": 3000,
+          "sharpness": 0.9078,
+          "edgeEvidence": true,
+          "edgeDefinition": 1.1332,
+          "voteAverage": 2.066,
+          "voteCount": 5,
+          "qualityAuditVersion": 2
         }
       }
     },
@@ -2353,53 +2500,6 @@
         }
       }
     },
-    "tv:226637": {
-      "title": "High Potential",
-      "layouts": {
-        "trending": {
-          "baseline": "/o5y99oQR6S5JunLITOtMTYBlZCN.jpg",
-          "posterPath": "/6ozHJmqt7VbPsTrCkhT0DOYW4vn.jpg",
-          "before": 0.0,
-          "after": 0.008,
-          "textCheck": "clear",
-          "textModel": "ppocrv3-en",
-          "faceCheck": "clear",
-          "selection": "alternate",
-          "qualityVersion": 1,
-          "qualityScore": 70.157,
-          "width": 1000,
-          "height": 1500,
-          "sharpness": 0.9128,
-          "edgeEvidence": true,
-          "edgeDefinition": 1.1384,
-          "voteAverage": 1.75,
-          "voteCount": 2,
-          "qualityAuditVersion": 1
-        },
-        "top20": {
-          "baseline": "/xm67vBnDwOxFgAyhCx4DtfvM2S5.jpg",
-          "posterPath": "/k1WZ8v7hUZ7QDseZH9TWVaAyTc0.jpg",
-          "before": 0.0,
-          "after": 0.0,
-          "textCheck": "clear",
-          "textModel": "ppocrv3-en",
-          "faceCheck": "clear",
-          "faceCount": 5,
-          "faceAssessment": "overlap_within_limit",
-          "width": 729,
-          "height": 1094,
-          "selection": "alternate",
-          "qualityVersion": 1,
-          "qualityScore": 54.953,
-          "sharpness": 0.6673,
-          "edgeEvidence": true,
-          "edgeDefinition": 0.8807,
-          "voteAverage": 3.334,
-          "voteCount": 1,
-          "qualityAuditVersion": 1
-        }
-      }
-    },
     "tv:157741": {
       "title": "Landman",
       "layouts": {
@@ -2677,7 +2777,7 @@
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
           "selection": "alternate",
-          "qualityVersion": 1,
+          "qualityVersion": 2,
           "qualityScore": 90.781,
           "width": 2000,
           "height": 3000,
@@ -2686,29 +2786,7 @@
           "edgeDefinition": 1.1899,
           "voteAverage": 0,
           "voteCount": 0,
-          "qualityAuditVersion": 1
-        },
-        "top20": {
-          "baseline": "/xcWMs3eNj7mG3jPCwZCCAXNT6Rr.jpg",
-          "posterPath": "/uOsvjNjYYshi44tR5onbTGAiexS.jpg",
-          "before": 0.093,
-          "after": 0.0,
-          "textCheck": "clear",
-          "textModel": "ppocrv3-en",
-          "faceCheck": "clear",
-          "faceCount": 2,
-          "faceAssessment": "overlap_within_limit",
-          "width": 768,
-          "height": 1152,
-          "selection": "alternate",
-          "qualityVersion": 1,
-          "qualityScore": 63.788,
-          "sharpness": 0.8375,
-          "edgeEvidence": true,
-          "edgeDefinition": 1.0594,
-          "voteAverage": 0,
-          "voteCount": 0,
-          "qualityAuditVersion": 1
+          "qualityAuditVersion": 2
         }
       }
     },
@@ -3615,55 +3693,6 @@
         }
       }
     },
-    "movie:2758": {
-      "title": "Addams Family Values",
-      "layouts": {
-        "top20": {
-          "baseline": "/8znyj20O3EYLD2EzWnZQMnkE4zH.jpg",
-          "posterPath": "/oe2EmsNJ2Z5vx4tF0V8ZpdrIZmO.jpg",
-          "before": 0.0,
-          "after": 0.0,
-          "textCheck": "clear",
-          "textModel": "ppocrv3-en",
-          "faceCheck": "clear",
-          "faceCount": 3,
-          "faceAssessment": "overlap_within_limit",
-          "width": 1065,
-          "height": 1427,
-          "selection": "alternate",
-          "qualityVersion": 1,
-          "qualityScore": 56.449,
-          "sharpness": 0.5972,
-          "edgeEvidence": true,
-          "edgeDefinition": 0.8071,
-          "voteAverage": 0,
-          "voteCount": 0,
-          "qualityAuditVersion": 1
-        },
-        "trending": {
-          "baseline": "/8znyj20O3EYLD2EzWnZQMnkE4zH.jpg",
-          "posterPath": "/oe2EmsNJ2Z5vx4tF0V8ZpdrIZmO.jpg",
-          "before": 0.0,
-          "after": 0.0,
-          "textCheck": "clear",
-          "textModel": "ppocrv3-en",
-          "faceCheck": "clear",
-          "faceCount": 3,
-          "faceAssessment": "overlap_within_limit",
-          "width": 1065,
-          "height": 1427,
-          "selection": "alternate",
-          "qualityVersion": 1,
-          "qualityScore": 56.449,
-          "sharpness": 0.5972,
-          "edgeEvidence": true,
-          "edgeDefinition": 0.8071,
-          "voteAverage": 0,
-          "voteCount": 0,
-          "qualityAuditVersion": 1
-        }
-      }
-    },
     "movie:940721": {
       "title": "Godzilla Minus One",
       "layouts": {
@@ -3694,55 +3723,6 @@
           "width": 2000,
           "height": 3000,
           "selection": "alternate"
-        }
-      }
-    },
-    "tv:291507": {
-      "title": "The Body",
-      "layouts": {
-        "top20": {
-          "baseline": "/zleCYDRbW5mKwgZwVK4SNIrKXWx.jpg",
-          "posterPath": "/iAbat5mIHdWcnj0wZJ8847SOWVO.jpg",
-          "before": 0.229,
-          "after": 0.0,
-          "textCheck": "clear",
-          "textModel": "ppocrv3-en",
-          "faceCheck": "clear",
-          "faceCount": 2,
-          "faceAssessment": "overlap_within_limit",
-          "width": 618,
-          "height": 927,
-          "selection": "alternate",
-          "qualityVersion": 1,
-          "qualityScore": 35.75,
-          "sharpness": 0.2804,
-          "edgeEvidence": true,
-          "edgeDefinition": 0.4744,
-          "voteAverage": 0,
-          "voteCount": 0,
-          "qualityAuditVersion": 1
-        },
-        "trending": {
-          "baseline": "/zleCYDRbW5mKwgZwVK4SNIrKXWx.jpg",
-          "posterPath": "/iAbat5mIHdWcnj0wZJ8847SOWVO.jpg",
-          "before": 0.193,
-          "after": 0.0,
-          "textCheck": "clear",
-          "textModel": "ppocrv3-en",
-          "faceCheck": "clear",
-          "faceCount": 2,
-          "faceAssessment": "overlap_within_limit",
-          "width": 618,
-          "height": 927,
-          "selection": "alternate",
-          "qualityVersion": 1,
-          "qualityScore": 35.75,
-          "sharpness": 0.2804,
-          "edgeEvidence": true,
-          "edgeDefinition": 0.4744,
-          "voteAverage": 0,
-          "voteCount": 0,
-          "qualityAuditVersion": 1
         }
       }
     },
@@ -3779,55 +3759,6 @@
         }
       }
     },
-    "tv:2190": {
-      "title": "South Park",
-      "layouts": {
-        "top20": {
-          "baseline": "/ka1ilKJLUkNvirukSAASEcufNFK.jpg",
-          "posterPath": "/la1aQtFQOXwOiyjo9yuTyIDucj7.jpg",
-          "before": 1,
-          "after": 0.0,
-          "textCheck": "clear",
-          "textModel": "ppocrv3-en",
-          "faceCheck": "clear",
-          "faceCount": 0,
-          "faceAssessment": "no_faces_detected",
-          "width": 1000,
-          "height": 1500,
-          "selection": "alternate",
-          "qualityVersion": 1,
-          "qualityScore": 64.101,
-          "sharpness": 0.7945,
-          "edgeEvidence": true,
-          "edgeDefinition": 1.0142,
-          "voteAverage": 1.222,
-          "voteCount": 3,
-          "qualityAuditVersion": 1
-        },
-        "trending": {
-          "baseline": "/ka1ilKJLUkNvirukSAASEcufNFK.jpg",
-          "posterPath": "/la1aQtFQOXwOiyjo9yuTyIDucj7.jpg",
-          "before": 0.771,
-          "after": 0.0,
-          "textCheck": "clear",
-          "textModel": "ppocrv3-en",
-          "faceCheck": "clear",
-          "faceCount": 0,
-          "faceAssessment": "no_faces_detected",
-          "width": 1000,
-          "height": 1500,
-          "selection": "alternate",
-          "qualityVersion": 1,
-          "qualityScore": 64.101,
-          "sharpness": 0.7945,
-          "edgeEvidence": true,
-          "edgeDefinition": 1.0142,
-          "voteAverage": 1.222,
-          "voteCount": 3,
-          "qualityAuditVersion": 1
-        }
-      }
-    },
     "tv:326247": {
       "title": "Fool Night",
       "layouts": {
@@ -3844,14 +3775,14 @@
           "width": 1200,
           "height": 1800,
           "selection": "alternate",
-          "qualityVersion": 1,
+          "qualityVersion": 2,
           "qualityScore": 79.082,
           "sharpness": 1.0,
           "edgeEvidence": true,
           "edgeDefinition": 1.7054,
           "voteAverage": 0,
           "voteCount": 0,
-          "qualityAuditVersion": 1
+          "qualityAuditVersion": 2
         },
         "trending": {
           "baseline": "/qZb0FSpnL1vJSNl742oupBOIE3Z.jpg",
@@ -3866,14 +3797,14 @@
           "width": 1200,
           "height": 1800,
           "selection": "alternate",
-          "qualityVersion": 1,
+          "qualityVersion": 2,
           "qualityScore": 79.082,
           "sharpness": 1.0,
           "edgeEvidence": true,
           "edgeDefinition": 1.7054,
           "voteAverage": 0,
           "voteCount": 0,
-          "qualityAuditVersion": 1
+          "qualityAuditVersion": 2
         }
       }
     },
@@ -4042,55 +3973,6 @@
         }
       }
     },
-    "tv:97546": {
-      "title": "Ted Lasso",
-      "layouts": {
-        "top20": {
-          "baseline": "/uRHsiw1wLxPHFXkkv4Ix1s0O6f4.jpg",
-          "posterPath": "/uqZjoWvpGMdQ6K9L8MsxngHBKy6.jpg",
-          "before": 0.491,
-          "after": 0.0,
-          "textCheck": "clear",
-          "textModel": "ppocrv3-en",
-          "faceCheck": "clear",
-          "faceCount": 1,
-          "faceAssessment": "overlap_within_limit",
-          "width": 816,
-          "height": 1224,
-          "selection": "alternate",
-          "qualityVersion": 1,
-          "qualityScore": 58.574,
-          "sharpness": 0.7011,
-          "edgeEvidence": true,
-          "edgeDefinition": 0.9162,
-          "voteAverage": 0,
-          "voteCount": 0,
-          "qualityAuditVersion": 1
-        },
-        "trending": {
-          "baseline": "/uRHsiw1wLxPHFXkkv4Ix1s0O6f4.jpg",
-          "posterPath": "/uqZjoWvpGMdQ6K9L8MsxngHBKy6.jpg",
-          "before": 0.4,
-          "after": 0.0,
-          "textCheck": "clear",
-          "textModel": "ppocrv3-en",
-          "faceCheck": "clear",
-          "faceCount": 1,
-          "faceAssessment": "overlap_within_limit",
-          "width": 816,
-          "height": 1224,
-          "selection": "alternate",
-          "qualityVersion": 1,
-          "qualityScore": 58.574,
-          "sharpness": 0.7011,
-          "edgeEvidence": true,
-          "edgeDefinition": 0.9162,
-          "voteAverage": 0,
-          "voteCount": 0,
-          "qualityAuditVersion": 1
-        }
-      }
-    },
     "movie:1439930": {
       "title": "The Punisher: One Last Kill",
       "layouts": {
@@ -4121,55 +4003,6 @@
           "width": 2000,
           "height": 3000,
           "selection": "alternate"
-        }
-      }
-    },
-    "movie:1265609": {
-      "title": "War Machine",
-      "layouts": {
-        "top20": {
-          "baseline": "/tlPgDzwIE7VYYIIAGCTUOnN4wI1.jpg",
-          "posterPath": "/sNcd70Q6sEBnF3YEd3kC9jIUO5E.jpg",
-          "before": 1,
-          "after": 0.0,
-          "textCheck": "clear",
-          "textModel": "ppocrv3-en",
-          "faceCheck": "clear",
-          "faceCount": 1,
-          "faceAssessment": "overlap_within_limit",
-          "width": 900,
-          "height": 1350,
-          "selection": "alternate",
-          "qualityVersion": 1,
-          "qualityScore": 58.437,
-          "sharpness": 0.6967,
-          "edgeEvidence": true,
-          "edgeDefinition": 0.9115,
-          "voteAverage": 2.278,
-          "voteCount": 3,
-          "qualityAuditVersion": 1
-        },
-        "trending": {
-          "baseline": "/tlPgDzwIE7VYYIIAGCTUOnN4wI1.jpg",
-          "posterPath": "/sNcd70Q6sEBnF3YEd3kC9jIUO5E.jpg",
-          "before": 1,
-          "after": 0.0,
-          "textCheck": "clear",
-          "textModel": "ppocrv3-en",
-          "faceCheck": "clear",
-          "faceCount": 1,
-          "faceAssessment": "overlap_within_limit",
-          "width": 900,
-          "height": 1350,
-          "selection": "alternate",
-          "qualityVersion": 1,
-          "qualityScore": 58.437,
-          "sharpness": 0.6967,
-          "edgeEvidence": true,
-          "edgeDefinition": 0.9115,
-          "voteAverage": 2.278,
-          "voteCount": 3,
-          "qualityAuditVersion": 1
         }
       }
     },
@@ -4208,11 +4041,46 @@
     }
   },
   "textScreening": {
-    "clear": 17,
-    "text": 1013,
+    "clear": 22,
+    "text": 925,
     "unknown": 0
   },
   "unresolved": {
+    "tv:291507": {
+      "title": "The Body",
+      "status": "unresolved",
+      "mode": "excluded"
+    },
+    "tv:226637": {
+      "title": "High Potential",
+      "status": "unresolved",
+      "mode": "excluded"
+    },
+    "tv:250923": {
+      "title": "Nobody Wants This",
+      "status": "partial",
+      "mode": "excluded"
+    },
+    "tv:97546": {
+      "title": "Ted Lasso",
+      "status": "unresolved",
+      "mode": "excluded"
+    },
+    "movie:1265609": {
+      "title": "War Machine",
+      "status": "unresolved",
+      "mode": "excluded"
+    },
+    "tv:2190": {
+      "title": "South Park",
+      "status": "unresolved",
+      "mode": "excluded"
+    },
+    "movie:2758": {
+      "title": "Addams Family Values",
+      "status": "unresolved",
+      "mode": "excluded"
+    },
     "movie:13963": {
       "title": "The Last Waltz",
       "status": "unresolved",
@@ -4295,6 +4163,16 @@
     },
     "tv:302837": {
       "title": "Toos: The Van der Valk Kidnapping",
+      "status": "unresolved",
+      "mode": "excluded"
+    },
+    "movie:1709391": {
+      "title": "Hanuman Ansh",
+      "status": "unresolved",
+      "mode": "excluded"
+    },
+    "movie:1457866": {
+      "title": "THE FURTHER MIS-ADVENTURES OF CLIFF BOOTH",
       "status": "unresolved",
       "mode": "excluded"
     },
