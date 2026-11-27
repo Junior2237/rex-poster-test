@@ -102,7 +102,7 @@ if(!item||item.id==null||item.id==='')return [];
 var id=String(item.id).trim(),title=String(item.title||'').trim().toLowerCase().replace(/\s+/g,' ');
 var type=String(item.mediaType||item.contentType||'').toLowerCase();
 if(type==='show'||type==='series'||type==='television')type='tv';
-var base='rex.regular384.clean.363:';
+var base='rex.regular384.clean.365:';
 var keys=[];
 if(type)keys.push(base+type+':'+id);
 if(title)keys.push(base+'idtitle:'+id+':'+title);
@@ -131,7 +131,7 @@ try{src=decodeURIComponent(src)}catch(e){}
 var matches=src.match(/\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)(?=$|[?#&/])/ig);
 return matches&&matches.length?matches[matches.length-1].toLowerCase():src;
 }
-var _fra={"9089":{"title":"home for the holidays","poster":"/s6ol3yUC7qTPwWoCM7b7rnSaeJl.jpg","logo":"/AtMN8tMKMQ8PDo760zKoLkRl4LA.png","logoAlternates":["/gkbavCi5ubuVp9XleopJDuWPplT.png","/buEFy3l1eKjoM5PfxUuuEhiHKLS.png"]},"13963":{"title":"the last waltz","poster":"/iXFOL9hCoCHFGACjJSIrY8eLlSY.jpg","logo":"/dI3b6DHMYGZDyZMfSqq8hHNrFBi.png","logoAlternates":["/z0mhltWcY0kIpdRTPpdpTfD9Ks.png"]},"244447":{"title":"the hunting wives","poster":"/kg09RkDPfvz44TX7K3rmUv1dI02.jpg","logo":"/dT0HdklknEGQYkn1dNACIs4IeAt.png","logoAlternates":["/vuIB3iTCnBXkSo4eYoCY8fZ3SXU.png","/5qE6Fm2d9fbH8m72kDPi40msky9.png"]}};
+var _fra={"1597":{title:"meet the parents",poster:"/t6Qs4qaANlikve2OmO0s3U1w9nv.jpg"},"225171":{title:"pluribus",poster:"/os1oQkTMZXiFP7KdEv3o03eshGC.jpg"},"9089":{"title":"home for the holidays","poster":"/s6ol3yUC7qTPwWoCM7b7rnSaeJl.jpg","logo":"/AtMN8tMKMQ8PDo760zKoLkRl4LA.png","logoAlternates":["/gkbavCi5ubuVp9XleopJDuWPplT.png","/buEFy3l1eKjoM5PfxUuuEhiHKLS.png"]},"13963":{"title":"the last waltz","poster":"/iXFOL9hCoCHFGACjJSIrY8eLlSY.jpg","logo":"/dI3b6DHMYGZDyZMfSqq8hHNrFBi.png","logoAlternates":["/z0mhltWcY0kIpdRTPpdpTfD9Ks.png"]},"244447":{"title":"the hunting wives","poster":"/kg09RkDPfvz44TX7K3rmUv1dI02.jpg","logo":"/dT0HdklknEGQYkn1dNACIs4IeAt.png","logoAlternates":["/vuIB3iTCnBXkSo4eYoCY8fZ3SXU.png","/5qE6Fm2d9fbH8m72kDPi40msky9.png"]}};
 function _frr(item){
 if(!item)return null;
 var id=String(item.tmdbId||item.id||'').replace(/^(?:tv|movie)[.:]/,'');
@@ -176,8 +176,8 @@ if(_frr(item))return null;
 var safe=_av(item.faceSafePosterPath);
 if(safe)return {poster:safe,logo:_av(item.titleLogoPath)||_av(item.titleLogoUrl)||_av(item.logoPath)};
 var cached=_raf(item);
-if(cached&&!item.faceSafePosterPath)return cached;
-var bundle=_rab(item),clean=_av(item.faceSafePosterPath)||_av(item.cleanPosterPath);
+if(cached)return cached;
+var bundle=_rab(item),clean=_av(item.cleanPosterPath);
 var nativePoster=_av(item.posterPath)||_av(item.coverUrl);
 var poster=(clean&&_iid(clean)!==_iid(nativePoster)?clean:'')||(bundle&&bundle.poster);
 if(!poster)return null;
@@ -353,7 +353,7 @@ if(index>=sources.length){logo.hidden=true;title.hidden=false;logo.removeAttribu
 var src=sources[index++];
 function success(){
 if(request!==logoRequest||logo.getAttribute('src')!==src)return;
-logo.hidden=false;title.hidden=true;_rlw(item,src);var v=_fit(logo,true);if(probed||v>=.68||!item||item.titleLogoPinned||(_frr(item)&&!/last waltz/i.test(name)))return;probed=true;var seen=[_iid(src)],ps=sources.filter(function(p){var k=_iid(p);if(seen.indexOf(k)>=0)return false;seen.push(k);return true;}).slice(0,3),best=src;function test(){if(request!==logoRequest)return;if(!ps.length){if(best!==src){var old=src;src=best;logo.onerror=function(){src=old;logo.onerror=null;logo.setAttribute('src',old);};logo.setAttribute('src',best);}return;}var p=ps.shift(),im=new Image();im.onerror=test;im.onload=function(){if(request!==logoRequest)return;var q=_fit(im,false);if(q>v+.08){v=q;best=p;}test();};im.src=p;}test();
+logo.hidden=false;title.hidden=true;_rlw(item,src);var v=_fit(logo,true);if(probed||v>=.68||!item||item.titleLogoPinned||(_frr(item)&&_frr(item).logo&&!/last waltz/i.test(name)))return;probed=true;var seen=[_iid(src)],ps=sources.filter(function(p){var k=_iid(p);if(seen.indexOf(k)>=0)return false;seen.push(k);return true;}).slice(0,3),best=src;function test(){if(request!==logoRequest)return;if(!ps.length){if(best!==src){var old=src;src=best;logo.onerror=function(){src=old;logo.onerror=null;logo.setAttribute('src',old);};logo.setAttribute('src',best);}return;}var p=ps.shift(),im=new Image();im.onerror=test;im.onload=function(){if(request!==logoRequest)return;var q=_fit(im,false);if(q>v+.08){v=q;best=p;}test();};im.src=p;}test();
 }
 logo.onload=success;
 logo.onerror=function(){if(request===logoRequest&&logo.getAttribute('src')===src)next();};
