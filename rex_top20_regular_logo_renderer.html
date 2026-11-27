@@ -102,7 +102,7 @@ if(!item||item.id==null||item.id==='')return [];
 var id=String(item.id).trim(),title=String(item.title||'').trim().toLowerCase().replace(/\s+/g,' ');
 var type=String(item.mediaType||item.contentType||'').toLowerCase();
 if(type==='show'||type==='series'||type==='television')type='tv';
-var base='rex.regular384.clean.353:';
+var base='rex.regular384.clean.363:';
 var keys=[];
 if(type)keys.push(base+type+':'+id);
 if(title)keys.push(base+'idtitle:'+id+':'+title);
@@ -173,6 +173,8 @@ if(!item)return null;
 var manual=_frsel(item);
 if(manual)return manual;
 if(_frr(item))return null;
+var safe=_av(item.faceSafePosterPath);
+if(safe)return {poster:safe,logo:_av(item.titleLogoPath)||_av(item.titleLogoUrl)||_av(item.logoPath)};
 var cached=_raf(item);
 if(cached&&!item.faceSafePosterPath)return cached;
 var bundle=_rab(item),clean=_av(item.faceSafePosterPath)||_av(item.cleanPosterPath);
@@ -195,6 +197,7 @@ _la.posters=manual.posters;
 return _la;
 }
 if(_frr(item))return null;
+if(_la&&item.faceSafePosterPath&&_iid(_la.poster)!==_iid(item.faceSafePosterPath)){_la=null;_dc=false;_fcp='';_pp='';_ig++;}
 if(_la)return _la;
 var art=_ca(item);
 if(!art)return null;
