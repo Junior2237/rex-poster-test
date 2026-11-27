@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.6.14 — Permanent artwork using native renderer references
+ * Version 3.6.15 — Universal verified textless poster policy
  *
  * Carries title logos through the documented backdropPaths array.
  * Transports the locked portrait as native poster and first backdrop entry; retains the real backdrop in the bundle.
@@ -62,7 +62,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.6.14",
+  version: "3.6.15",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -450,7 +450,7 @@ async function loadCachedRow(key, target, loader) {
   // The manifest version participates in the row-cache identity so a new
   // scheduled selection cannot be hidden by the module's old cached list.
   var manifest=await faceManifest();
-  key="locked-v3614:"+key;
+  key="locked-v3615:"+key;
   if(manifest&&manifest.generatedAt)key+=":"+manifest.generatedAt;
   var cached = startupCacheRead("row:" + key, CACHE_SECONDS);
   if (Array.isArray(cached) && cached.length === target) return cached;
@@ -768,39 +768,36 @@ function selectHuntingWivesStill(episode, excluded){
 
 var artworkRegistryPromise=null;
 async function artworkRegistry(){
-  var cached=startupCacheRead("registry-v3611",300);
+  var cached=startupCacheRead("registry-v3615",300);
   if(cached&&cached.schemaVersion===1&&cached.overrides)return cached.overrides;
   if(artworkRegistryPromise)return artworkRegistryPromise;
   artworkRegistryPromise=(async function(){
     try{
       var data=unwrap(await Widget.http.get("https://raw.githubusercontent.com/Junior2237/rex-poster-test/refs/heads/main/artwork_overrides.json",{headers:{Accept:"application/json"}}));
       if(data&&data.schemaVersion===1&&data.overrides&&typeof data.overrides==="object"){
-        startupCacheWrite("registry-v3611",data);return data.overrides;
+        startupCacheWrite("registry-v3615",data);return data.overrides;
       }
     }catch(e){}
-    var lastKnown=startupCacheRead("registry-v3611",Infinity);
-    return lastKnown&&lastKnown.overrides||{"tv:244447":{"title":"The Hunting Wives","strategy":"fixed","posterPath":"/hsEcXCnzoalH3i0HowKbOpJRqD0.jpg","logoPath":"/dT0HdklknEGQYkn1dNACIs4IeAt.png","revision":3,"posterPaths":{"top20":"/kg09RkDPfvz44TX7K3rmUv1dI02.jpg","trending":"/yzfW8fZvPQOZKAIRaPlf8WlU9yT.jpg"},"combinedTrendingPosterPath":"/rnu5OUtv5X865QEmrdqYEmzZiT2.jpg","logoAlternates":["/vuIB3iTCnBXkSo4eYoCY8fZ3SXU.png","/5qE6Fm2d9fbH8m72kDPi40msky9.png"]},"movie:13963":{"title":"The Last Waltz","strategy":"fixed","posterPath":"/iXFOL9hCoCHFGACjJSIrY8eLlSY.jpg","logoPath":"/dI3b6DHMYGZDyZMfSqq8hHNrFBi.png","revision":3,"logoAlternates":["/z0mhltWcY0kIpdRTPpdpTfD9Ks.png"],"autoLogo":true},"movie:9089":{"title":"Home for the Holidays","strategy":"fixed","posterPath":"/s6ol3yUC7qTPwWoCM7b7rnSaeJl.jpg","logoPath":"/AtMN8tMKMQ8PDo760zKoLkRl4LA.png","revision":2,"logoAlternates":["/gkbavCi5ubuVp9XleopJDuWPplT.png","/buEFy3l1eKjoM5PfxUuuEhiHKLS.png"]},"movie:950237":{"title":"The 90s Club","requireManualLogo":true,"revision":1},"movie:1597":{"title":"Meet the Parents","strategy":"fixed","posterPath":"/t6Qs4qaANlikve2OmO0s3U1w9nv.jpg","revision":1},"tv:225171":{"title":"Pluribus","strategy":"fixed","posterPath":"/os1oQkTMZXiFP7KdEv3o03eshGC.jpg","revision":1}};
+    var lastKnown=startupCacheRead("registry-v3615",Infinity);
+    return lastKnown&&lastKnown.overrides||{"tv:244447":{"title":"The Hunting Wives","logoPath":"/dT0HdklknEGQYkn1dNACIs4IeAt.png","revision":3,"logoAlternates":["/vuIB3iTCnBXkSo4eYoCY8fZ3SXU.png","/5qE6Fm2d9fbH8m72kDPi40msky9.png"]},"movie:13963":{"title":"The Last Waltz","logoPath":"/dI3b6DHMYGZDyZMfSqq8hHNrFBi.png","revision":3,"logoAlternates":["/z0mhltWcY0kIpdRTPpdpTfD9Ks.png"],"autoLogo":true},"movie:9089":{"title":"Home for the Holidays","logoPath":"/AtMN8tMKMQ8PDo760zKoLkRl4LA.png","revision":2,"logoAlternates":["/gkbavCi5ubuVp9XleopJDuWPplT.png","/buEFy3l1eKjoM5PfxUuuEhiHKLS.png"]},"movie:950237":{"title":"The 90s Club","requireManualLogo":true,"revision":1}};
   })();
   try{return await artworkRegistryPromise;}finally{artworkRegistryPromise=null;}
 }
 async function applyArtworkOverride(artwork,mediaType,tmdbId,premiumPortrait,combinedTrending){
   var registry=await artworkRegistry(),id=mediaType+":"+tmdbId,rule=registry[id];
   if(!rule||typeof rule!=="object")return artwork;
-  var excluded=[artwork.standardPoster,artwork.backdrop,artwork.cleanPoster,artwork.logo];
+  // Registry may customize logos only. Poster eligibility is never bypassed.
   function safePath(v){return typeof v==="string"&&/^\/[A-Za-z0-9_-]+\.(jpg|jpeg|png|webp)$/i.test(v)?v:"";}
-  var layout=premiumPortrait?"trending":"top20";
-  // Only explicit registry paths can override an automatic manifest lock.
-  var alternate=(combinedTrending===true&&premiumPortrait===true?safePath(rule.combinedTrendingPosterPath):"")||safePath(rule.posterPaths&&rule.posterPaths[layout])||safePath(rule.posterPath);
   var logo=safePath(rule.logoPath);
   if (!/\.png$/i.test(logo)) logo="";
   if (rule.requireManualLogo && !logo) return Object.assign({},artwork,{logo:"",logos:[]});
-  if(!alternate&&!logo)return artwork;
+  if(!logo)return artwork;
   var logoPaths = [];
   (rule.autoLogo ? [artwork.logo].concat(artwork.logos||[],[logo],rule.logoAlternates||[]) : [logo,artwork.logo].concat(Array.isArray(rule.logoAlternates)?rule.logoAlternates:[],artwork.logos||[])).forEach(function(p){
     p=safePath(p);
     if(p&&/\.png$/i.test(p)&&logoPaths.indexOf(p)<0)logoPaths.push(p);
   });
-  return Object.assign({},artwork,alternate?{cleanPoster:alternate,fixedRailPoster:true}:{},logoPaths.length?{logo:logoPaths[0],logos:logoPaths,titleLogoPinned:!!logo&&!rule.autoLogo}:{});
+  return Object.assign({},artwork,logoPaths.length?{logo:logoPaths[0],logos:logoPaths,titleLogoPinned:!!logo&&!rule.autoLogo}:{});
 }
 
 var faceManifestPromise=null,faceManifestMemory=null,faceManifestAt=0;
@@ -828,10 +825,11 @@ async function faceManifest(){
   try{return await faceManifestPromise;}finally{faceManifestPromise=null;}
 }
 function applyFaceSafePoster(artwork,manifest,mediaType,tmdbId,premiumPortrait){
-  if(!artwork||artwork.fixedRailPoster||!manifest||!manifest.overrides)return artwork;
+  if(!artwork||!manifest||!manifest.overrides)return artwork;
   var key=mediaType+":"+tmdbId,rule=manifest.overrides[key];
   var choice=rule&&rule.layouts&&rule.layouts[premiumPortrait?"trending":"top20"];
   if(!choice||choice.textCheck!=="clear"||choice.textModel!=="ppocrv3-en"||!/^\/[A-Za-z0-9_-]+\.(jpg|jpeg|png|webp)$/i.test(choice.posterPath||""))return artwork;
+  if(choice.posterPath==="/iXFOL9hCoCHFGACjJSIrY8eLlSY.jpg")return artwork;
   if(!(typeof choice.after==="number"&&choice.after>=0&&choice.after<=.04))return artwork;
   if(manifest.algorithm==="yunet-ppocr-v3"||manifest.algorithm==="yunet-ppocr-v4"||manifest.algorithm==="yunet-ppocr-v5"){
     if(choice.faceCheck!=="clear"||(choice.selection!=="confirmed"&&choice.selection!=="alternate"))return artwork;
@@ -841,7 +839,7 @@ function applyFaceSafePoster(artwork,manifest,mediaType,tmdbId,premiumPortrait){
 }
 
 function hasEligibleTextlessPoster(artwork){
-  return !!(artwork&&!artwork.nativePosterOnly&&(artwork.fixedRailPoster||artwork.verifiedPoster)&&/^\/[A-Za-z0-9_-]+\.(jpg|jpeg|png|webp)$/i.test(artwork.cleanPoster||""));
+  return !!(artwork&&!artwork.nativePosterOnly&&artwork.verifiedPoster===artwork.cleanPoster&&artwork.verifiedPoster!=="/iXFOL9hCoCHFGACjJSIrY8eLlSY.jpg"&&/^\/[A-Za-z0-9_-]+\.(jpg|jpeg|png|webp)$/i.test(artwork.cleanPoster||""));
 }
 
 async function buildItem(
@@ -927,7 +925,7 @@ async function buildItem(
     try { artwork = await applyArtworkOverride(artwork, mediaType, tmdbId, premiumPortrait, combinedTrending); } catch(e) {}
 
 
-    // Automated selections never replace a manually pinned poster.
+    // Every title must have a verified manifest selection, without exceptions.
     artwork = applyFaceSafePoster(artwork,await facePromise,mediaType,tmdbId,premiumPortrait);
 
     // Fail closed: no standard titled poster or unverified alternative in any row.
