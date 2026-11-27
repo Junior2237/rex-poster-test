@@ -1,47 +1,695 @@
 {
   "schemaVersion": 1,
-  "algorithm": "yunet-ppocr-v2",
-  "generatedAt": "2026-11-27T03:31:38.620289+00:00",
+  "algorithm": "yunet-ppocr-v3",
+  "generatedAt": "2026-11-27T03:46:14.011718+00:00",
   "overrides": {
+    "movie:2609": {
+      "title": "Planes, Trains and Automobiles",
+      "layouts": {
+        "top20": {
+          "baseline": "/9vXTvhYrAX7Rl858FXCYvN2LzOo.jpg",
+          "posterPath": "/9vXTvhYrAX7Rl858FXCYvN2LzOo.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/9vXTvhYrAX7Rl858FXCYvN2LzOo.jpg",
+          "posterPath": "/9vXTvhYrAX7Rl858FXCYvN2LzOo.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "movie:1458300": {
+      "title": "The Mosquito Bowl",
+      "layouts": {
+        "top20": {
+          "baseline": "/1pgckcz1vjpMqtKhBr3BwK4MCWK.jpg",
+          "posterPath": "/1j1u5xZ5Avk6sVUWMuJX8UE6lYM.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/1pgckcz1vjpMqtKhBr3BwK4MCWK.jpg",
+          "posterPath": "/1j1u5xZ5Avk6sVUWMuJX8UE6lYM.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:1101383": {
+      "title": "The End of Oak Street",
+      "layouts": {
+        "top20": {
+          "baseline": "/ffDlu6T4f3sxJqKzuzf0N5DFhBg.jpg",
+          "posterPath": "/ffDlu6T4f3sxJqKzuzf0N5DFhBg.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/ffDlu6T4f3sxJqKzuzf0N5DFhBg.jpg",
+          "posterPath": "/ffDlu6T4f3sxJqKzuzf0N5DFhBg.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "movie:70160": {
+      "title": "The Hunger Games",
+      "layouts": {
+        "top20": {
+          "baseline": "/sfFRBRaoSyKgS6AB6LiBGa5ooOR.jpg",
+          "posterPath": "/sfFRBRaoSyKgS6AB6LiBGa5ooOR.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/sfFRBRaoSyKgS6AB6LiBGa5ooOR.jpg",
+          "posterPath": "/sfFRBRaoSyKgS6AB6LiBGa5ooOR.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "movie:1280115": {
+      "title": "Way of the Warrior Kid",
+      "layouts": {
+        "top20": {
+          "baseline": "/wEfII5kVNlToh4Cji2eRb6UbZwk.jpg",
+          "posterPath": "/yKUkPG3Es9YWWg68Nmz4TeYxiCb.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/wEfII5kVNlToh4Cji2eRb6UbZwk.jpg",
+          "posterPath": "/yKUkPG3Es9YWWg68Nmz4TeYxiCb.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:1071215": {
+      "title": "Thanksgiving",
+      "layouts": {
+        "top20": {
+          "baseline": "/1hqRP0oQsPTuS82mSg2x6yy7JxD.jpg",
+          "posterPath": "/1hqRP0oQsPTuS82mSg2x6yy7JxD.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/1hqRP0oQsPTuS82mSg2x6yy7JxD.jpg",
+          "posterPath": "/1hqRP0oQsPTuS82mSg2x6yy7JxD.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "movie:695721": {
+      "title": "The Hunger Games: The Ballad of Songbirds & Snakes",
+      "layouts": {
+        "top20": {
+          "baseline": "/k7z4ICehX8T4AJsFyi0mMGeER3j.jpg",
+          "posterPath": "/23kZGZYYTa4goHbPs1Mro3fMFNY.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/k7z4ICehX8T4AJsFyi0mMGeER3j.jpg",
+          "posterPath": "/23kZGZYYTa4goHbPs1Mro3fMFNY.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:687163": {
+      "title": "Project Hail Mary",
+      "layouts": {
+        "top20": {
+          "baseline": "/7mL0PR2jGC283JbPApFS8aJ2x1F.jpg",
+          "posterPath": "/cdGVNiyUt289DgopWUdImNVVDaw.jpg",
+          "before": null,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/7mL0PR2jGC283JbPApFS8aJ2x1F.jpg",
+          "posterPath": "/cdGVNiyUt289DgopWUdImNVVDaw.jpg",
+          "before": null,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:10719": {
+      "title": "Elf",
+      "layouts": {
+        "top20": {
+          "baseline": "/zsKO3CblaLtJumWLsjEBPX8dP5P.jpg",
+          "posterPath": "/zsKO3CblaLtJumWLsjEBPX8dP5P.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/zsKO3CblaLtJumWLsjEBPX8dP5P.jpg",
+          "posterPath": "/zsKO3CblaLtJumWLsjEBPX8dP5P.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
     "movie:1339713": {
       "title": "Obsession",
       "layouts": {
         "top20": {
           "baseline": "/gAVqI7yhgdZ35aIJuREytlhDvpf.jpg",
           "posterPath": "/o5VincY0eEAq4GHHiKcWjSuNPCm.jpg",
-          "before": 0.262,
+          "before": 0.301,
           "after": 0.0,
           "textCheck": "clear",
-          "textModel": "ppocrv3-en"
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
         },
         "trending": {
           "baseline": "/gAVqI7yhgdZ35aIJuREytlhDvpf.jpg",
           "posterPath": "/o5VincY0eEAq4GHHiKcWjSuNPCm.jpg",
-          "before": 0.262,
+          "before": 0.255,
           "after": 0.0,
           "textCheck": "clear",
-          "textModel": "ppocrv3-en"
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
         }
       }
     },
-    "movie:1597": {
-      "title": "Meet the Parents",
+    "movie:771": {
+      "title": "Home Alone",
+      "layouts": {
+        "trending": {
+          "baseline": "/zqWtmVMhfbnIlDruY6ndQw5ObEy.jpg",
+          "posterPath": "/zqWtmVMhfbnIlDruY6ndQw5ObEy.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "top20": {
+          "baseline": "/zqWtmVMhfbnIlDruY6ndQw5ObEy.jpg",
+          "posterPath": "/7UJtxSnIk5IKFJL926Seio6PHU9.jpg",
+          "before": 0.062,
+          "after": 0.001,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:5825": {
+      "title": "National Lampoon's Christmas Vacation",
       "layouts": {
         "top20": {
-          "baseline": "/8P1zuBFVZjbJNP3xM2C91WNPohD.jpg",
-          "posterPath": "/t6Qs4qaANlikve2OmO0s3U1w9nv.jpg",
-          "before": 1,
+          "baseline": "/6eSlCOEXO1SpCtxqeISiG5VcbWQ.jpg",
+          "posterPath": "/6eSlCOEXO1SpCtxqeISiG5VcbWQ.jpg",
+          "before": 0.0,
           "after": 0.0,
           "textCheck": "clear",
-          "textModel": "ppocrv3-en"
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
         },
         "trending": {
-          "baseline": "/8P1zuBFVZjbJNP3xM2C91WNPohD.jpg",
-          "posterPath": "/t6Qs4qaANlikve2OmO0s3U1w9nv.jpg",
-          "before": 1,
+          "baseline": "/6eSlCOEXO1SpCtxqeISiG5VcbWQ.jpg",
+          "posterPath": "/6eSlCOEXO1SpCtxqeISiG5VcbWQ.jpg",
+          "before": 0.0,
           "after": 0.0,
           "textCheck": "clear",
-          "textModel": "ppocrv3-en"
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:171802": {
+      "title": "Blade Runner 2099",
+      "layouts": {
+        "trending": {
+          "baseline": "/r2NdpdzuyeZEn0AdPk1d8iXnVJm.jpg",
+          "posterPath": "/r2NdpdzuyeZEn0AdPk1d8iXnVJm.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:290826": {
+      "title": "DIG",
+      "layouts": {
+        "top20": {
+          "baseline": "/u0ppOi8Odq3Im1BlUHQth2Ubnnr.jpg",
+          "posterPath": "/wd70MwWEkTf5wpUbA46UDpjAZ2M.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/u0ppOi8Odq3Im1BlUHQth2Ubnnr.jpg",
+          "posterPath": "/wd70MwWEkTf5wpUbA46UDpjAZ2M.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:84773": {
+      "title": "The Lord of the Rings: The Rings of Power",
+      "layouts": {
+        "top20": {
+          "baseline": "/qTMn0dFVxT6AreSF2Is2EEKxBZe.jpg",
+          "posterPath": "/qTMn0dFVxT6AreSF2Is2EEKxBZe.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/qTMn0dFVxT6AreSF2Is2EEKxBZe.jpg",
+          "posterPath": "/qTMn0dFVxT6AreSF2Is2EEKxBZe.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:124364": {
+      "title": "FROM",
+      "layouts": {
+        "top20": {
+          "baseline": "/mPFwg9BjfgSFcINA0U7i1lpQAIS.jpg",
+          "posterPath": "/mPFwg9BjfgSFcINA0U7i1lpQAIS.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/mPFwg9BjfgSFcINA0U7i1lpQAIS.jpg",
+          "posterPath": "/mPFwg9BjfgSFcINA0U7i1lpQAIS.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:292741": {
+      "title": "Nocturne",
+      "layouts": {
+        "top20": {
+          "baseline": "/yllwzRiqYnUXSV4TwvQz0MVstGL.jpg",
+          "posterPath": "/yllwzRiqYnUXSV4TwvQz0MVstGL.jpg",
+          "before": 0.036,
+          "after": 0.036,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/yllwzRiqYnUXSV4TwvQz0MVstGL.jpg",
+          "posterPath": "/yllwzRiqYnUXSV4TwvQz0MVstGL.jpg",
+          "before": 0.036,
+          "after": 0.036,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:247718": {
+      "title": "MobLand",
+      "layouts": {
+        "top20": {
+          "baseline": "/o38vOfVhLq1wtgDVCoE4HRDDl30.jpg",
+          "posterPath": "/o38vOfVhLq1wtgDVCoE4HRDDl30.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/o38vOfVhLq1wtgDVCoE4HRDDl30.jpg",
+          "posterPath": "/o38vOfVhLq1wtgDVCoE4HRDDl30.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:248830": {
+      "title": "Stick",
+      "layouts": {
+        "top20": {
+          "baseline": "/qGNdgWQdRzAWigtoWANIFrDLmV9.jpg",
+          "posterPath": "/qGNdgWQdRzAWigtoWANIFrDLmV9.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/qGNdgWQdRzAWigtoWANIFrDLmV9.jpg",
+          "posterPath": "/qGNdgWQdRzAWigtoWANIFrDLmV9.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:254630": {
+      "title": "12 12 12",
+      "layouts": {
+        "top20": {
+          "baseline": "/8Fsctut3QuqX9pHqLTm7bGextRc.jpg",
+          "posterPath": "/dGW7lx1EjVlwXIbXqIRiWyrJPkN.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/8Fsctut3QuqX9pHqLTm7bGextRc.jpg",
+          "posterPath": "/dGW7lx1EjVlwXIbXqIRiWyrJPkN.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:279246": {
+      "title": "The Remarried Empress",
+      "layouts": {
+        "top20": {
+          "baseline": "/AmpavsESFGTooPKkr8CwNRMPeQH.jpg",
+          "posterPath": "/AmpavsESFGTooPKkr8CwNRMPeQH.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/AmpavsESFGTooPKkr8CwNRMPeQH.jpg",
+          "posterPath": "/AmpavsESFGTooPKkr8CwNRMPeQH.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:1668": {
+      "title": "Friends",
+      "layouts": {
+        "top20": {
+          "baseline": "/h2nvuo60bvjisIDt3FJTdjhL3jb.jpg",
+          "posterPath": "/yx1BxA0P7cxU7bAn75Ltt1jqset.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/h2nvuo60bvjisIDt3FJTdjhL3jb.jpg",
+          "posterPath": "/yx1BxA0P7cxU7bAn75Ltt1jqset.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:81723": {
+      "title": "The Gilded Age",
+      "layouts": {
+        "top20": {
+          "baseline": "/LDnajfoCciN6LRrc8ZJsg5A0C9.jpg",
+          "posterPath": "/xdLRCryLboh9k0ZVTCxTTduGXYY.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/LDnajfoCciN6LRrc8ZJsg5A0C9.jpg",
+          "posterPath": "/xdLRCryLboh9k0ZVTCxTTduGXYY.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:273247": {
+      "title": "The Lowdown",
+      "layouts": {
+        "top20": {
+          "baseline": "/34oYHJiRyywnbOvDbpkM8womBw4.jpg",
+          "posterPath": "/34oYHJiRyywnbOvDbpkM8womBw4.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/34oYHJiRyywnbOvDbpkM8womBw4.jpg",
+          "posterPath": "/34oYHJiRyywnbOvDbpkM8womBw4.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:225385": {
+      "title": "Black Doves",
+      "layouts": {
+        "top20": {
+          "baseline": "/xzX1tPr8W9I9S1dhunTsH4XlSN1.jpg",
+          "posterPath": "/xzX1tPr8W9I9S1dhunTsH4XlSN1.jpg",
+          "before": 0.037,
+          "after": 0.037,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/xzX1tPr8W9I9S1dhunTsH4XlSN1.jpg",
+          "posterPath": "/xzX1tPr8W9I9S1dhunTsH4XlSN1.jpg",
+          "before": 0.029,
+          "after": 0.029,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:303630": {
+      "title": "Cupertino",
+      "layouts": {
+        "top20": {
+          "baseline": "/rv6dfhXIq5lLK4cQa8FHuUg2Ahh.jpg",
+          "posterPath": "/rv6dfhXIq5lLK4cQa8FHuUg2Ahh.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/rv6dfhXIq5lLK4cQa8FHuUg2Ahh.jpg",
+          "posterPath": "/rv6dfhXIq5lLK4cQa8FHuUg2Ahh.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "movie:1003596": {
+      "title": "Avengers: Doomsday",
+      "layouts": {
+        "top20": {
+          "baseline": "/sKtKn660vapCgngdjj1f3mPZbnQ.jpg",
+          "posterPath": "/zhYu1P6AloNRVYS6O89sEEpruy1.jpg",
+          "before": 0.431,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/sKtKn660vapCgngdjj1f3mPZbnQ.jpg",
+          "posterPath": "/zhYu1P6AloNRVYS6O89sEEpruy1.jpg",
+          "before": 0.273,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:1538497": {
+      "title": "Hexed",
+      "layouts": {
+        "top20": {
+          "baseline": "/on7ATiTPrKPEkYSkMRBXo3wUxkA.jpg",
+          "posterPath": "/vUEPTGdDMGtqlHqTnTCELujMzbp.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/on7ATiTPrKPEkYSkMRBXo3wUxkA.jpg",
+          "posterPath": "/vUEPTGdDMGtqlHqTnTCELujMzbp.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
         }
       }
     },
@@ -51,18 +699,147 @@
         "top20": {
           "baseline": "/LqIboqIkbEJ0LXcfrY9Tk5uawL.jpg",
           "posterPath": "/b3ZOREKKziY9yM4yMt5oyYfWqCw.jpg",
-          "before": 0.264,
+          "before": 0.302,
           "after": 0.0,
           "textCheck": "clear",
-          "textModel": "ppocrv3-en"
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
         },
         "trending": {
           "baseline": "/LqIboqIkbEJ0LXcfrY9Tk5uawL.jpg",
           "posterPath": "/b3ZOREKKziY9yM4yMt5oyYfWqCw.jpg",
-          "before": 0.264,
+          "before": 0.127,
           "after": 0.0,
           "textCheck": "clear",
-          "textModel": "ppocrv3-en"
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:1300968": {
+      "title": "The Hunger Games: Sunrise on the Reaping",
+      "layouts": {
+        "top20": {
+          "baseline": "/xtAfkYImY13kPpqKmsdePQYzK3s.jpg",
+          "posterPath": "/xtAfkYImY13kPpqKmsdePQYzK3s.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/xtAfkYImY13kPpqKmsdePQYzK3s.jpg",
+          "posterPath": "/xtAfkYImY13kPpqKmsdePQYzK3s.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "movie:969681": {
+      "title": "Spider-Man: Brand New Day",
+      "layouts": {
+        "top20": {
+          "baseline": "/yxOxOBxspl3NgC676W62G02g1cR.jpg",
+          "posterPath": "/yxOxOBxspl3NgC676W62G02g1cR.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/yxOxOBxspl3NgC676W62G02g1cR.jpg",
+          "posterPath": "/yxOxOBxspl3NgC676W62G02g1cR.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "movie:1368337": {
+      "title": "The Odyssey",
+      "layouts": {
+        "top20": {
+          "baseline": "/ugEXTmwvFj8oqOui6ZwXjQgSwAp.jpg",
+          "posterPath": "/ugEXTmwvFj8oqOui6ZwXjQgSwAp.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/ugEXTmwvFj8oqOui6ZwXjQgSwAp.jpg",
+          "posterPath": "/ugEXTmwvFj8oqOui6ZwXjQgSwAp.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "movie:1195803": {
+      "title": "Wicker",
+      "layouts": {
+        "top20": {
+          "baseline": "/18U1TLC154qmWPXuiMt8PiFi83v.jpg",
+          "posterPath": "/18U1TLC154qmWPXuiMt8PiFi83v.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/18U1TLC154qmWPXuiMt8PiFi83v.jpg",
+          "posterPath": "/18U1TLC154qmWPXuiMt8PiFi83v.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "movie:1281331": {
+      "title": "The Social Reckoning",
+      "layouts": {
+        "top20": {
+          "baseline": "/4o7wIbeTAqWs0Nya8DnwinyEgTr.jpg",
+          "posterPath": "/4o7wIbeTAqWs0Nya8DnwinyEgTr.jpg",
+          "before": 0.015,
+          "after": 0.015,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/4o7wIbeTAqWs0Nya8DnwinyEgTr.jpg",
+          "posterPath": "/4o7wIbeTAqWs0Nya8DnwinyEgTr.jpg",
+          "before": 0.015,
+          "after": 0.015,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
         }
       }
     },
@@ -72,18 +849,562 @@
         "top20": {
           "baseline": "/hs8Ymk4p0EGrDvHnPrr7NrR6lug.jpg",
           "posterPath": "/lPjpY0OpOfrfbj2nmR1Td6EpvvO.jpg",
-          "before": 0.345,
+          "before": 0.356,
           "after": 0.0,
           "textCheck": "clear",
-          "textModel": "ppocrv3-en"
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
         },
         "trending": {
           "baseline": "/hs8Ymk4p0EGrDvHnPrr7NrR6lug.jpg",
           "posterPath": "/lPjpY0OpOfrfbj2nmR1Td6EpvvO.jpg",
-          "before": 0.345,
+          "before": 0.297,
           "after": 0.0,
           "textCheck": "clear",
-          "textModel": "ppocrv3-en"
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:310209": {
+      "title": "Nine to Six",
+      "layouts": {
+        "top20": {
+          "baseline": "/sbTWI3BOkEsGeSzLjEBmkKIAwTp.jpg",
+          "posterPath": "/c6iv1EvwsmTRH4cqzwfDQf1O0NG.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/sbTWI3BOkEsGeSzLjEBmkKIAwTp.jpg",
+          "posterPath": "/c6iv1EvwsmTRH4cqzwfDQf1O0NG.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:338930": {
+      "title": "Always on Call",
+      "layouts": {
+        "top20": {
+          "baseline": "/l7cUpr5l41orSDkIh9QUjHgbbbH.jpg",
+          "posterPath": "/l7cUpr5l41orSDkIh9QUjHgbbbH.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/l7cUpr5l41orSDkIh9QUjHgbbbH.jpg",
+          "posterPath": "/l7cUpr5l41orSDkIh9QUjHgbbbH.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "movie:1496696": {
+      "title": "Breeder",
+      "layouts": {
+        "top20": {
+          "baseline": "/auzVrJQj9f23WYFC2ivPSinzNHQ.jpg",
+          "posterPath": "/auzVrJQj9f23WYFC2ivPSinzNHQ.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/auzVrJQj9f23WYFC2ivPSinzNHQ.jpg",
+          "posterPath": "/auzVrJQj9f23WYFC2ivPSinzNHQ.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "movie:1595124": {
+      "title": "Steps",
+      "layouts": {
+        "top20": {
+          "baseline": "/fIYsNCce4HdUiw5MEx2l3gZdAR7.jpg",
+          "posterPath": "/idfbOZ6QBziR6suqFGIMJsSk3lV.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/fIYsNCce4HdUiw5MEx2l3gZdAR7.jpg",
+          "posterPath": "/idfbOZ6QBziR6suqFGIMJsSk3lV.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:1170608": {
+      "title": "Dune: Part Three",
+      "layouts": {
+        "trending": {
+          "baseline": "/eiU7F1MBfY88EQRxp5ykLWqqnTx.jpg",
+          "posterPath": "/8tI06eBsuHPStjP2x9V7aUo6Q4I.jpg",
+          "before": null,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "top20": {
+          "baseline": "/eiU7F1MBfY88EQRxp5ykLWqqnTx.jpg",
+          "posterPath": "/pYu5uBU7TpflPvqijUwY1NvEchi.jpg",
+          "before": null,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:218347": {
+      "title": "Sweetpea",
+      "layouts": {
+        "top20": {
+          "baseline": "/r1n4xZ4emGrHKufA2phVLe2GWQO.jpg",
+          "posterPath": "/6inwXPYV2702HFiC4oFBFIuLbkz.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/r1n4xZ4emGrHKufA2phVLe2GWQO.jpg",
+          "posterPath": "/6inwXPYV2702HFiC4oFBFIuLbkz.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:1611767": {
+      "title": "Clashing Through the Snow",
+      "layouts": {
+        "trending": {
+          "baseline": "/mHW2L9jNxXj0maTu39VdbNQ4PJv.jpg",
+          "posterPath": "/mHW2L9jNxXj0maTu39VdbNQ4PJv.jpg",
+          "before": 0.01,
+          "after": 0.01,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "movie:1381071": {
+      "title": "Godzilla Minus Zero",
+      "layouts": {
+        "top20": {
+          "baseline": "/e8gIGHtOPlMbdzMhCUnpOud1CPv.jpg",
+          "posterPath": "/5jpgbruR4XmnvNVguGroQpaX77d.jpg",
+          "before": null,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/e8gIGHtOPlMbdzMhCUnpOud1CPv.jpg",
+          "posterPath": "/5jpgbruR4XmnvNVguGroQpaX77d.jpg",
+          "before": null,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:1423191": {
+      "title": "Resident Evil",
+      "layouts": {
+        "top20": {
+          "baseline": "/9YzsMLLSpCbAiDiEXlwkZr3m5Ri.jpg",
+          "posterPath": "/din22fvRocM0qInDE0URXDJyjsj.jpg",
+          "before": null,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/9YzsMLLSpCbAiDiEXlwkZr3m5Ri.jpg",
+          "posterPath": "/din22fvRocM0qInDE0URXDJyjsj.jpg",
+          "before": null,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:1263337": {
+      "title": "Heart of the Beast",
+      "layouts": {
+        "trending": {
+          "baseline": "/4RLhArdnymkf2WpQ5R2RxbUC21e.jpg",
+          "posterPath": "/4RLhArdnymkf2WpQ5R2RxbUC21e.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "top20": {
+          "baseline": "/4RLhArdnymkf2WpQ5R2RxbUC21e.jpg",
+          "posterPath": "/xMQPJ58oradSdkpkUagLkziOjDm.jpg",
+          "before": 0.108,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:1551025": {
+      "title": "Guarding Stars",
+      "layouts": {
+        "top20": {
+          "baseline": "/hUaSF0UgGWzDgotlmUmQi928c20.jpg",
+          "posterPath": "/hUaSF0UgGWzDgotlmUmQi928c20.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/hUaSF0UgGWzDgotlmUmQi928c20.jpg",
+          "posterPath": "/hUaSF0UgGWzDgotlmUmQi928c20.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "movie:101299": {
+      "title": "The Hunger Games: Catching Fire",
+      "layouts": {
+        "trending": {
+          "baseline": "/pjGkn73eCKE73wWx1RgkfTaiIhN.jpg",
+          "posterPath": "/pjGkn73eCKE73wWx1RgkfTaiIhN.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "top20": {
+          "baseline": "/pjGkn73eCKE73wWx1RgkfTaiIhN.jpg",
+          "posterPath": "/bvsdROLqkcZI1qmv0414egXd0Ky.jpg",
+          "before": 0.045,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:131631": {
+      "title": "The Hunger Games: Mockingjay - Part 1",
+      "layouts": {
+        "top20": {
+          "baseline": "/7FRAlGNvvf5hTuV9sIUyGxT0WEJ.jpg",
+          "posterPath": "/7FRAlGNvvf5hTuV9sIUyGxT0WEJ.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/7FRAlGNvvf5hTuV9sIUyGxT0WEJ.jpg",
+          "posterPath": "/7FRAlGNvvf5hTuV9sIUyGxT0WEJ.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "movie:131634": {
+      "title": "The Hunger Games: Mockingjay - Part 2",
+      "layouts": {
+        "top20": {
+          "baseline": "/AedDI1FoOsYIb0kWqu4UHuzOBZ.jpg",
+          "posterPath": "/2COYD5WV4cC1qPgdgIVcirEpqA7.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/AedDI1FoOsYIb0kWqu4UHuzOBZ.jpg",
+          "posterPath": "/2COYD5WV4cC1qPgdgIVcirEpqA7.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:1375441": {
+      "title": "Primetime",
+      "layouts": {
+        "top20": {
+          "baseline": "/q6zV9EG2aOCTW8aiZBzXLIiw0Yz.jpg",
+          "posterPath": "/q6zV9EG2aOCTW8aiZBzXLIiw0Yz.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/q6zV9EG2aOCTW8aiZBzXLIiw0Yz.jpg",
+          "posterPath": "/q6zV9EG2aOCTW8aiZBzXLIiw0Yz.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "movie:299534": {
+      "title": "Avengers: Endgame",
+      "layouts": {
+        "trending": {
+          "baseline": "/jWhqOBWUpZBq5MC8y34KNv7Avv3.jpg",
+          "posterPath": "/wqlm341ITPhC2I4W3FXQfUaI1dp.jpg",
+          "before": null,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "top20": {
+          "baseline": "/jWhqOBWUpZBq5MC8y34KNv7Avv3.jpg",
+          "posterPath": "/nHLcTHuHyAc6G6jQXa6tQeouQ7z.jpg",
+          "before": null,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:1384216": {
+      "title": "The Dog Stars",
+      "layouts": {
+        "top20": {
+          "baseline": "/o3TY0dc236CM7eMwAsyghcXIzBL.jpg",
+          "posterPath": "/o3TY0dc236CM7eMwAsyghcXIzBL.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/o3TY0dc236CM7eMwAsyghcXIzBL.jpg",
+          "posterPath": "/o3TY0dc236CM7eMwAsyghcXIzBL.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:14658": {
+      "title": "Survivor",
+      "layouts": {
+        "top20": {
+          "baseline": "/rlIuUR6RFnKooQ65t5UYkCtpxnU.jpg",
+          "posterPath": "/rlIuUR6RFnKooQ65t5UYkCtpxnU.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/rlIuUR6RFnKooQ65t5UYkCtpxnU.jpg",
+          "posterPath": "/rlIuUR6RFnKooQ65t5UYkCtpxnU.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:259909": {
+      "title": "Dexter: Resurrection",
+      "layouts": {
+        "top20": {
+          "baseline": "/m146j8Jdfnblx0ApCda8DpfxEEC.jpg",
+          "posterPath": "/m146j8Jdfnblx0ApCda8DpfxEEC.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/m146j8Jdfnblx0ApCda8DpfxEEC.jpg",
+          "posterPath": "/m146j8Jdfnblx0ApCda8DpfxEEC.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:153312": {
+      "title": "Tulsa King",
+      "layouts": {
+        "top20": {
+          "baseline": "/yxWDzf7cFQIL99m0o8iu4rrzzWr.jpg",
+          "posterPath": "/yxWDzf7cFQIL99m0o8iu4rrzzWr.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/yxWDzf7cFQIL99m0o8iu4rrzzWr.jpg",
+          "posterPath": "/yxWDzf7cFQIL99m0o8iu4rrzzWr.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:5920": {
+      "title": "The Mentalist",
+      "layouts": {
+        "top20": {
+          "baseline": "/eTYWcYIFyyuG5nqM1IcCv5TpW5I.jpg",
+          "posterPath": "/oOuDnahbtMhF9vLwE9LiOS0oiJj.jpg",
+          "before": null,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/eTYWcYIFyyuG5nqM1IcCv5TpW5I.jpg",
+          "posterPath": "/oOuDnahbtMhF9vLwE9LiOS0oiJj.jpg",
+          "before": null,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:211288": {
+      "title": "Tracker",
+      "layouts": {
+        "top20": {
+          "baseline": "/ac4r6lBZaSviJ2vMK9MyMC1baRa.jpg",
+          "posterPath": "/ac4r6lBZaSviJ2vMK9MyMC1baRa.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/ac4r6lBZaSviJ2vMK9MyMC1baRa.jpg",
+          "posterPath": "/ac4r6lBZaSviJ2vMK9MyMC1baRa.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
         }
       }
     },
@@ -93,18 +1414,287 @@
         "top20": {
           "baseline": "/Z2nsorZhADARy3717Lzll9gLf6.jpg",
           "posterPath": "/ukVaY6J9CWVYxrP8nAo5ZCU7BZY.jpg",
-          "before": 0.26,
+          "before": 0.292,
           "after": 0.0,
           "textCheck": "clear",
-          "textModel": "ppocrv3-en"
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
         },
         "trending": {
           "baseline": "/Z2nsorZhADARy3717Lzll9gLf6.jpg",
           "posterPath": "/ukVaY6J9CWVYxrP8nAo5ZCU7BZY.jpg",
-          "before": 0.26,
+          "before": 0.223,
           "after": 0.0,
           "textCheck": "clear",
-          "textModel": "ppocrv3-en"
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:95480": {
+      "title": "Slow Horses",
+      "layouts": {
+        "top20": {
+          "baseline": "/A3LSzbNOitRlzmRlcEnpe0tAfBm.jpg",
+          "posterPath": "/A3LSzbNOitRlzmRlcEnpe0tAfBm.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/A3LSzbNOitRlzmRlcEnpe0tAfBm.jpg",
+          "posterPath": "/A3LSzbNOitRlzmRlcEnpe0tAfBm.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:103540": {
+      "title": "Percy Jackson and the Olympians",
+      "layouts": {
+        "top20": {
+          "baseline": "/yBkhoqyh5MZeYzdcwJwFVd19GGk.jpg",
+          "posterPath": "/gGjyOikfc252ScahlA3gRucz2ai.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/yBkhoqyh5MZeYzdcwJwFVd19GGk.jpg",
+          "posterPath": "/gGjyOikfc252ScahlA3gRucz2ai.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:1416": {
+      "title": "Grey's Anatomy",
+      "layouts": {
+        "top20": {
+          "baseline": "/jY8bOtqTqc7rXht8waha7Bzjw7E.jpg",
+          "posterPath": "/jY8bOtqTqc7rXht8waha7Bzjw7E.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/jY8bOtqTqc7rXht8waha7Bzjw7E.jpg",
+          "posterPath": "/jY8bOtqTqc7rXht8waha7Bzjw7E.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:30957": {
+      "title": "The Amazing Race",
+      "layouts": {
+        "trending": {
+          "baseline": "/pv0NvyYW8sAVrFbOcnQgrGNMd0t.jpg",
+          "posterPath": "/eaX60GUoRHYCD3JAEtNFKrGpZeE.jpg",
+          "before": null,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:208921": {
+      "title": "Rivals",
+      "layouts": {
+        "top20": {
+          "baseline": "/pxBbWtjKz3TnCpCdbFeneNce8i1.jpg",
+          "posterPath": "/pxBbWtjKz3TnCpCdbFeneNce8i1.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/pxBbWtjKz3TnCpCdbFeneNce8i1.jpg",
+          "posterPath": "/pxBbWtjKz3TnCpCdbFeneNce8i1.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:1418": {
+      "title": "The Big Bang Theory",
+      "layouts": {
+        "top20": {
+          "baseline": "/vq2Ipo0F8wH9ymcJm3FPFJTBYqi.jpg",
+          "posterPath": "/sWe0Itd99ip1EKHk5620WKPb2O2.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/vq2Ipo0F8wH9ymcJm3FPFJTBYqi.jpg",
+          "posterPath": "/sWe0Itd99ip1EKHk5620WKPb2O2.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:270603": {
+      "title": "The Exiled Heavy Knight Knows How to Game the System",
+      "layouts": {
+        "top20": {
+          "baseline": "/8fjzyHd67TaPUnbn8gsK12VbQjP.jpg",
+          "posterPath": "/8fjzyHd67TaPUnbn8gsK12VbQjP.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/8fjzyHd67TaPUnbn8gsK12VbQjP.jpg",
+          "posterPath": "/8fjzyHd67TaPUnbn8gsK12VbQjP.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "movie:1368166": {
+      "title": "The Housemaid",
+      "layouts": {
+        "top20": {
+          "baseline": "/wmn03MjXSrIJAHsdMJJRK35VfqH.jpg",
+          "posterPath": "/wmn03MjXSrIJAHsdMJJRK35VfqH.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/wmn03MjXSrIJAHsdMJJRK35VfqH.jpg",
+          "posterPath": "/wmn03MjXSrIJAHsdMJJRK35VfqH.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "movie:1275779": {
+      "title": "Disclosure Day",
+      "layouts": {
+        "top20": {
+          "baseline": "/701aTHRSfEm2IHchyMXoZt4T1yV.jpg",
+          "posterPath": "/mIOAQ1ljuiDaaCCxe6zcbbkUCbC.jpg",
+          "before": 0.288,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/701aTHRSfEm2IHchyMXoZt4T1yV.jpg",
+          "posterPath": "/mIOAQ1ljuiDaaCCxe6zcbbkUCbC.jpg",
+          "before": 0.225,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:936075": {
+      "title": "Michael",
+      "layouts": {
+        "top20": {
+          "baseline": "/5HgVwIzug5iCoprtj4ZSvcHjjI1.jpg",
+          "posterPath": "/okOIo64WWHBAzE6mdig5le78jvk.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/5HgVwIzug5iCoprtj4ZSvcHjjI1.jpg",
+          "posterPath": "/okOIo64WWHBAzE6mdig5le78jvk.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:83533": {
+      "title": "Avatar: Fire and Ash",
+      "layouts": {
+        "top20": {
+          "baseline": "/dVv28yL7kyeMK3sUTWVSKrZC6tV.jpg",
+          "posterPath": "/dVv28yL7kyeMK3sUTWVSKrZC6tV.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/dVv28yL7kyeMK3sUTWVSKrZC6tV.jpg",
+          "posterPath": "/dVv28yL7kyeMK3sUTWVSKrZC6tV.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
         }
       }
     },
@@ -113,19 +1703,148 @@
       "layouts": {
         "top20": {
           "baseline": "/7NVnp7XHiW99nYLqEH5A63uPSJN.jpg",
-          "posterPath": "/hc9Qg2CQYSgkBRoExIyD36unCyA.jpg",
-          "before": 0.159,
-          "after": 0.0,
+          "posterPath": "/8vs8jeaYeYbGBwLN1U3eNafHjZ5.jpg",
+          "before": 0.17,
+          "after": 0.036,
           "textCheck": "clear",
-          "textModel": "ppocrv3-en"
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
         },
         "trending": {
           "baseline": "/7NVnp7XHiW99nYLqEH5A63uPSJN.jpg",
-          "posterPath": "/hc9Qg2CQYSgkBRoExIyD36unCyA.jpg",
-          "before": 0.159,
+          "posterPath": "/8vs8jeaYeYbGBwLN1U3eNafHjZ5.jpg",
+          "before": 0.119,
+          "after": 0.036,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:1226863": {
+      "title": "The Super Mario Galaxy Movie",
+      "layouts": {
+        "top20": {
+          "baseline": "/pcTweebSCQYIbdpjbN3r0Tw8iI2.jpg",
+          "posterPath": "/pcTweebSCQYIbdpjbN3r0Tw8iI2.jpg",
+          "before": 0.0,
           "after": 0.0,
           "textCheck": "clear",
-          "textModel": "ppocrv3-en"
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/pcTweebSCQYIbdpjbN3r0Tw8iI2.jpg",
+          "posterPath": "/pcTweebSCQYIbdpjbN3r0Tw8iI2.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "movie:1314481": {
+      "title": "The Devil Wears Prada 2",
+      "layouts": {
+        "top20": {
+          "baseline": "/xHyWDAJ4Dz3eVUqEQ2HQ6pXISDL.jpg",
+          "posterPath": "/AsiPtN0mHVaofCT9BrKVMu4GeUB.jpg",
+          "before": null,
+          "after": 0.03,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/xHyWDAJ4Dz3eVUqEQ2HQ6pXISDL.jpg",
+          "posterPath": "/AsiPtN0mHVaofCT9BrKVMu4GeUB.jpg",
+          "before": null,
+          "after": 0.03,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:454639": {
+      "title": "Masters of the Universe",
+      "layouts": {
+        "top20": {
+          "baseline": "/xYfAWmxHRZwU5RT1wVGoFI9DlIz.jpg",
+          "posterPath": "/AaY8qJx1KbOvZuAj1IIL5HTDjaP.jpg",
+          "before": 1,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/xYfAWmxHRZwU5RT1wVGoFI9DlIz.jpg",
+          "posterPath": "/AaY8qJx1KbOvZuAj1IIL5HTDjaP.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:1081003": {
+      "title": "Supergirl",
+      "layouts": {
+        "top20": {
+          "baseline": "/9WyCDqi6ogIWYCnlCLJfvNuR9dF.jpg",
+          "posterPath": "/9WyCDqi6ogIWYCnlCLJfvNuR9dF.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/9WyCDqi6ogIWYCnlCLJfvNuR9dF.jpg",
+          "posterPath": "/9WyCDqi6ogIWYCnlCLJfvNuR9dF.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "movie:1198994": {
+      "title": "Send Help",
+      "layouts": {
+        "top20": {
+          "baseline": "/e7lx2JxRSia7uYHjdoEieQpcAVW.jpg",
+          "posterPath": "/e7lx2JxRSia7uYHjdoEieQpcAVW.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/e7lx2JxRSia7uYHjdoEieQpcAVW.jpg",
+          "posterPath": "/e7lx2JxRSia7uYHjdoEieQpcAVW.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
         }
       }
     },
@@ -138,7 +1857,9 @@
           "before": 1,
           "after": 0.0,
           "textCheck": "clear",
-          "textModel": "ppocrv3-en"
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
         },
         "trending": {
           "baseline": "/4D5k1Cs9hA0REwXN6w5Lxxlhba5.jpg",
@@ -146,7 +1867,99 @@
           "before": 1,
           "after": 0.0,
           "textCheck": "clear",
-          "textModel": "ppocrv3-en"
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:1228710": {
+      "title": "The Mandalorian and Grogu",
+      "layouts": {
+        "trending": {
+          "baseline": "/imYNnIA5FcP6d3hrS60uXlbE13o.jpg",
+          "posterPath": "/uj94Jm17VAcUgqG9EwmsU5CZXEm.jpg",
+          "before": null,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "top20": {
+          "baseline": "/imYNnIA5FcP6d3hrS60uXlbE13o.jpg",
+          "posterPath": "/uj94Jm17VAcUgqG9EwmsU5CZXEm.jpg",
+          "before": null,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:1327819": {
+      "title": "Hoppers",
+      "layouts": {
+        "top20": {
+          "baseline": "/p5G1Fbn6hjQprNijkcjarf8FZWG.jpg",
+          "posterPath": "/p5G1Fbn6hjQprNijkcjarf8FZWG.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/p5G1Fbn6hjQprNijkcjarf8FZWG.jpg",
+          "posterPath": "/p5G1Fbn6hjQprNijkcjarf8FZWG.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "movie:1236153": {
+      "title": "Mercy",
+      "layouts": {
+        "trending": {
+          "baseline": "/2M7oQor0TM5OsYUECUG9cdDgPQK.jpg",
+          "posterPath": "/f0ye7HWAqcSVJXcAGPDnDhYtuCP.jpg",
+          "before": 0.23,
+          "after": 0.007,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:1318447": {
+      "title": "Apex",
+      "layouts": {
+        "top20": {
+          "baseline": "/xS0W0zcabQvS3jTX09C4fovGWRJ.jpg",
+          "posterPath": "/fcXYtiOCEP8Nqpc0ib57Mmf3Or2.jpg",
+          "before": null,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/xS0W0zcabQvS3jTX09C4fovGWRJ.jpg",
+          "posterPath": "/fcXYtiOCEP8Nqpc0ib57Mmf3Or2.jpg",
+          "before": null,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
         }
       }
     },
@@ -156,18 +1969,317 @@
         "top20": {
           "baseline": "/exIgwuLT3WWdkDwzQVtvmrIVgRI.jpg",
           "posterPath": "/y20kqEAJvZLn3FmC3LLoWyeXUdK.jpg",
-          "before": 0.186,
+          "before": 0.176,
           "after": 0.0,
           "textCheck": "clear",
-          "textModel": "ppocrv3-en"
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
         },
         "trending": {
           "baseline": "/exIgwuLT3WWdkDwzQVtvmrIVgRI.jpg",
           "posterPath": "/y20kqEAJvZLn3FmC3LLoWyeXUdK.jpg",
-          "before": 0.186,
+          "before": 0.117,
           "after": 0.0,
           "textCheck": "clear",
-          "textModel": "ppocrv3-en"
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:1301421": {
+      "title": "The Sheep Detectives",
+      "layouts": {
+        "top20": {
+          "baseline": "/5TnrqeO3pniOGBTEhNiMi98LmNU.jpg",
+          "posterPath": "/8PTIEKIK9QkffYsbmn0EozCkE39.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/5TnrqeO3pniOGBTEhNiMi98LmNU.jpg",
+          "posterPath": "/8PTIEKIK9QkffYsbmn0EozCkE39.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:1171145": {
+      "title": "Crime 101",
+      "layouts": {
+        "trending": {
+          "baseline": "/sGWwEfFxIsSfhDxuAXhIDGKa7B6.jpg",
+          "posterPath": "/nLacDm0Oq0cZnf8EhqXHsi9TQXm.jpg",
+          "before": 0.307,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:1290821": {
+      "title": "Shelter",
+      "layouts": {
+        "top20": {
+          "baseline": "/AmFWVRdCn2J6AFfyHDA0GWQr518.jpg",
+          "posterPath": "/AmFWVRdCn2J6AFfyHDA0GWQr518.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/AmFWVRdCn2J6AFfyHDA0GWQr518.jpg",
+          "posterPath": "/AmFWVRdCn2J6AFfyHDA0GWQr518.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "movie:1325734": {
+      "title": "The Drama",
+      "layouts": {
+        "top20": {
+          "baseline": "/8aZWT5wYQYYpDnHzdThlvhPZTJt.jpg",
+          "posterPath": "/8aZWT5wYQYYpDnHzdThlvhPZTJt.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/8aZWT5wYQYYpDnHzdThlvhPZTJt.jpg",
+          "posterPath": "/8aZWT5wYQYYpDnHzdThlvhPZTJt.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "movie:1317288": {
+      "title": "Marty Supreme",
+      "layouts": {
+        "trending": {
+          "baseline": "/jAH9pv4gl9taAD7fRI0Pd9ebr2e.jpg",
+          "posterPath": "/jAH9pv4gl9taAD7fRI0Pd9ebr2e.jpg",
+          "before": 0.007,
+          "after": 0.007,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:250307": {
+      "title": "The Pitt",
+      "layouts": {
+        "top20": {
+          "baseline": "/jLxZPL8OGvkiZW5J7uXN8RK8HCi.jpg",
+          "posterPath": "/flgp5KE4Ed0lmhYodj65EGmCfZe.jpg",
+          "before": null,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/jLxZPL8OGvkiZW5J7uXN8RK8HCi.jpg",
+          "posterPath": "/flgp5KE4Ed0lmhYodj65EGmCfZe.jpg",
+          "before": null,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:270476": {
+      "title": "Widow's Bay",
+      "layouts": {
+        "top20": {
+          "baseline": "/7HdUreTP4GNHf4LhgrxvLUVEK4r.jpg",
+          "posterPath": "/7HdUreTP4GNHf4LhgrxvLUVEK4r.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/7HdUreTP4GNHf4LhgrxvLUVEK4r.jpg",
+          "posterPath": "/7HdUreTP4GNHf4LhgrxvLUVEK4r.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:224372": {
+      "title": "A Knight of the Seven Kingdoms",
+      "layouts": {
+        "top20": {
+          "baseline": "/2sddK6rP3VaoETfa7ADE2KCkfpj.jpg",
+          "posterPath": "/2sddK6rP3VaoETfa7ADE2KCkfpj.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/2sddK6rP3VaoETfa7ADE2KCkfpj.jpg",
+          "posterPath": "/2sddK6rP3VaoETfa7ADE2KCkfpj.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:106379": {
+      "title": "Fallout",
+      "layouts": {
+        "top20": {
+          "baseline": "/7TBfMjYvAuSVHw1B7E5GZT3I4GG.jpg",
+          "posterPath": "/7TBfMjYvAuSVHw1B7E5GZT3I4GG.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/7TBfMjYvAuSVHw1B7E5GZT3I4GG.jpg",
+          "posterPath": "/7TBfMjYvAuSVHw1B7E5GZT3I4GG.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:95350": {
+      "title": "Lanterns",
+      "layouts": {
+        "top20": {
+          "baseline": "/9i6966Py1jvnGHFFwxf3CGku7GV.jpg",
+          "posterPath": "/9i6966Py1jvnGHFFwxf3CGku7GV.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/9i6966Py1jvnGHFFwxf3CGku7GV.jpg",
+          "posterPath": "/9i6966Py1jvnGHFFwxf3CGku7GV.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:202555": {
+      "title": "Daredevil: Born Again",
+      "layouts": {
+        "top20": {
+          "baseline": "/A46i2ECLE1bVrl9YTWVnfBEWuzh.jpg",
+          "posterPath": "/dTFeULXN1AIEinHLBNenk5ZSy7I.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/A46i2ECLE1bVrl9YTWVnfBEWuzh.jpg",
+          "posterPath": "/dTFeULXN1AIEinHLBNenk5ZSy7I.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:226637": {
+      "title": "High Potential",
+      "layouts": {
+        "trending": {
+          "baseline": "/o5y99oQR6S5JunLITOtMTYBlZCN.jpg",
+          "posterPath": "/6ozHJmqt7VbPsTrCkhT0DOYW4vn.jpg",
+          "before": 0.0,
+          "after": 0.008,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:157741": {
+      "title": "Landman",
+      "layouts": {
+        "top20": {
+          "baseline": "/iQIDcC3zC6XiPCZGjxArq4mfZRL.jpg",
+          "posterPath": "/ydEBy8eud6L5J5YA1SWso6oUkO2.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/iQIDcC3zC6XiPCZGjxArq4mfZRL.jpg",
+          "posterPath": "/ydEBy8eud6L5J5YA1SWso6oUkO2.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
         }
       }
     },
@@ -177,18 +2289,292 @@
         "top20": {
           "baseline": "/bhujlLfcdfHNWKDLYqeDdYLcuKZ.jpg",
           "posterPath": "/ipj4SerOtCTdIEqMuerAohD6Hfv.jpg",
-          "before": 0.339,
+          "before": 0.375,
           "after": 0.0,
           "textCheck": "clear",
-          "textModel": "ppocrv3-en"
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
         },
         "trending": {
           "baseline": "/bhujlLfcdfHNWKDLYqeDdYLcuKZ.jpg",
           "posterPath": "/ipj4SerOtCTdIEqMuerAohD6Hfv.jpg",
-          "before": 0.339,
+          "before": 0.283,
           "after": 0.0,
           "textCheck": "clear",
-          "textModel": "ppocrv3-en"
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:245927": {
+      "title": "Paradise",
+      "layouts": {
+        "trending": {
+          "baseline": "/n6quIwv07YaKDONN1OEdyW6JI9i.jpg",
+          "posterPath": "/n6quIwv07YaKDONN1OEdyW6JI9i.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "top20": {
+          "baseline": "/n6quIwv07YaKDONN1OEdyW6JI9i.jpg",
+          "posterPath": "/pVEt73YgxSQsZkN1LURHLLxd4xD.jpg",
+          "before": 0.044,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:220102": {
+      "title": "Spider-Noir",
+      "layouts": {
+        "trending": {
+          "baseline": "/iZdvO7DMBNEE66iB1XvRROxdeCg.jpg",
+          "posterPath": "/yeQ78tsOdSVQYDCTl4txH8pnG0c.jpg",
+          "before": null,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "top20": {
+          "baseline": "/iZdvO7DMBNEE66iB1XvRROxdeCg.jpg",
+          "posterPath": "/2pdafG1pR8EiDnoh1MRYcPRYsda.jpg",
+          "before": null,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:241609": {
+      "title": "Your Friends & Neighbors",
+      "layouts": {
+        "top20": {
+          "baseline": "/1e8NbJqmfhBVrzI7exgv2q6NPMY.jpg",
+          "posterPath": "/1e8NbJqmfhBVrzI7exgv2q6NPMY.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/1e8NbJqmfhBVrzI7exgv2q6NPMY.jpg",
+          "posterPath": "/1e8NbJqmfhBVrzI7exgv2q6NPMY.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:243875": {
+      "title": "Georgie & Mandy's First Marriage",
+      "layouts": {
+        "top20": {
+          "baseline": "/6Yl0O29P5r3RDbqz4ZzR3gNUrwa.jpg",
+          "posterPath": "/6Yl0O29P5r3RDbqz4ZzR3gNUrwa.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/6Yl0O29P5r3RDbqz4ZzR3gNUrwa.jpg",
+          "posterPath": "/6Yl0O29P5r3RDbqz4ZzR3gNUrwa.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:278178": {
+      "title": "I Will Find You",
+      "layouts": {
+        "trending": {
+          "baseline": "/qGv0tGmhkAUrdCxWIOxtC8gZhip.jpg",
+          "posterPath": "/qGv0tGmhkAUrdCxWIOxtC8gZhip.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:299167": {
+      "title": "Dutton Ranch",
+      "layouts": {
+        "top20": {
+          "baseline": "/91a2gwK9g61pubHzShTVjMEkJEM.jpg",
+          "posterPath": "/91a2gwK9g61pubHzShTVjMEkJEM.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/91a2gwK9g61pubHzShTVjMEkJEM.jpg",
+          "posterPath": "/91a2gwK9g61pubHzShTVjMEkJEM.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:94997": {
+      "title": "House of the Dragon",
+      "layouts": {
+        "top20": {
+          "baseline": "/elwO2VlWzvUWsGGeeypZzpa61Jm.jpg",
+          "posterPath": "/elwO2VlWzvUWsGGeeypZzpa61Jm.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/elwO2VlWzvUWsGGeeypZzpa61Jm.jpg",
+          "posterPath": "/elwO2VlWzvUWsGGeeypZzpa61Jm.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:200875": {
+      "title": "IT: Welcome to Derry",
+      "layouts": {
+        "top20": {
+          "baseline": "/xcxFRWCE4ccsaGEEPnvvRR32f6Y.jpg",
+          "posterPath": "/xcxFRWCE4ccsaGEEPnvvRR32f6Y.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/xcxFRWCE4ccsaGEEPnvvRR32f6Y.jpg",
+          "posterPath": "/xcxFRWCE4ccsaGEEPnvvRR32f6Y.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:288673": {
+      "title": "Carrie",
+      "layouts": {
+        "top20": {
+          "baseline": "/7CDmD9H4FRyTngJI717TrKIppb0.jpg",
+          "posterPath": "/7CDmD9H4FRyTngJI717TrKIppb0.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/7CDmD9H4FRyTngJI717TrKIppb0.jpg",
+          "posterPath": "/7CDmD9H4FRyTngJI717TrKIppb0.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:250923": {
+      "title": "Nobody Wants This",
+      "layouts": {
+        "trending": {
+          "baseline": "/43vUlUQJ7OCfcFV1fMJhddC0TPN.jpg",
+          "posterPath": "/pb7ZRFWp9Y3gre049cpiarjUXhh.jpg",
+          "before": 0.0,
+          "after": 0.005,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:136315": {
+      "title": "The Bear",
+      "layouts": {
+        "trending": {
+          "baseline": "/uuQycdQyixtS4EHKtUQpXtZvPki.jpg",
+          "posterPath": "/bu99Db7vDhqUjJHdcmXj74j9Gu1.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:295778": {
+      "title": "Scrubs",
+      "layouts": {
+        "top20": {
+          "baseline": "/f9Z2j0d0xEm4yXY2MWfHakUWl4i.jpg",
+          "posterPath": "/ouzcrmqJHMV0FpYjO1wtIvw3rRw.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/f9Z2j0d0xEm4yXY2MWfHakUWl4i.jpg",
+          "posterPath": "/ouzcrmqJHMV0FpYjO1wtIvw3rRw.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
         }
       }
     },
@@ -198,25 +2584,163 @@
         "top20": {
           "baseline": "/5n8yuHdiObGIhZypMDwawQCW0s1.jpg",
           "posterPath": "/7a9RmJA142gqRkzkLd2HAirBguU.jpg",
-          "before": 0.212,
+          "before": 0.219,
           "after": 0.0,
           "textCheck": "clear",
-          "textModel": "ppocrv3-en"
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
         },
         "trending": {
           "baseline": "/5n8yuHdiObGIhZypMDwawQCW0s1.jpg",
           "posterPath": "/7a9RmJA142gqRkzkLd2HAirBguU.jpg",
-          "before": 0.212,
+          "before": 0.088,
           "after": 0.0,
           "textCheck": "clear",
-          "textModel": "ppocrv3-en"
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
         }
       }
     }
   },
   "textScreening": {
-    "clear": 10,
-    "text": 16,
+    "clear": 178,
+    "text": 146,
     "unknown": 0
+  },
+  "unresolved": {
+    "movie:13479": {
+      "title": "A Charlie Brown Thanksgiving",
+      "status": "unresolved"
+    },
+    "movie:351339": {
+      "title": "Anthropoid",
+      "status": "unresolved"
+    },
+    "movie:13203": {
+      "title": "Son in Law",
+      "status": "unresolved"
+    },
+    "movie:175574": {
+      "title": "Free Birds",
+      "status": "unresolved"
+    },
+    "tv:171802": {
+      "title": "Blade Runner 2099",
+      "status": "partial"
+    },
+    "tv:291507": {
+      "title": "The Body",
+      "status": "unresolved"
+    },
+    "tv:117488": {
+      "title": "Yellowjackets",
+      "status": "unresolved"
+    },
+    "tv:308007": {
+      "title": "The Altruists",
+      "status": "unresolved"
+    },
+    "tv:213375": {
+      "title": "VisionQuest",
+      "status": "unresolved"
+    },
+    "tv:2190": {
+      "title": "South Park",
+      "status": "unresolved"
+    },
+    "tv:326247": {
+      "title": "Fool Night",
+      "status": "unresolved"
+    },
+    "movie:1765072": {
+      "title": "You Can See Everything",
+      "status": "unresolved"
+    },
+    "tv:302837": {
+      "title": "Toos: The Van der Valk Kidnapping",
+      "status": "no eligible portrait"
+    },
+    "movie:1611767": {
+      "title": "Clashing Through the Snow",
+      "status": "partial"
+    },
+    "movie:1101412": {
+      "title": "Fall 2: Deadpoint",
+      "status": "unresolved"
+    },
+    "tv:292044": {
+      "title": "The Story Untold",
+      "status": "no eligible portrait"
+    },
+    "movie:1400837": {
+      "title": "Other Mommy",
+      "status": "unresolved"
+    },
+    "movie:1084409": {
+      "title": "A Talent for Murder",
+      "status": "unresolved"
+    },
+    "tv:456": {
+      "title": "The Simpsons",
+      "status": "unresolved"
+    },
+    "tv:30957": {
+      "title": "The Amazing Race",
+      "status": "partial"
+    },
+    "tv:97546": {
+      "title": "Ted Lasso",
+      "status": "unresolved"
+    },
+    "movie:931285": {
+      "title": "Mortal Kombat II",
+      "status": "unresolved"
+    },
+    "movie:1439930": {
+      "title": "The Punisher: One Last Kill",
+      "status": "unresolved"
+    },
+    "movie:1265609": {
+      "title": "War Machine",
+      "status": "unresolved"
+    },
+    "movie:1236153": {
+      "title": "Mercy",
+      "status": "partial"
+    },
+    "movie:1171145": {
+      "title": "Crime 101",
+      "status": "partial"
+    },
+    "movie:1317288": {
+      "title": "Marty Supreme",
+      "status": "partial"
+    },
+    "tv:226637": {
+      "title": "High Potential",
+      "status": "partial"
+    },
+    "tv:273240": {
+      "title": "Off Campus",
+      "status": "unresolved"
+    },
+    "tv:278178": {
+      "title": "I Will Find You",
+      "status": "partial"
+    },
+    "tv:250923": {
+      "title": "Nobody Wants This",
+      "status": "partial"
+    },
+    "tv:136315": {
+      "title": "The Bear",
+      "status": "partial"
+    },
+    "tv:256721": {
+      "title": "Gachiakuta",
+      "status": "unresolved"
+    }
   }
 }
