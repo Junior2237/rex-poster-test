@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "algorithm": "yunet-ppocr-v5",
-  "generatedAt": "2026-11-27T04:13:27.622172+00:00",
+  "generatedAt": "2026-11-27T06:39:16.817461+00:00",
   "overrides": {
     "movie:2609": {
       "title": "Planes, Trains and Automobiles",
@@ -2780,6 +2780,16 @@
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
           "selection": "alternate"
+        },
+        "top20": {
+          "baseline": "/27U5WJd2vqUznevZg0iuqDEm3R3.jpg",
+          "posterPath": "/ajL4pxKtDe0ZSy40N3qxg1QE7NL.jpg",
+          "before": 0.791,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
         }
       }
     },
@@ -3262,14 +3272,164 @@
           "selection": "confirmed"
         }
       }
+    },
+    "movie:1597": {
+      "title": "Meet the Parents",
+      "layouts": {
+        "top20": {
+          "baseline": "/8P1zuBFVZjbJNP3xM2C91WNPohD.jpg",
+          "posterPath": "/t6Qs4qaANlikve2OmO0s3U1w9nv.jpg",
+          "before": 1,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/8P1zuBFVZjbJNP3xM2C91WNPohD.jpg",
+          "posterPath": "/t6Qs4qaANlikve2OmO0s3U1w9nv.jpg",
+          "before": 1,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:225171": {
+      "title": "Pluribus",
+      "layouts": {
+        "top20": {
+          "baseline": "/os1oQkTMZXiFP7KdEv3o03eshGC.jpg",
+          "posterPath": "/g6y5N9aTnvgrI092oflyoK82IGj.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/os1oQkTMZXiFP7KdEv3o03eshGC.jpg",
+          "posterPath": "/g6y5N9aTnvgrI092oflyoK82IGj.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "tv:244447": {
+      "title": "The Hunting Wives",
+      "layouts": {
+        "top20": {
+          "baseline": "/rnu5OUtv5X865QEmrdqYEmzZiT2.jpg",
+          "posterPath": "/rnu5OUtv5X865QEmrdqYEmzZiT2.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/rnu5OUtv5X865QEmrdqYEmzZiT2.jpg",
+          "posterPath": "/rnu5OUtv5X865QEmrdqYEmzZiT2.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "tv:322052": {
+      "title": "Wintertime",
+      "layouts": {
+        "top20": {
+          "baseline": "/lDKxuOXnlEullJvCpmbW1XJ8naZ.jpg",
+          "posterPath": "/lDKxuOXnlEullJvCpmbW1XJ8naZ.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        },
+        "trending": {
+          "baseline": "/lDKxuOXnlEullJvCpmbW1XJ8naZ.jpg",
+          "posterPath": "/lDKxuOXnlEullJvCpmbW1XJ8naZ.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "confirmed"
+        }
+      }
+    },
+    "movie:1400837": {
+      "title": "Other Mommy",
+      "layouts": {
+        "top20": {
+          "baseline": "/fGRNCssTRrhYZxNzykGGCoMsAVq.jpg",
+          "posterPath": "/zrGOYS3mKAaiyviBrCfzYi6qVlQ.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/fGRNCssTRrhYZxNzykGGCoMsAVq.jpg",
+          "posterPath": "/zrGOYS3mKAaiyviBrCfzYi6qVlQ.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
+    },
+    "movie:931285": {
+      "title": "Mortal Kombat II",
+      "layouts": {
+        "trending": {
+          "baseline": "/mUExj4VneG3S0Ysufxnj9JPZEHQ.jpg",
+          "posterPath": "/gzNDVSaIxZaBm6MCD1qnrpF8t70.jpg",
+          "before": 0.106,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "selection": "alternate"
+        }
+      }
     }
   },
   "textScreening": {
-    "clear": 85,
-    "text": 515,
+    "clear": 54,
+    "text": 1687,
     "unknown": 0
   },
   "unresolved": {
+    "movie:13963": {
+      "title": "The Last Waltz",
+      "status": "unresolved",
+      "mode": "excluded"
+    },
+    "movie:9089": {
+      "title": "Home for the Holidays",
+      "status": "unresolved",
+      "mode": "excluded"
+    },
     "movie:13479": {
       "title": "A Charlie Brown Thanksgiving",
       "status": "unresolved",
@@ -3288,11 +3448,6 @@
     "movie:175574": {
       "title": "Free Birds",
       "status": "unresolved",
-      "mode": "excluded"
-    },
-    "movie:360920": {
-      "title": "The Grinch",
-      "status": "partial",
       "mode": "excluded"
     },
     "movie:940721": {
@@ -3345,14 +3500,14 @@
       "status": "unresolved",
       "mode": "excluded"
     },
-    "tv:275139": {
-      "title": "Phony",
-      "status": "partial",
-      "mode": "excluded"
-    },
     "tv:213562": {
       "title": "Crystal Lake",
       "status": "unresolved",
+      "mode": "excluded"
+    },
+    "tv:275139": {
+      "title": "Phony",
+      "status": "partial",
       "mode": "excluded"
     },
     "tv:250923": {
@@ -3375,6 +3530,11 @@
       "status": "unresolved",
       "mode": "excluded"
     },
+    "movie:1269325": {
+      "title": "Drishyam: The Conclusion",
+      "status": "unresolved",
+      "mode": "excluded"
+    },
     "movie:1611767": {
       "title": "Clashing Through the Snow",
       "status": "partial",
@@ -3385,18 +3545,13 @@
       "status": "unresolved",
       "mode": "excluded"
     },
-    "tv:292044": {
-      "title": "The Story Untold",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
     "movie:1457866": {
       "title": "THE FURTHER MIS-ADVENTURES OF CLIFF BOOTH",
       "status": "unresolved",
       "mode": "excluded"
     },
-    "tv:313701": {
-      "title": "A Filipino Christmas",
+    "tv:292044": {
+      "title": "The Story Untold",
       "status": "unresolved",
       "mode": "excluded"
     },
@@ -3405,13 +3560,13 @@
       "status": "unresolved",
       "mode": "excluded"
     },
-    "movie:1269325": {
-      "title": "Drishyam: The Conclusion",
+    "tv:313701": {
+      "title": "A Filipino Christmas",
       "status": "unresolved",
       "mode": "excluded"
     },
-    "movie:1400837": {
-      "title": "Other Mommy",
+    "movie:1391021": {
+      "title": "Once Upon a Time in the Middle East",
       "status": "unresolved",
       "mode": "excluded"
     },
@@ -3437,7 +3592,7 @@
     },
     "movie:931285": {
       "title": "Mortal Kombat II",
-      "status": "unresolved",
+      "status": "partial",
       "mode": "excluded"
     },
     "movie:1439930": {
