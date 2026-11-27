@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="rex-widget" content="type=rail; height=700; item-ratio=4:5">
-<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster,titleLogoAlternates,titleLogoRawPath,logoUrl,titleLogoPinned">
+<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster,titleLogoAlternates,titleLogoRawPath,logoUrl,titleLogoPinned,faceSafePosterPath">
 <title>Rex Editorial — Consistent Artwork</title>
 <style>
 *{box-sizing:border-box}
@@ -275,8 +275,8 @@ function confirmedArtwork(item){
  // Never trust old automatic artwork for a title with an explicit override.
  if(fixedRailRule(item))return null;
  var cached=railArtFor(item);
- if(cached)return cached;
- var bundle=railArtworkBundle(item),clean=artworkValue(item.cleanPosterPath);
+ if(cached&&!item.faceSafePosterPath)return cached;
+ var bundle=railArtworkBundle(item),clean=artworkValue(item.faceSafePosterPath)||artworkValue(item.cleanPosterPath);
  var nativePoster=artworkValue(item.posterPath)||artworkValue(item.coverUrl);
  // Do not treat changing native detail art as verified textless artwork.
  var poster=(clean&&imageIdentity(clean)!==imageIdentity(nativePoster)?clean:'')||(bundle&&bundle.poster);
