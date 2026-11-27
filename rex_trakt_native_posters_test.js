@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.6.5 — Visually verified poster overrides
+ * Version 3.6.6 — Universal verified artwork selection and native delivery
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -62,7 +62,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.6.5",
+  version: "3.6.6",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -447,6 +447,10 @@ function startupCachePrune() {
 }
 
 async function loadCachedRow(key, target, loader) {
+  // The manifest version participates in the row-cache identity so a new
+  // scheduled selection cannot be hidden by the module's old cached list.
+  var manifest=await faceManifest();
+  if(manifest&&manifest.generatedAt)key+=":"+manifest.generatedAt;
   var cached = startupCacheRead("row:" + key, CACHE_SECONDS);
   if (Array.isArray(cached) && cached.length === target) return cached;
   var started = Date.now();
@@ -830,14 +834,14 @@ async function applyArtworkOverride(artwork,mediaType,tmdbId,premiumPortrait){
 
 var faceManifestPromise=null,faceManifestMemory=null,faceManifestAt=0;
 function validFaceManifest(data){
-  if(!data||data.schemaVersion!==1||data.algorithm!=="yunet-ppocr-v2"||!data.overrides||typeof data.overrides!=="object")return null;
+  if(!data||data.schemaVersion!==1||(data.algorithm!=="yunet-ppocr-v3"&&data.algorithm!=="yunet-ppocr-v2")||!data.overrides||typeof data.overrides!=="object")return null;
   if(!data.generatedAt)return data;
   var age=Date.now()-Date.parse(data.generatedAt);
   return Number.isFinite(age)&&age>=-300000&&age<=72*3600000?data:null;
 }
 async function faceManifest(){
   if(faceManifestMemory&&Date.now()-faceManifestAt<300000)return faceManifestMemory;
-  var cached=validFaceManifest(startupCacheRead("face-manifest-v364",300));
+  var cached=validFaceManifest(startupCacheRead("face-manifest-v366",300));
   if(cached)return cached;
   if(faceManifestPromise)return faceManifestPromise;
   faceManifestPromise=(async function(){
@@ -845,8 +849,8 @@ async function faceManifest(){
     try{
       data=validFaceManifest(unwrap(await Widget.http.get("https://raw.githubusercontent.com/Junior2237/rex-poster-test/refs/heads/main/face_safe_posters.json",{headers:{Accept:"application/json"}})));
     }catch(e){}
-    if(data)startupCacheWrite("face-manifest-v364",data);
-    faceManifestMemory=data||validFaceManifest(startupCacheRead("face-manifest-v364",72*3600))||{overrides:{}};
+    if(data)startupCacheWrite("face-manifest-v366",data);
+    faceManifestMemory=data||validFaceManifest(startupCacheRead("face-manifest-v366",72*3600))||{overrides:{}};
     faceManifestAt=Date.now();
     return faceManifestMemory;
   })();
@@ -857,8 +861,12 @@ function applyFaceSafePoster(artwork,manifest,mediaType,tmdbId,premiumPortrait){
   var rule=manifest.overrides[mediaType+":"+tmdbId];
   var choice=rule&&rule.layouts&&rule.layouts[premiumPortrait?"trending":"top20"];
   if(!choice||choice.textCheck!=="clear"||choice.textModel!=="ppocrv3-en"||!/^\/[A-Za-z0-9_-]+\.(jpg|jpeg|png|webp)$/i.test(choice.posterPath||""))return artwork;
-  if(!(Number(choice.before)>=.12&&Number(choice.after)>=0&&Number(choice.after)<=.04&&Number(choice.before)-Number(choice.after)>=.10))return artwork;
-  return Object.assign({},artwork,{cleanPoster:choice.posterPath,faceSafePoster:choice.posterPath});
+  if(!(typeof choice.after==="number"&&choice.after>=0&&choice.after<=.04))return artwork;
+  if(manifest.algorithm==="yunet-ppocr-v3"){
+    if(choice.faceCheck!=="clear"||(choice.selection!=="confirmed"&&choice.selection!=="alternate"))return artwork;
+  }else if(!(Number(choice.before)>=.12&&Number(choice.before)-choice.after>=.10))return artwork;
+  var changed=choice.posterPath!==artwork.cleanPoster;
+  return Object.assign({},artwork,{cleanPoster:choice.posterPath,verifiedPoster:choice.posterPath,faceSafePoster:changed||choice.selection==="alternate"?choice.posterPath:""});
 }
 
 async function buildItem(
@@ -960,9 +968,9 @@ async function buildItem(
     if (!artwork.logo || !/^\/[A-Za-z0-9_-]+\.png$/i.test(artwork.logo)) return null;
     if (!artwork.standardPoster) artwork.standardPoster = tmdbPath(subject.poster_path || row.poster_path);
     assignPosterFields(item, artwork, premiumPortrait);
-    if(artwork.faceSafePoster){
-      item.faceSafePosterPath=tmdbUrl(artwork.faceSafePoster);
-      console.log("Face-safe applied: "+title+" "+artwork.faceSafePoster);
+    if(artwork.verifiedPoster||artwork.faceSafePoster){
+      item.faceSafePosterPath=tmdbUrl(artwork.verifiedPoster||artwork.faceSafePoster);
+      if(artwork.faceSafePoster)console.log("Face-safe applied: "+title+" "+artwork.faceSafePoster);
     }
     item.cleanPosterAlternates=(artwork.cleanPosterAlternates||[]).filter(function(p){return p!==artwork.cleanPoster;}).map(tmdbUrl);
     if (artwork.releaseDate) item.releaseDate = artwork.releaseDate;
@@ -979,6 +987,12 @@ async function buildItem(
       nativePaths = [artwork.cleanPoster];
       if (artwork.backdrop && nativePaths.indexOf(artwork.backdrop) < 0) nativePaths.push(artwork.backdrop);
       if (artwork.logo && nativePaths.indexOf(artwork.logo) < 0) nativePaths.push(artwork.logo);
+    }
+    // Carry automatic replacements through native fields even if Rex strips
+    // custom metadata. A portrait-first bundle is recognized by our renderers.
+    if(artwork.faceSafePoster&&artwork.backdrop&&artwork.backdrop!==artwork.cleanPoster){
+      item.backdropPath=artwork.cleanPoster;
+      nativePaths=[artwork.cleanPoster,artwork.backdrop,artwork.logo];
     }
     if (nativePaths.length) item.backdropPaths = nativePaths;
 
@@ -1290,14 +1304,14 @@ async function loadNativeList(
 
 async function loadNativeMovies(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("daily-movies-v365", MAX_ITEMS, function() {
+  return loadCachedRow("daily-movies-v366", MAX_ITEMS, function() {
     return loadNativeList("movie", MOVIES_LIST, params);
   });
 }
 
 async function loadNativeShows(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("daily-shows-v365", MAX_ITEMS, function() {
+  return loadCachedRow("daily-shows-v366", MAX_ITEMS, function() {
     return loadNativeList("tv", TV_LIST, params);
   });
 }
@@ -1371,25 +1385,25 @@ async function loadArtworkChart(mediaType, chart, params) {
 
 async function loadTrendingMovies(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("trending-movies-v365", CHART_TARGET, function() {
+  return loadCachedRow("trending-movies-v366", CHART_TARGET, function() {
     return loadArtworkChart("movie", "trending", params);
   });
 }
 async function loadTrendingShows(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("trending-shows-v365", CHART_TARGET, function() {
+  return loadCachedRow("trending-shows-v366", CHART_TARGET, function() {
     return loadArtworkChart("tv", "trending", params);
   });
 }
 async function loadPopularMovies(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("popular-movies-v365", CHART_TARGET, function() {
+  return loadCachedRow("popular-movies-v366", CHART_TARGET, function() {
     return loadArtworkChart("movie", "popular", params);
   });
 }
 async function loadPopularShows(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("popular-shows-v365", CHART_TARGET, function() {
+  return loadCachedRow("popular-shows-v366", CHART_TARGET, function() {
     return loadArtworkChart("tv", "popular", params);
   });
 }
@@ -1400,7 +1414,7 @@ async function loadPopularShows(params) {
  * Unlike active Trakt watcher counts, upcoming titles can qualify.
  */
 async function loadCombinedTrending(params) {
-  return loadCachedRow("combined-trending-v365", CHART_TARGET, function() {
+  return loadCachedRow("combined-trending-v366", CHART_TARGET, function() {
     return loadCombinedTrendingUncached(params);
   });
 }
