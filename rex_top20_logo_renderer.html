@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="rex-widget" content="type=rail; height=480; item-ratio=5:6">
-<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster,titleLogoAlternates,titleLogoRawPath,logoUrl,titleLogoPinned,faceSafePosterPath,nativePosterOnly">
+<meta name="rex-fields" content="lockedPosterPath,posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster,titleLogoAlternates,titleLogoRawPath,logoUrl,titleLogoPinned,faceSafePosterPath,nativePosterOnly">
 <title>Rex — Numbered Top 20 Editorial</title>
 <style>
 *{box-sizing:border-box}
@@ -90,21 +90,20 @@ function _frsel(item){var rule=_frr(item);if(!rule)return null;var posters=_frs(
  var src=_av(value);
  try{src=decodeURIComponent(src)}catch(e){}
  var m=src.match(/\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)(?=$|[?#&/])/ig);
- return m&&m.length?m[m.length-1].toLowerCase():'';
+ return m&&m.length?m[m.length-1]:'';
 }
 function _ca(item) {
  if(!item||item.nativePosterOnly)return null;
  var refs=[],bundle=_rab(item);
  // These are alternate reference forms of the same source-selected image,
  // not different artwork. Never use the actual landscape backdrop.
- [item.faceSafePosterPath,item.cleanPosterPath,item.coverUrl,item.posterPath,item.detailPoster].forEach(function(value){
+ [item.lockedPosterPath,item.faceSafePosterPath,item.cleanPosterPath,bundle&&bundle.poster,item.coverUrl,item.posterPath,item.detailPoster].forEach(function(value){
   var ref=_av(value);
   if(ref&&refs.indexOf(ref)<0)refs.push(ref);
  });
- if(!refs.length&&bundle&&bundle.poster)refs.push(bundle.poster);
  if(!refs.length)return null;
  // The verified source path is authoritative; native wrappers may contain stale artwork.
- var expected=approvedFile(item.faceSafePosterPath)||approvedFile(item.cleanPosterPath)||approvedFile(refs[0]);
+ var expected=approvedFile(item.lockedPosterPath)||approvedFile(item.faceSafePosterPath)||approvedFile(item.cleanPosterPath)||approvedFile(refs[0]);
  if(expected){
   refs=refs.filter(function(ref){var f=approvedFile(ref);return !f||f===expected;});
  }
@@ -114,13 +113,6 @@ function _ca(item) {
 function _lock(item) {
  var incoming=_ca(item);
  if(_la&&_la.poster){
-  // Accept only a new explicit approved filename, never a resized wrapper
-  // or an interim snapshot. Keep normal artwork locking intact.
-  if(incoming&&incoming.identity&&_la.identity&&incoming.identity!==_la.identity){
-   _reset();
-   _la=incoming;
-   return _la;
-  }
   if(!_dc&&incoming&&(!_la.identity||!incoming.identity||_la.identity===incoming.identity)){
    incoming.refs.forEach(function(ref){if(_la.refs.indexOf(ref)<0)_la.refs.push(ref);});
   }
@@ -129,7 +121,7 @@ function _lock(item) {
  _la=incoming;
  return _la;
 }
-function _ak(item){if(!item)return '';return String(item.id==null?'':item.id)+'|'+_nm(item).trim().toLowerCase();}function _reset(){_ig++;_dp='';_pp='';_la=null;_dc=false;_fcp='';_fa='';_ff=Object.create(null);_si(el('poster'),'');_lreq++;_lk='';var logo=el('logo');logo.onload=null;logo.onerror=null;logo.style.transform='';_si(logo,'');el('title').hidden=true;}
+function _ak(item){if(!item)return '';return item.id!=null ? String(item.mediaType||'')+'|'+item.id : _nm(item).trim().toLowerCase();}function _reset(){_ig++;_dp='';_pp='';_la=null;_dc=false;_fcp='';_fa='';_ff=Object.create(null);_si(el('poster'),'');_lreq++;_lk='';var logo=el('logo');logo.onload=null;logo.onerror=null;logo.style.transform='';_si(logo,'');el('title').hidden=true;}
 var _rlm=Object.create(null);function _rlr(item){var keys=_raks(item);for(var i=0;i<keys.length;i++){var key=keys[i]+':logo360',entry=_rlm[key];if(!entry){try{entry=JSON.parse(localStorage.getItem(key)||'null')}catch(e){}}if(entry&&entry.src&&Date.now()-entry.at>=0&&Date.now()-entry.at<_rat)return entry.src;}return '';}function _rlw(item,src){if(!src)return;_raks(item).forEach(function(k){var key=k+':logo360',entry={src:src,at:Date.now()};_rlm[key]=entry;try{localStorage.setItem(key,JSON.stringify(entry))}catch(e){}});}function _rlc(item,art){if(!item)return [];var fixed=_frr(item),bundle=_rab(item),result=[];function append(v){var src=_av(v);if(src&&result.indexOf(src)<0)result.push(src);}function _ap(path){_frs(item,path).forEach(append);}[item.titleLogoPath,item.titleLogoUrl,item.logoUrl,item.logoPath,item.titleLogoRawPath,bundle&&bundle.logo,art&&art.logo].forEach(function(v){var src=_av(v);if(src.charAt(0)==='/')_ap(src);append(src);});var _rm=_rlr(item);if(_rm)append(_rm);if(Array.isArray(item.titleLogoAlternates))item.titleLogoAlternates.forEach(function(v){var src=_av(v);if(src.charAt(0)==='/')_ap(src);append(src);});if(fixed){_ap(fixed.logo);(fixed.logoAlternates||[]).forEach(_ap);}var paths=Array.isArray(item.backdropPaths)?item.backdropPaths.map(_av).filter(Boolean):[];var excluded=[item.backdropPath,item.posterPath,item.coverUrl,item.detailPoster,item.cleanPosterPath,art&&art.poster,bundle&&bundle.poster].map(_iid).filter(Boolean);for(var i=paths.length-1;i>=0;i--){var p=paths[i],identity=_iid(p);if(excluded.indexOf(identity)<0&&/\.png(?:$|[?#&/])/i.test(identity))append(p);}if(fixed&&paths.length===3&&excluded.indexOf(_iid(paths[2]))<0)append(paths[2]);return result;}function _spb(item,art){if(!item)return;if(art&&art.n){_lreq++;_lk='';el('logo').hidden=el('title').hidden=true;el('logo').removeAttribute('src');return;}_rtl(_rlc(item,art),_nm(item));}function _up(item,art) {
  if(!art||!art.poster||_dc||_pp)return;
  var refs=art.refs||[art.poster],src='',key=_ak(item);

@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="rex-widget" content="type=rail; height=384; item-ratio=2:3">
-<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster,titleLogoAlternates,titleLogoRawPath,logoUrl,titleLogoPinned,faceSafePosterPath,nativePosterOnly">
+<meta name="rex-fields" content="lockedPosterPath,posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster,titleLogoAlternates,titleLogoRawPath,logoUrl,titleLogoPinned,faceSafePosterPath,nativePosterOnly">
 <title>Top 20 — Apple TV Size — Refined Genres</title>
 <style>
 *{box-sizing:border-box}
@@ -168,21 +168,20 @@ function approvedFile(value){
  var src=_av(value);
  try{src=decodeURIComponent(src)}catch(e){}
  var m=src.match(/\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)(?=$|[?#&/])/ig);
- return m&&m.length?m[m.length-1].toLowerCase():'';
+ return m&&m.length?m[m.length-1]:'';
 }
 function _ca(item) {
  if(!item||item.nativePosterOnly)return null;
  var refs=[],bundle=_rab(item);
  // These are alternate reference forms of the same source-selected image,
  // not different artwork. Never use the actual landscape backdrop.
- [item.faceSafePosterPath,item.cleanPosterPath,item.coverUrl,item.posterPath,item.detailPoster].forEach(function(value){
+ [item.lockedPosterPath,item.faceSafePosterPath,item.cleanPosterPath,bundle&&bundle.poster,item.coverUrl,item.posterPath,item.detailPoster].forEach(function(value){
   var ref=_av(value);
   if(ref&&refs.indexOf(ref)<0)refs.push(ref);
  });
- if(!refs.length&&bundle&&bundle.poster)refs.push(bundle.poster);
  if(!refs.length)return null;
  // The verified source path is authoritative; native wrappers may contain stale artwork.
- var expected=approvedFile(item.faceSafePosterPath)||approvedFile(item.cleanPosterPath)||approvedFile(refs[0]);
+ var expected=approvedFile(item.lockedPosterPath)||approvedFile(item.faceSafePosterPath)||approvedFile(item.cleanPosterPath)||approvedFile(refs[0]);
  if(expected){
   refs=refs.filter(function(ref){var f=approvedFile(ref);return !f||f===expected;});
  }
@@ -192,13 +191,6 @@ function _ca(item) {
 function _lock(item) {
  var incoming=_ca(item);
  if(_la&&_la.poster){
-  // Accept only a new explicit approved filename, never a resized wrapper
-  // or an interim snapshot. Keep normal artwork locking intact.
-  if(incoming&&incoming.identity&&_la.identity&&incoming.identity!==_la.identity){
-   _reset();
-   _la=incoming;
-   return _la;
-  }
   if(!_dc&&incoming&&(!_la.identity||!incoming.identity||_la.identity===incoming.identity)){
    incoming.refs.forEach(function(ref){if(_la.refs.indexOf(ref)<0)_la.refs.push(ref);});
   }
@@ -209,7 +201,7 @@ function _lock(item) {
 }
 function _ak(item){
 if(!item)return '';
-return String(item.id==null?'':item.id)+'|'+_nm(item).trim().toLowerCase();
+return item.id!=null ? String(item.mediaType||'')+'|'+item.id : _nm(item).trim().toLowerCase();
 }
 function _reset(){
 _ig++;

@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="rex-widget" content="type=rail; height=700; item-ratio=4:5">
-<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster,titleLogoAlternates,titleLogoRawPath,logoUrl,titleLogoPinned,faceSafePosterPath,nativePosterOnly">
+<meta name="rex-fields" content="lockedPosterPath,posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster,titleLogoAlternates,titleLogoRawPath,logoUrl,titleLogoPinned,faceSafePosterPath,nativePosterOnly">
 <title>Rex Editorial — Consistent Artwork</title>
 <style>
 *{box-sizing:border-box}
@@ -173,7 +173,7 @@ function nameOf(item){
 function titleKey(item){
  if(!item)return '';
  var id=item.id==null?'':String(item.id);
- return id+'|'+fold(nameOf(item));
+ return id ? String(item.mediaType||'')+'|'+id : fold(nameOf(item));
 }
 
 function artworkValue(v){
@@ -265,21 +265,20 @@ function approvedFile(value){
  var src=artworkValue(value);
  try{src=decodeURIComponent(src)}catch(e){}
  var m=src.match(/\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)(?=$|[?#&/])/ig);
- return m&&m.length?m[m.length-1].toLowerCase():'';
+ return m&&m.length?m[m.length-1]:'';
 }
 function confirmedArtwork(item) {
  if(!item||item.nativePosterOnly)return null;
  var refs=[],bundle=railArtworkBundle(item);
  // These are alternate reference forms of the same source-selected image,
  // not different artwork. Never use the actual landscape backdrop.
- [item.faceSafePosterPath,item.cleanPosterPath,item.coverUrl,item.posterPath,item.detailPoster].forEach(function(value){
+ [item.lockedPosterPath,item.faceSafePosterPath,item.cleanPosterPath,bundle&&bundle.poster,item.coverUrl,item.posterPath,item.detailPoster].forEach(function(value){
   var ref=artworkValue(value);
   if(ref&&refs.indexOf(ref)<0)refs.push(ref);
  });
- if(!refs.length&&bundle&&bundle.poster)refs.push(bundle.poster);
  if(!refs.length)return null;
  // The verified source path is authoritative; native wrappers may contain stale artwork.
- var expected=approvedFile(item.faceSafePosterPath)||approvedFile(item.cleanPosterPath)||approvedFile(refs[0]);
+ var expected=approvedFile(item.lockedPosterPath)||approvedFile(item.faceSafePosterPath)||approvedFile(item.cleanPosterPath)||approvedFile(refs[0]);
  if(expected){
   refs=refs.filter(function(ref){var f=approvedFile(ref);return !f||f===expected;});
  }
@@ -289,13 +288,6 @@ function confirmedArtwork(item) {
 function lockArtwork(item) {
  var incoming=confirmedArtwork(item);
  if(lockedArtwork&&lockedArtwork.poster){
-  // Accept only a new explicit approved filename, never a resized wrapper
-  // or an interim snapshot. Keep normal artwork locking intact.
-  if(incoming&&incoming.identity&&lockedArtwork.identity&&incoming.identity!==lockedArtwork.identity){
-   clearTitleImages();
-   lockedArtwork=incoming;
-   return lockedArtwork;
-  }
   if(!displayedClean&&incoming&&(!lockedArtwork.identity||!incoming.identity||lockedArtwork.identity===incoming.identity)){
    incoming.refs.forEach(function(ref){if(lockedArtwork.refs.indexOf(ref)<0)lockedArtwork.refs.push(ref);});
   }

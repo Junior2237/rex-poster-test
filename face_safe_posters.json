@@ -1,153 +1,6 @@
 {
   "schemaVersion": 1,
   "algorithm": "yunet-ppocr-v5",
-  "displayAuditVersion": 1,
-  "displayUpgrades": [
-    {
-      "title": "Street Fighter",
-      "layout": "top20",
-      "from": "/b3ZOREKKziY9yM4yMt5oyYfWqCw.jpg",
-      "to": "/qy1LLlrnuLvOV4KA6WklVfqxRfa.jpg",
-      "old": {
-        "score": 2.02615,
-        "edgeStrength": 0.08038,
-        "width": 780,
-        "height": 1170
-      },
-      "new": {
-        "score": 2.40763,
-        "edgeStrength": 0.07152,
-        "width": 780,
-        "height": 1170
-      }
-    },
-    {
-      "title": "Street Fighter",
-      "layout": "trending",
-      "from": "/b3ZOREKKziY9yM4yMt5oyYfWqCw.jpg",
-      "to": "/qy1LLlrnuLvOV4KA6WklVfqxRfa.jpg",
-      "old": {
-        "score": 2.02615,
-        "edgeStrength": 0.08038,
-        "width": 780,
-        "height": 1170
-      },
-      "new": {
-        "score": 2.40763,
-        "edgeStrength": 0.07152,
-        "width": 780,
-        "height": 1170
-      }
-    },
-    {
-      "title": "Supergirl",
-      "layout": "top20",
-      "from": "/9WyCDqi6ogIWYCnlCLJfvNuR9dF.jpg",
-      "to": "/mCOEjgLhWWtcX3qsZGANM5mjX8W.jpg",
-      "old": {
-        "score": 2.60751,
-        "edgeStrength": 0.04859,
-        "width": 780,
-        "height": 1170
-      },
-      "new": {
-        "score": 3.52881,
-        "edgeStrength": 0.06609,
-        "width": 780,
-        "height": 1170
-      }
-    },
-    {
-      "title": "Supergirl",
-      "layout": "trending",
-      "from": "/9WyCDqi6ogIWYCnlCLJfvNuR9dF.jpg",
-      "to": "/mCOEjgLhWWtcX3qsZGANM5mjX8W.jpg",
-      "old": {
-        "score": 2.60751,
-        "edgeStrength": 0.04859,
-        "width": 780,
-        "height": 1170
-      },
-      "new": {
-        "score": 3.52881,
-        "edgeStrength": 0.06609,
-        "width": 780,
-        "height": 1170
-      }
-    },
-    {
-      "title": "Toy Story 5",
-      "layout": "top20",
-      "from": "/q40Py29yikeMJOjBXDKSSA6ybMY.jpg",
-      "to": "/v8lRnrY1fhdQDhlmJABwHb4OUdH.jpg",
-      "old": {
-        "score": 1.60306,
-        "edgeStrength": 0.05804,
-        "width": 780,
-        "height": 1170
-      },
-      "new": {
-        "score": 2.00017,
-        "edgeStrength": 0.06571,
-        "width": 780,
-        "height": 1170
-      }
-    },
-    {
-      "title": "Toy Story 5",
-      "layout": "trending",
-      "from": "/q40Py29yikeMJOjBXDKSSA6ybMY.jpg",
-      "to": "/v8lRnrY1fhdQDhlmJABwHb4OUdH.jpg",
-      "old": {
-        "score": 1.60306,
-        "edgeStrength": 0.05804,
-        "width": 780,
-        "height": 1170
-      },
-      "new": {
-        "score": 2.00017,
-        "edgeStrength": 0.06571,
-        "width": 780,
-        "height": 1170
-      }
-    },
-    {
-      "title": "The End of Oak Street",
-      "layout": "top20",
-      "from": "/ffDlu6T4f3sxJqKzuzf0N5DFhBg.jpg",
-      "to": "/x8NSkBCYPRUJYxFfNCv1LlaNpfP.jpg",
-      "old": {
-        "score": 1.88772,
-        "edgeStrength": 0.05592,
-        "width": 780,
-        "height": 1170
-      },
-      "new": {
-        "score": 2.79344,
-        "edgeStrength": 0.07701,
-        "width": 780,
-        "height": 1170
-      }
-    },
-    {
-      "title": "The End of Oak Street",
-      "layout": "trending",
-      "from": "/ffDlu6T4f3sxJqKzuzf0N5DFhBg.jpg",
-      "to": "/x8NSkBCYPRUJYxFfNCv1LlaNpfP.jpg",
-      "old": {
-        "score": 1.88772,
-        "edgeStrength": 0.05592,
-        "width": 780,
-        "height": 1170
-      },
-      "new": {
-        "score": 2.79344,
-        "edgeStrength": 0.07701,
-        "width": 780,
-        "height": 1170
-      }
-    }
-  ],
   "generatedAt": "2026-11-27T20:07:36.606350+00:00",
   "overrides": {
     "movie:2609": {
@@ -205,57 +58,23 @@
       "layouts": {
         "top20": {
           "baseline": "/ffDlu6T4f3sxJqKzuzf0N5DFhBg.jpg",
-          "posterPath": "/x8NSkBCYPRUJYxFfNCv1LlaNpfP.jpg",
+          "posterPath": "/ffDlu6T4f3sxJqKzuzf0N5DFhBg.jpg",
           "before": 0.0,
           "after": 0.0,
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate",
-          "faceCount": 0,
-          "faceAssessment": "no_faces_detected",
-          "width": 2000,
-          "height": 3000,
-          "displayAuditVersion": 1,
-          "displayDetail": {
-            "score": 2.79344,
-            "edgeStrength": 0.07701,
-            "width": 780,
-            "height": 1170
-          },
-          "displayPreviousDetail": {
-            "score": 1.88772,
-            "edgeStrength": 0.05592,
-            "width": 780,
-            "height": 1170
-          }
+          "selection": "confirmed"
         },
         "trending": {
           "baseline": "/ffDlu6T4f3sxJqKzuzf0N5DFhBg.jpg",
-          "posterPath": "/x8NSkBCYPRUJYxFfNCv1LlaNpfP.jpg",
+          "posterPath": "/ffDlu6T4f3sxJqKzuzf0N5DFhBg.jpg",
           "before": 0.0,
           "after": 0.0,
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate",
-          "faceCount": 0,
-          "faceAssessment": "no_faces_detected",
-          "width": 2000,
-          "height": 3000,
-          "displayAuditVersion": 1,
-          "displayDetail": {
-            "score": 2.79344,
-            "edgeStrength": 0.07701,
-            "width": 780,
-            "height": 1170
-          },
-          "displayPreviousDetail": {
-            "score": 1.88772,
-            "edgeStrength": 0.05592,
-            "width": 780,
-            "height": 1170
-          }
+          "selection": "confirmed"
         }
       }
     },
@@ -2102,57 +1921,23 @@
       "layouts": {
         "top20": {
           "baseline": "/9WyCDqi6ogIWYCnlCLJfvNuR9dF.jpg",
-          "posterPath": "/mCOEjgLhWWtcX3qsZGANM5mjX8W.jpg",
+          "posterPath": "/9WyCDqi6ogIWYCnlCLJfvNuR9dF.jpg",
           "before": 0.0,
           "after": 0.0,
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate",
-          "faceCount": 1,
-          "faceAssessment": "overlap_within_limit",
-          "width": 2000,
-          "height": 3000,
-          "displayAuditVersion": 1,
-          "displayDetail": {
-            "score": 3.52881,
-            "edgeStrength": 0.06609,
-            "width": 780,
-            "height": 1170
-          },
-          "displayPreviousDetail": {
-            "score": 2.60751,
-            "edgeStrength": 0.04859,
-            "width": 780,
-            "height": 1170
-          }
+          "selection": "confirmed"
         },
         "trending": {
           "baseline": "/9WyCDqi6ogIWYCnlCLJfvNuR9dF.jpg",
-          "posterPath": "/mCOEjgLhWWtcX3qsZGANM5mjX8W.jpg",
+          "posterPath": "/9WyCDqi6ogIWYCnlCLJfvNuR9dF.jpg",
           "before": 0.0,
           "after": 0.0,
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate",
-          "faceCount": 1,
-          "faceAssessment": "overlap_within_limit",
-          "width": 2000,
-          "height": 3000,
-          "displayAuditVersion": 1,
-          "displayDetail": {
-            "score": 3.52881,
-            "edgeStrength": 0.06609,
-            "width": 780,
-            "height": 1170
-          },
-          "displayPreviousDetail": {
-            "score": 2.60751,
-            "edgeStrength": 0.04859,
-            "width": 780,
-            "height": 1170
-          }
+          "selection": "confirmed"
         }
       }
     },
@@ -2185,58 +1970,24 @@
       "title": "Toy Story 5",
       "layouts": {
         "top20": {
-          "baseline": "/q40Py29yikeMJOjBXDKSSA6ybMY.jpg",
-          "posterPath": "/v8lRnrY1fhdQDhlmJABwHb4OUdH.jpg",
-          "before": 0.0,
+          "baseline": "/4D5k1Cs9hA0REwXN6w5Lxxlhba5.jpg",
+          "posterPath": "/q40Py29yikeMJOjBXDKSSA6ybMY.jpg",
+          "before": 1,
           "after": 0.0,
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate",
-          "faceCount": 5,
-          "faceAssessment": "overlap_within_limit",
-          "width": 2000,
-          "height": 3000,
-          "displayAuditVersion": 1,
-          "displayDetail": {
-            "score": 2.00017,
-            "edgeStrength": 0.06571,
-            "width": 780,
-            "height": 1170
-          },
-          "displayPreviousDetail": {
-            "score": 1.60306,
-            "edgeStrength": 0.05804,
-            "width": 780,
-            "height": 1170
-          }
+          "selection": "alternate"
         },
         "trending": {
-          "baseline": "/q40Py29yikeMJOjBXDKSSA6ybMY.jpg",
-          "posterPath": "/v8lRnrY1fhdQDhlmJABwHb4OUdH.jpg",
-          "before": 0.0,
+          "baseline": "/4D5k1Cs9hA0REwXN6w5Lxxlhba5.jpg",
+          "posterPath": "/q40Py29yikeMJOjBXDKSSA6ybMY.jpg",
+          "before": 1,
           "after": 0.0,
           "textCheck": "clear",
           "textModel": "ppocrv3-en",
           "faceCheck": "clear",
-          "selection": "alternate",
-          "faceCount": 5,
-          "faceAssessment": "overlap_within_limit",
-          "width": 2000,
-          "height": 3000,
-          "displayAuditVersion": 1,
-          "displayDetail": {
-            "score": 2.00017,
-            "edgeStrength": 0.06571,
-            "width": 780,
-            "height": 1170
-          },
-          "displayPreviousDetail": {
-            "score": 1.60306,
-            "edgeStrength": 0.05804,
-            "width": 780,
-            "height": 1170
-          }
+          "selection": "alternate"
         }
       }
     },
@@ -4582,5 +4333,6 @@
       "status": "unresolved",
       "mode": "excluded"
     }
-  }
+  },
+  "registryPolicy": "append-only-v1"
 }
