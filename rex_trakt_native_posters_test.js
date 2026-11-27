@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.6.8 — Strict verified textless artwork eligibility
+ * Version 3.6.9 — Single approved poster source with stable native transport
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -62,7 +62,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.6.8",
+  version: "3.6.9",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -973,33 +973,17 @@ async function buildItem(
     if (!hasEligibleTextlessPoster(artwork)) return null;
     if (!artwork.standardPoster) artwork.standardPoster = tmdbPath(subject.poster_path || row.poster_path);
     assignPosterFields(item, artwork, premiumPortrait);
-    if(artwork.verifiedPoster||artwork.faceSafePoster){
-      item.faceSafePosterPath=tmdbUrl(artwork.verifiedPoster||artwork.faceSafePoster);
-      if(artwork.faceSafePoster)console.log("Face-safe applied: "+title+" "+artwork.faceSafePoster);
-    }
-    item.cleanPosterAlternates=(artwork.cleanPosterAlternates||[]).filter(function(p){return p!==artwork.cleanPoster;}).map(tmdbUrl);
+    // Eligibility has already passed. Every accepted card has exactly one approved portrait.
+    item.faceSafePosterPath=tmdbUrl(artwork.cleanPoster);
     if (artwork.releaseDate) item.releaseDate = artwork.releaseDate;
 
-    if (artwork.backdrop) item.backdropPath = artwork.backdrop;
-    // Only these two unresolved cards require the alternate artwork in the
-    // native primary backdrop slot as well as the native poster slot.
-    var nativePaths = nativeArtworkBundle(artwork);
-    if (artwork.fixedRailPoster && artwork.cleanPoster &&
-        ((mediaType === "movie" && (Number(tmdbId) === 13963 || Number(tmdbId) === 1597)) ||
-         (mediaType === "tv" && Number(tmdbId) === 225171) ||
-         (mediaType === "tv" && Number(tmdbId) === 244447 && premiumPortrait))) {
-      item.backdropPath = artwork.cleanPoster;
-      nativePaths = [artwork.cleanPoster];
-      if (artwork.backdrop && nativePaths.indexOf(artwork.backdrop) < 0) nativePaths.push(artwork.backdrop);
-      if (artwork.logo && nativePaths.indexOf(artwork.logo) < 0) nativePaths.push(artwork.logo);
-    }
-    // Carry automatic replacements through native fields even if Rex strips
-    // custom metadata. A portrait-first bundle is recognized by our renderers.
-    if(artwork.faceSafePoster&&artwork.backdrop&&artwork.backdrop!==artwork.cleanPoster){
-      item.backdropPath=artwork.cleanPoster;
-      nativePaths=[artwork.cleanPoster,artwork.backdrop,artwork.logo];
-    }
-    if (nativePaths.length) item.backdropPaths = nativePaths;
+    // Put the same approved portrait into every native primary artwork slot.
+    // Preserve the genuine backdrop only as the secondary bundle entry.
+    item.backdropPath=artwork.cleanPoster;
+    var nativePaths=[artwork.cleanPoster];
+    if(artwork.backdrop&&artwork.backdrop!==artwork.cleanPoster)nativePaths.push(artwork.backdrop);
+    nativePaths.push(artwork.logo);
+    item.backdropPaths=nativePaths;
 
     if (artwork.logo) {
       var logoUrl = tmdbUrl(artwork.logo);
@@ -1309,14 +1293,14 @@ async function loadNativeList(
 
 async function loadNativeMovies(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("daily-movies-v368", MAX_ITEMS, function() {
+  return loadCachedRow("daily-movies-v369", MAX_ITEMS, function() {
     return loadNativeList("movie", MOVIES_LIST, params);
   });
 }
 
 async function loadNativeShows(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("daily-shows-v368", MAX_ITEMS, function() {
+  return loadCachedRow("daily-shows-v369", MAX_ITEMS, function() {
     return loadNativeList("tv", TV_LIST, params);
   });
 }
@@ -1390,25 +1374,25 @@ async function loadArtworkChart(mediaType, chart, params) {
 
 async function loadTrendingMovies(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("trending-movies-v368", CHART_TARGET, function() {
+  return loadCachedRow("trending-movies-v369", CHART_TARGET, function() {
     return loadArtworkChart("movie", "trending", params);
   });
 }
 async function loadTrendingShows(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("trending-shows-v368", CHART_TARGET, function() {
+  return loadCachedRow("trending-shows-v369", CHART_TARGET, function() {
     return loadArtworkChart("tv", "trending", params);
   });
 }
 async function loadPopularMovies(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("popular-movies-v368", CHART_TARGET, function() {
+  return loadCachedRow("popular-movies-v369", CHART_TARGET, function() {
     return loadArtworkChart("movie", "popular", params);
   });
 }
 async function loadPopularShows(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("popular-shows-v368", CHART_TARGET, function() {
+  return loadCachedRow("popular-shows-v369", CHART_TARGET, function() {
     return loadArtworkChart("tv", "popular", params);
   });
 }
@@ -1419,7 +1403,7 @@ async function loadPopularShows(params) {
  * Unlike active Trakt watcher counts, upcoming titles can qualify.
  */
 async function loadCombinedTrending(params) {
-  return loadCachedRow("combined-trending-v368", CHART_TARGET, function() {
+  return loadCachedRow("combined-trending-v369", CHART_TARGET, function() {
     return loadCombinedTrendingUncached(params);
   });
 }
