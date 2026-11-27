@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.5.7 — Strict title-logo eligibility and selectable logo registry
+ * Version 3.5.8 — Top 20 legibility-aware logo selection
  *
  * Carries title logos through the documented backdropPaths array.
  * Preserves the real primary backdrop and original title.
@@ -62,7 +62,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.5.7",
+  version: "3.5.8",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -360,7 +360,18 @@ function chooseStandardPoster(posters) {
     : "";
 }
 
-function chooseLogoCandidates(logos){
+function logoFit(record){
+ var w=Number(record.width),h=Number(record.height);
+ if(!(w>0&&h>0))return -1;
+ // A representative Top 20 logo region: 230 x 92 logical pixels.
+ // Balance visible width and height; don't equate pixel count with legibility.
+ var r=w/h,target=2.5;
+ var fill=Math.min(r/target,target/r);
+ var resolution=Math.min(1,w/460,h/184);
+ return 0.85*fill+0.15*resolution;
+}
+
+function chooseLogoCandidates(logos,top20){
  if(!Array.isArray(logos))return [];
  var candidates=logos.filter(function(logo){
   return logo&&tmdbPath(logo.file_path)&&/\.png$/i.test(logo.file_path);
@@ -368,6 +379,7 @@ function chooseLogoCandidates(logos){
  function languageScore(logo){return logo.iso_639_1==="en"?3:logo.iso_639_1==null?2:1;}
  candidates.sort(function(a,b){
   return languageScore(b)-languageScore(a)||
+    (top20?logoFit(b)-logoFit(a):0)||
     ((Number(b.width)||0)*(Number(b.height)||0))-((Number(a.width)||0)*(Number(a.height)||0));
  });
  var paths=[];
@@ -450,7 +462,7 @@ async function loadCachedRow(key, target, loader) {
 }
 
 async function getArtwork(mediaType, tmdbId, title, premiumPortrait) {
-  var key = "art:" + mediaType + ":" + tmdbId + ":" + (premiumPortrait ? "premium" : "standard");
+  var key = "art:" + mediaType + ":" + tmdbId + ":" + (premiumPortrait ? "premium" : "standard-logo358");
   var cached = startupCacheRead(key, ARTWORK_CACHE_SECONDS);
   if (cached && cached.logo && cached.cleanPoster && Array.isArray(cached.genres)) return cached;
   var artwork = await getArtworkUncached(mediaType, tmdbId, title, premiumPortrait);
@@ -498,7 +510,7 @@ async function getArtworkUncached(
   var allLogoRecords = [];
   function collectLogos(list){
     if(Array.isArray(list))allLogoRecords=allLogoRecords.concat(list);
-    result.logos=chooseLogoCandidates(allLogoRecords);
+    result.logos=chooseLogoCandidates(allLogoRecords,!premiumPortrait);
     result.logo=result.logos[0]||"";
   }
 
@@ -1222,14 +1234,14 @@ async function loadNativeList(
 
 async function loadNativeMovies(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("daily-movies-v357", MAX_ITEMS, function() {
+  return loadCachedRow("daily-movies-v358", MAX_ITEMS, function() {
     return loadNativeList("movie", MOVIES_LIST, params);
   });
 }
 
 async function loadNativeShows(params) {
   if (!String((params || {}).traktClientId || "").trim()) throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("daily-shows-v357", MAX_ITEMS, function() {
+  return loadCachedRow("daily-shows-v358", MAX_ITEMS, function() {
     return loadNativeList("tv", TV_LIST, params);
   });
 }
