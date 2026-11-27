@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="rex-widget" content="type=rail; height=700; item-ratio=4:5">
-<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster,titleLogoAlternates,titleLogoRawPath,logoUrl">
+<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster,titleLogoAlternates,titleLogoRawPath,logoUrl,titleLogoPinned">
 <title>Rex Editorial — Consistent Artwork</title>
 <style>
 *{box-sizing:border-box}
@@ -347,7 +347,7 @@ var railLogoMemory=Object.create(null);
 function railLogoRead(item){
  var keys=railArtKeys(item);
  for(var i=0;i<keys.length;i++){
-  var key=keys[i]+':logo356',entry=railLogoMemory[key];
+  var key=keys[i]+':logo361',entry=railLogoMemory[key];
   if(!entry){try{entry=JSON.parse(localStorage.getItem(key)||'null')}catch(e){}}
   if(entry&&entry.src&&Date.now()-entry.at>=0&&Date.now()-entry.at<railArtTTL)return entry.src;
  }
@@ -356,7 +356,7 @@ function railLogoRead(item){
 function railLogoRemember(item,src){
  if(!src)return;
  railArtKeys(item).forEach(function(k){
-  var key=k+':logo356',entry={src:src,at:Date.now()};railLogoMemory[key]=entry;
+  var key=k+':logo361',entry={src:src,at:Date.now()};railLogoMemory[key]=entry;
   try{localStorage.setItem(key,JSON.stringify(entry))}catch(e){}
  });
 }
@@ -365,11 +365,12 @@ function railLogoCandidates(item,art){
  var fixed=fixedRailRule(item),bundle=railArtworkBundle(item),result=[];
  function append(v){var src=artworkValue(v);if(src&&result.indexOf(src)<0)result.push(src);}
  function appendPath(path){fixedRailSources(item,path).forEach(append);}
- var remembered=railLogoRead(item);if(remembered)append(remembered);
+
  // Explicit native fields and the actual artwork bundle take priority.
  [item.titleLogoPath,item.titleLogoUrl,item.logoUrl,item.logoPath,item.titleLogoRawPath,bundle&&bundle.logo,art&&art.logo].forEach(function(v){
   var src=artworkValue(v);if(src.charAt(0)==='/')appendPath(src);append(src);
  });
+ var remembered=railLogoRead(item);if(remembered)append(remembered);
  if(Array.isArray(item.titleLogoAlternates))item.titleLogoAlternates.forEach(function(v){
   var src=artworkValue(v);if(src.charAt(0)==='/')appendPath(src);append(src);
  });
@@ -440,6 +441,28 @@ function updatePoster(item,art){
  if(image.complete&&image.naturalWidth>0&&pendingPoster===src)image.onload();
 }
 var logoRequest=0,logoKey='';
+var _lb=Object.create(null);
+function _bounds(im){
+var w=im.naturalWidth,h=im.naturalHeight,key=im.getAttribute('src')||im.src,b=[0,0,1,1];
+if(!w||!h)return b;
+if(_lb[key])return _lb[key];
+try{
+var c=document.createElement('canvas'),f=Math.min(1,256/Math.max(w,h));
+c.width=Math.max(1,Math.round(w*f));c.height=Math.max(1,Math.round(h*f));
+var x=c.getContext('2d'),W=c.width,H=c.height;
+x.drawImage(im,0,0,W,H);
+var a=x.getImageData(0,0,W,H).data,l=W,t=H,r=-1,d=-1;
+for(var j=0;j<H;j++)for(var i=0;i<W;i++)if(a[(j*W+i)*4+3]>8){l=Math.min(l,i);t=Math.min(t,j);r=Math.max(r,i);d=Math.max(d,j);}
+if(r>=l&&d>=t)b=[Math.max(0,l-1)/W,Math.max(0,t-1)/H,Math.min(W,r+2)/W,Math.min(H,d+2)/H];
+}catch(e){}
+return _lb[key]=b;
+}
+function logoReadability(im){
+ var l=el('logo'),W=l.clientWidth,H=l.clientHeight,w=im.naturalWidth,h=im.naturalHeight;
+ if(!W||!H||!w||!h)return 1;
+ var b=_bounds(im),q=Math.min(W/w,H/h);
+ return Math.min(w*q*(b[2]-b[0])/W,h*q*(b[3]-b[1])/H);
+}
 function renderTitleLogo(sources,name){
  var logo=el('logo'),title=el('title');
  title.textContent=name;logo.alt='';
@@ -447,7 +470,7 @@ function renderTitleLogo(sources,name){
  if(key===logoKey)return;
  logoKey=key;
  var request=++logoRequest,index=0,item=selected;
- var visible=logo.getAttribute('src');
+ var probed=false,visible=logo.getAttribute('src');
  // Keep a successfully displayed logo during metadata updates.
  if(visible&&!logo.hidden&&logo.complete&&logo.naturalWidth>0){title.hidden=true;return;}
  logo.hidden=true;title.hidden=false;
@@ -459,6 +482,24 @@ function renderTitleLogo(sources,name){
   function success(){
    if(request!==logoRequest||logo.getAttribute('src')!==src)return;
    logo.hidden=false;title.hidden=true;railLogoRemember(item,src);
+   var score=logoReadability(logo);
+   if(probed||score>=.68||!item||item.titleLogoPinned||(fixedRailRule(item)&&!/last waltz/i.test(name)))return;
+   probed=true;
+   var seen=[imageIdentity(src)],best=src,ps=sources.filter(function(p){
+    var k=imageIdentity(p);if(seen.indexOf(k)>=0)return false;seen.push(k);return true;
+   }).slice(0,3);
+   function test(){
+    if(request!==logoRequest||!selected||selected.id!==item.id)return;
+    if(!ps.length){
+     if(best!==src){var old=src;src=best;logo.onerror=function(){src=old;logo.onerror=null;logo.setAttribute('src',old);};logo.setAttribute('src',best);}
+     return;
+    }
+    var p=ps.shift(),im=new Image();
+    im.onerror=test;
+    im.onload=function(){if(request!==logoRequest)return;var q=logoReadability(im);if(q>score+.08){score=q;best=p;}test();};
+    im.src=p;
+   }
+   test();
   }
   logo.onload=success;
   logo.onerror=function(){if(request===logoRequest&&logo.getAttribute('src')===src)next();};
