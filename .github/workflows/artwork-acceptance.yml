@@ -1,0 +1,28 @@
+name: Rex artwork acceptance
+on:
+  pull_request:
+    paths:
+      - 'rex_*.html'
+      - 'rex_trakt_native_posters_test.js'
+      - 'face_safe_posters.json'
+      - 'tests/**'
+      - '.github/workflows/artwork-acceptance.yml'
+permissions:
+  contents: read
+jobs:
+  renderer:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        engine: [chromium, webkit]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: node tests/lists.cjs
+      - run: python -m pip install playwright==1.55.0
+      - run: python -m playwright install --with-deps ${{ matrix.engine }}
+      - run: python tests/renderers.py
+        env:
+          REX_BROWSER: ${{ matrix.engine }}
