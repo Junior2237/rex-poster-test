@@ -170,36 +170,54 @@ function approvedFile(value){
  var m=src.match(/\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)(?=$|[?#&/])/ig);
  return m&&m.length?m[m.length-1].toLowerCase():'';
 }
+// Immutable per-title poster identity; retained across card recycling.
+var permanentPosterMemory=Object.create(null);
+function permanentPosterKey(item){
+ if(!item)return '';
+ var kind=String(item.mediaType||item.contentType||item.kind||'').toLowerCase();
+ if(/^(show|series|tv show|tv series|television)$/.test(kind))kind='tv';
+ if(/^(film|cinema)$/.test(kind))kind='movie';
+ var id=String(item.tmdbId||item.id||'').replace(/^(?:tv|movie)[.:]/,'');
+ return id?'rex-permanent-regular-v1:'+kind+':'+id:'';
+}
+function permanentPosterRead(key){
+ if(!key)return null;
+ var p=permanentPosterMemory[key];
+ if(!p){try{p=JSON.parse(localStorage.getItem(key)||'null')}catch(e){}}
+ if(!p||!p.identity||!Array.isArray(p.refs))return null;
+ var refs=p.refs.filter(function(ref){return approvedFile(ref)===p.identity;});
+ if(!refs.length)return null;
+ return {identity:p.identity,refs:refs};
+}
+function permanentPosterWrite(key,p){
+ if(!key||!p||!p.identity||!p.refs.length)return;
+ var record={identity:p.identity,refs:p.refs.slice(0,6)};
+ permanentPosterMemory[key]=record;
+ try{localStorage.setItem(key,JSON.stringify(record))}catch(e){}
+}
 function _ca(item) {
  if(!item||item.nativePosterOnly)return null;
+ var key=permanentPosterKey(item),saved=permanentPosterRead(key);
+ // Only an explicit verified source field can create a new permanent lock.
+ var expected=saved?saved.identity:(approvedFile(item.faceSafePosterPath)||approvedFile(item.cleanPosterPath)||approvedFile(item.lockedPosterPath));
+ if(!expected||expected==='/ixfol9hcochfgacjjsiryl8esy.jpg'||expected==='/q8opuh5c2vobbbtpqvtioz0gnjrx.jpg')return null;
  var refs=[],bundle=_rab(item);
- // These are alternate reference forms of the same source-selected image,
- // not different artwork. Never use the actual landscape backdrop.
- [item.faceSafePosterPath,item.cleanPosterPath,item.coverUrl,item.posterPath,item.detailPoster].forEach(function(value){
+ function add(value){
   var ref=_av(value);
-  if(ref&&refs.indexOf(ref)<0)refs.push(ref);
- });
- if(!refs.length&&bundle&&bundle.poster)refs.push(bundle.poster);
- if(!refs.length)return null;
- // The verified source path is authoritative; native wrappers may contain stale artwork.
- var expected=approvedFile(item.faceSafePosterPath)||approvedFile(item.cleanPosterPath)||approvedFile(refs[0]);
- if(expected){
-  refs=refs.filter(function(ref){var f=approvedFile(ref);return !f||f===expected;});
+  if(ref&&approvedFile(ref)===expected&&refs.indexOf(ref)<0)refs.push(ref);
  }
+ [item.faceSafePosterPath,item.cleanPosterPath,item.lockedPosterPath,item.coverUrl,item.posterPath,item.detailPoster,bundle&&bundle.poster].forEach(add);
+ if(saved)saved.refs.forEach(add);
  if(!refs.length)return null;
- return {poster:refs[0],refs:refs,v:true,identity:expected,logo:_av(item.titleLogoPath||item.titleLogoUrl||item.logoPath)||(bundle&&bundle.logo)||''};
+ var record={poster:refs[0],refs:refs,v:true,identity:expected,logo:_av(item.titleLogoPath||item.titleLogoUrl||item.logoPath)||(bundle&&bundle.logo)||''};
+ permanentPosterWrite(key,record);
+ return record;
 }
 function _lock(item) {
  var incoming=_ca(item);
  if(_la&&_la.poster){
-  // Accept only a new explicit approved filename, never a resized wrapper
-  // or an interim snapshot. Keep normal artwork locking intact.
-  if(incoming&&incoming.identity&&_la.identity&&incoming.identity!==_la.identity){
-   _reset();
-   _la=incoming;
-   return _la;
-  }
-  if(!_dc&&incoming&&(!_la.identity||!incoming.identity||_la.identity===incoming.identity)){
+  // Never unlock during an event, even if metadata briefly changes.
+  if(incoming&&incoming.identity===_la.identity){
    incoming.refs.forEach(function(ref){if(_la.refs.indexOf(ref)<0)_la.refs.push(ref);});
   }
   return _la;
@@ -207,10 +225,7 @@ function _lock(item) {
  _la=incoming;
  return _la;
 }
-function _ak(item){
-if(!item)return '';
-return String(item.id==null?'':item.id)+'|'+_nm(item).trim().toLowerCase();
-}
+function _ak(item){return permanentPosterKey(item);}
 function _reset(){
 _ig++;
 _dp='';
