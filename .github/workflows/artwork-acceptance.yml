@@ -11,8 +11,9 @@ permissions:
   contents: read
 jobs:
   renderer:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
+      fail-fast: false
       matrix:
         engine: [chromium, webkit]
     steps:
