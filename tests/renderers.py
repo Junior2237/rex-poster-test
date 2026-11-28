@@ -91,6 +91,7 @@ def check(page, name, width, height, base):
     for ident,path in replacements.items():
         with urllib.request.urlopen("https://image.tmdb.org/t/p/w185"+path,timeout=20) as response:
             wrong[ident]=response.read()
+    page.route("https://image.tmdb.org/t/p/original/**", lambda route: route.abort())
     active = [records[0][0]]
     opaque = f"{base}/native/item"
     page.route("**/native/item", lambda route: route.fulfill(body=wrong[active[0]],content_type="image/jpeg",
@@ -132,6 +133,29 @@ def check(page, name, width, height, base):
     page.route("**/native/fresh", lambda route: route.fulfill(body=frames[active[0]],content_type="image/jpeg"))
     update(dict(id=225171,mediaType="tv",title="Pluribus",backdropPaths=[f"{base}/native/fresh",logo]))
     visible(records[0][2])
+    # A fresh card gets a cross-origin recycled token with the right filename but
+    # the wrong picture. Compare visible pixels to an independently rendered reference.
+    clean=page.context.browser.new_page(viewport={"width":width,"height":height})
+    clean.add_init_script(HOST)
+    clean.goto(f"{base}/{name}")
+    ident,title,path=records[0]
+    canonical="https://image.tmdb.org/t/p/original"+path
+    recycled="https://native.invalid/cache"+path
+    hits=[]
+    def original(route):
+        hits.append(route.request.url)
+        route.fulfill(body=frames[ident],content_type="image/jpeg")
+    clean.route(canonical,original)
+    clean.route(recycled,lambda route: route.fulfill(body=wrong[ident],content_type="image/jpeg"))
+    clean.evaluate("item => updateItem(item)",dict(id=ident,mediaType="tv",title=title,posterPath=recycled))
+    clean.wait_for_selector("canvas#poster",timeout=5000)
+    observed=clean.locator("#poster").screenshot()
+    assert hits==[canonical], "Accepted unverified pixels from a recycled URL"
+    clean.reload()
+    clean.evaluate("item => updateItem(item)",dict(id=ident,mediaType="tv",title=title,posterPath=canonical))
+    clean.wait_for_selector("canvas#poster",timeout=5000)
+    assert clean.locator("#poster").screenshot()==observed
+    clean.close()
     assert not errors, errors
     page.close()
 

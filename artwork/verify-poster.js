@@ -111,14 +111,18 @@ async function obtainApprovedFrame(art) {
   finally {URL.revokeObjectURL(url);}
  }).catch(function(){return null;});
  var incoming=(async function(){
-  for (var i=0;i<art.refs.length;i++) {
-   var src=art.refs[i], named=approvedFile(src);
+  // Rex may serve recycled pixels from a native URL bearing the approved filename.
+  // Only the exact original CDN URL can establish identity without canvas access.
+  var original='https://image.tmdb.org/t/p/original'+path;
+  for (var i=0;i<=art.refs.length;i++) {
+   if(i===art.refs.length && (!signature || art.refs.indexOf(original)>=0)) break;
+   var src=art.refs[i] || original, named=approvedFile(src);
    if(named && named!==path) continue;
    var image=await readImage(src);
    if(!image) continue;
    if(signature) {
     try {if(!matchesPosterPixels(image,signature)) continue;}
-    catch (_) {if(named!==path) continue;}
+    catch (_) {if(src!==original) continue;}
    } else if(named!==path) continue;
    var frame=freezeDecoded(image);
    retainFrame(path,frame);
