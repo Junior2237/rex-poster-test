@@ -771,7 +771,7 @@ async function artworkRegistry(){
   if(artworkRegistryPromise)return artworkRegistryPromise;
   artworkRegistryPromise=(async function(){
     try{
-      var data=unwrap(await Widget.http.get("https://raw.githubusercontent.com/Junior2237/rex-poster-test/8661ab35c1b907c236f207c65e75a1e094d3cb09/artwork_overrides.json?recovery=v3617",{headers:{Accept:"application/json"}}));
+      var data=unwrap(await Widget.http.get("https://raw.githubusercontent.com/Junior2237/rex-poster-test/a43f76224e1fcff9da087e6b8c76e77158575d88/artwork_overrides.json?recovery=v3617",{headers:{Accept:"application/json"}}));
       if(data&&data.schemaVersion===1&&data.overrides&&typeof data.overrides==="object"){
         startupCacheWrite("registry-v3615",data);return data.overrides;
       }
@@ -826,7 +826,7 @@ async function faceManifest(){
   faceManifestPromise=(async function(){
     var data=null;
     try{
-      data=validFaceManifest(unwrap(await Widget.http.get("https://raw.githubusercontent.com/Junior2237/rex-poster-test/8661ab35c1b907c236f207c65e75a1e094d3cb09/face_safe_posters.json?registry=append-only-v1",{headers:{Accept:"application/json"}})));
+      data=validFaceManifest(unwrap(await Widget.http.get("https://raw.githubusercontent.com/Junior2237/rex-poster-test/a43f76224e1fcff9da087e6b8c76e77158575d88/face_safe_posters.json?registry=append-only-v1",{headers:{Accept:"application/json"}})));
     }catch(e){}
     var prior = validFaceManifest(faceManifestMemory) ||
       validFaceManifest(startupCacheRead("approved-manifest-v1", Infinity));
