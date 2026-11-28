@@ -66,7 +66,7 @@ var WidgetMetadata = {
   requiredVersion: "0.0.1",
 
   modules: [
-    {id:'artwork-lock-device-check',title:'Poster Lock Check — Pluribus and The Pitt',functionName:'loadPosterLockCheck',cacheDuration:0,params:[]},
+    {id:'loadPosterLockCheck',title:'Poster Lock Check — Pluribus and The Pitt',functionName:'loadPosterLockCheck',cacheDuration:0,params:[]},
     {
       id: "native-top20-movies-with-posters",
       title: "Today's Top 20 Movies — Fast",
