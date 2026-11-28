@@ -109,14 +109,14 @@ def check(page, name, width, height, base):
                     backdropPaths=[opaque,logo],backdropPath=uri,posterPath=other))
         visible(record[2])
         shown[record[0]]=page.locator("#poster").evaluate("c=>c.toDataURL('image/png')")
-    # The token still contains Pitt when the Pluribus cell returns.
+    # The recycled token now returns the yellow Pluribus alternative from the recording.
     active[0]=records[0][0]
     show(records[0])
     visible(records[0][2])
     assert page.locator("#poster").evaluate("c=>c.toDataURL('image/png')")==shown[225171]
     page.wait_for_function("""async () => {
       const db=await new Promise(r=>{const q=indexedDB.open('rex-approved-poster-frames-v1');q.onsuccess=()=>r(q.result);});
-      return await new Promise(r=>{const q=db.transaction('frames').objectStore('frames').get('/g6y5N9aTnvgrI092oflyoK82IGj.jpg');q.onsuccess=()=>r(!!q.result);});
+      return await new Promise(r=>{const q=db.transaction('frames').objectStore('frames').get('/g6y5N9aTnvgrI092oflyoK82IGj.jpg');q.onsuccess=()=>{db.close();r(q.result instanceof ArrayBuffer && q.result.byteLength>0);};});
     }""")
     page.reload()
     active[0]=records[0][0]

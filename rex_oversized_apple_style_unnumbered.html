@@ -313,8 +313,10 @@ function retainFrame(path, canvas) {
  try {
   canvas.toBlob(async function(blob) {
    if (!blob) return;
-   var db = await frameDatabase();
-   if (db) try { db.transaction('frames','readwrite').objectStore('frames').put(blob,path); } catch (_) {}
+   try {
+    var bytes=await blob.arrayBuffer(),db=await frameDatabase();
+    if(db) db.transaction('frames','readwrite').objectStore('frames').put(bytes,path);
+   } catch (_) {}
   },'image/png');
  } catch (_) {}
 }
@@ -370,7 +372,7 @@ async function obtainApprovedFrame(art) {
  // Disk can recover a recycled native reference after the app restarts.
  var disk=storedFrame(path).then(async function(blob){
   if (!blob) return null;
-  var url=URL.createObjectURL(blob);
+  var url=URL.createObjectURL(new Blob([blob],{type:'image/png'}));
   try {var image=await readImage(url);return image ? freezeDecoded(image) : null;}
   finally {URL.revokeObjectURL(url);}
  }).catch(function(){return null;});
