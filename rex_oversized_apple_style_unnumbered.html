@@ -524,10 +524,14 @@ function updatePoster(item,art) {
  if(!art||displayedClean||pendingPoster)return;
  var key=titleKey(item), generation=++imageGeneration;
  pendingPoster=art.identity;
+ var initialRefs=art.refs.length;
  obtainApprovedFrame(art).then(function(frame){
   if(generation!==imageGeneration||key!==currentKey||!selected||titleKey(selected)!==key)return;
   pendingPoster='';
-  if(!frame)return;
+  if(!frame){
+   if(art.refs.length>initialRefs) updatePoster(item,art);
+   return;
+  }
   installFrame(frame,art.identity);
   displayedPoster=art.identity;
   displayedClean=true;

@@ -265,10 +265,14 @@ var _rlm=Object.create(null);function _rlr(item){var keys=_raks(item);for(var i=
  if(!art||_dc||_pp)return;
  var key=_ak(item), generation=++_ig;
  _pp=art.identity;
+ var initialRefs=art.refs.length;
  obtainApprovedFrame(art).then(function(frame){
   if(generation!==_ig||key!==_cak||!_sel||_ak(_sel)!==key)return;
   _pp='';
-  if(!frame)return;
+  if(!frame){
+   if(art.refs.length>initialRefs) _up(item,art);
+   return;
+  }
   installFrame(frame,art.identity);
   _dp=art.identity;
   _dc=true;
