@@ -37,7 +37,7 @@ var BATCH_SIZE = 4;
 var CACHE_SECONDS = 1800;
 var ARTWORK_CACHE_SECONDS = 14400;
 var DAILY_WORKERS = 6;
-var STARTUP_CACHE_PREFIX = "rex-lock-expanded-v2:";
+var STARTUP_CACHE_PREFIX = "rex-lock-expanded-v3:";
 
 var TMDB_BASE =
   "https://image.tmdb.org/t/p/original";
@@ -62,7 +62,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.7.2",
+  version: "3.7.3",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -1208,7 +1208,8 @@ function rankDailyMovies(items, imdbRatings) {
 async function loadNativeList(
   mediaType,
   slug,
-  params
+  params,
+  premiumPortrait
 ) {
   var entries = await fetchTraktList(
     slug,
@@ -1246,7 +1247,7 @@ async function loadNativeList(
       var index = next++;
       var entry = entries[index];
       try {
-        results[index] = await buildItem(entry, mediaType, false, true);
+        results[index] = await buildItem(entry, mediaType, !!premiumPortrait, true);
       } catch (error) {
         console.warn("Item failed:", entry.rank, errorText(error));
         results[index] = null;
@@ -1384,85 +1385,24 @@ async function loadCombinedTrending(params) {
 }
 
 async function loadCombinedTrendingUncached(params) {
-  var results = [];
-  var seen = Object.create(null);
-  var tvCount = 0;
-  var tvCap = Math.floor(CHART_TARGET / 2);
-  var sourceRank = 0;
-  var maxPages = 5;
-
-  for (var page = 1; page <= maxPages && results.length < CHART_TARGET; page++) {
-    var response = await Widget.tmdb.get("trending/all/day", {
-      params: { language: "en-US", page: page }
-    });
-    var data = unwrap(response);
-    var rows = Array.isArray(data) ? data : data && data.results;
-    if (!Array.isArray(rows)) throw new Error("Invalid TMDB trending response.");
-    if (!rows.length) break;
-
-    var candidates = [];
-    for (var i = 0; i < rows.length; i++) {
-      sourceRank++;
-      var row = rows[i];
-      if (!row || (row.media_type !== "movie" && row.media_type !== "tv")) continue;
-      var id = positiveId(row.id);
-      if (!id) continue;
-      var key = row.media_type + ":" + id;
-      if (seen[key]) continue;
-      seen[key] = true;
-      candidates.push({
-        mediaType: row.media_type,
-        rank: sourceRank,
-        row: {
-          title: row.title || row.name || "Untitled",
-          ids: { tmdb: id }, poster_path: row.poster_path
-        }
-      });
-    }
-
-    for (var start = 0; start < candidates.length && results.length < CHART_TARGET;) {
-      var batch = [];
-      var reservedTV = 0;
-      while (start < candidates.length && batch.length < BATCH_SIZE) {
-        var candidate = candidates[start];
-        if (candidate.mediaType === "tv" && tvCount >= tvCap) {
-          start++;
-          continue;
-        }
-        // Do not discard a TV candidate until preceding TV lookups finish.
-        if (candidate.mediaType === "tv" && tvCount + reservedTV >= tvCap) break;
-        start++;
-        batch.push(candidate);
-        if (candidate.mediaType === "tv") reservedTV++;
+  // Trakt is the source for both media types. Interleave by chart position;
+  // movie and television watcher counts are not a single comparable chart.
+  var lists=await Promise.all([
+    loadArtworkChart("movie","trending",params),
+    loadArtworkChart("tv","trending",params)
+  ]);
+  var results=[];
+  for(var i=0;results.length<CHART_TARGET&&(i<lists[0].length||i<lists[1].length);i++){
+    for(var t=0;t<2&&results.length<CHART_TARGET;t++){
+      if(lists[t][i]){
+        var item=Object.assign({},lists[t][i]);
+        item.sourceChartRank=item.rank;
+        item.rank=results.length+1;
+        item.position=item.rank;
+        results.push(item);
       }
-      if (!batch.length) continue;
-      var completed = await Promise.all(batch.map(async function(candidate) {
-        try {
-          var item = await buildItem({
-            row: candidate.row,
-            rank: candidate.rank,
-            index: candidate.rank - 1
-          }, candidate.mediaType, true, false, true);
-          if (!item) return null;
-          return { item: item, mediaType: candidate.mediaType };
-        } catch (error) {
-          console.warn("TMDB trending item failed:", candidate.rank, errorText(error));
-          return null;
-        }
-      }));
-      completed.forEach(function(entry) {
-        if (!entry || results.length >= CHART_TARGET) return;
-        if (entry.mediaType === "tv") {
-          if (tvCount >= tvCap) return;
-          tvCount++;
-        }
-        results.push(entry.item);
-      });
     }
-    if (data && Number(data.total_pages) > 0 && page >= Number(data.total_pages)) break;
   }
-
-  if (!results.length) throw new Error("No eligible TMDB trending titles.");
   return results;
 }
 
@@ -1482,33 +1422,14 @@ async function loadPosterLockCheck() {
   return items.filter(Boolean);
 }
 
-/* Read the actual two automated Trakt lists, preserving membership and order.
- * The working reproduction's trending-layout artwork remains unchanged.
- * No catalogue-derived ranking, re-ranking or substitute titles.
+/* Daily Trakt membership + the original score-ranking functions.
+ * Preserve the working preview's premium artwork layout.
  */
 async function loadExpandedPosterLockCheck(mediaType, params) {
   var slug=mediaType==="movie"?MOVIES_LIST:TV_LIST;
-  var clientId=String((params||{}).traktClientId||"").trim();
-  if(!clientId)throw new Error("Missing Trakt Client ID.");
-  return loadCachedRow("lock-check-trakt-"+slug, MAX_ITEMS, async function(){
-    var entries=await fetchTraktList(slug,mediaType,clientId);
-    if(!entries.length)throw new Error("Trakt returned no titles: "+slug);
-    var results=new Array(entries.length);
-    var next=0;
-    async function worker(){
-      while(next<entries.length){
-        var index=next++;
-        var entry=entries[index];
-        try{
-          results[index]=await buildItem(entry,mediaType,true);
-          if(!results[index])console.warn("No verified artwork or logo for Trakt rank",entry.rank,(entry.row.movie||entry.row.show||entry.row).title);
-        }catch(error){console.warn("Lock-check item failed:",entry.rank,errorText(error));results[index]=null;}
-      }
-    }
-    var workers=[];
-    for(var w=0;w<Math.min(DAILY_WORKERS,entries.length);w++)workers.push(worker());
-    await Promise.all(workers);
-    return results.filter(Boolean);
+  if(!String((params||{}).traktClientId||"").trim())throw new Error("Missing Trakt Client ID.");
+  return loadCachedRow("lock-check-scored-"+slug,MAX_ITEMS,function(){
+    return loadNativeList(mediaType,slug,params,true);
   });
 }
 async function loadPosterLockCheckTV(params){return loadExpandedPosterLockCheck("tv",params);}
