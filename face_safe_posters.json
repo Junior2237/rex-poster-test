@@ -2,99 +2,8 @@
   "schemaVersion": 1,
   "algorithm": "yunet-ppocr-v5",
   "displayAuditVersion": 1,
-  "displayUpgrades": [
-    {
-      "title": "Way of the Warrior Kid",
-      "layout": "top20",
-      "from": "/yKUkPG3Es9YWWg68Nmz4TeYxiCb.jpg",
-      "to": "/hRwSJg4Q9LUl36lqFHm0ou420oA.jpg",
-      "old": {
-        "score": 1.96104,
-        "edgeStrength": 0.04351,
-        "width": 780,
-        "height": 1170
-      },
-      "new": {
-        "score": 3.13807,
-        "edgeStrength": 0.08208,
-        "width": 780,
-        "height": 1170
-      }
-    },
-    {
-      "title": "Way of the Warrior Kid",
-      "layout": "trending",
-      "from": "/yKUkPG3Es9YWWg68Nmz4TeYxiCb.jpg",
-      "to": "/hRwSJg4Q9LUl36lqFHm0ou420oA.jpg",
-      "old": {
-        "score": 1.96104,
-        "edgeStrength": 0.04351,
-        "width": 780,
-        "height": 1170
-      },
-      "new": {
-        "score": 3.13807,
-        "edgeStrength": 0.08208,
-        "width": 780,
-        "height": 1170
-      }
-    },
-    {
-      "title": "The Social Reckoning",
-      "layout": "trending",
-      "from": "/4o7wIbeTAqWs0Nya8DnwinyEgTr.jpg",
-      "to": "/z5mg0VPTwznJziRLn6CPbRrkLMf.jpg",
-      "old": {
-        "score": 1.75571,
-        "edgeStrength": 0.0312,
-        "width": 780,
-        "height": 1170
-      },
-      "new": {
-        "score": 2.7072,
-        "edgeStrength": 0.03237,
-        "width": 780,
-        "height": 1170
-      }
-    },
-    {
-      "title": "Shelter",
-      "layout": "top20",
-      "from": "/AmFWVRdCn2J6AFfyHDA0GWQr518.jpg",
-      "to": "/gLsjSLr1ywUU4dGxGjcMxFiBcQD.jpg",
-      "old": {
-        "score": 1.76474,
-        "edgeStrength": 0.04799,
-        "width": 780,
-        "height": 1170
-      },
-      "new": {
-        "score": 2.99385,
-        "edgeStrength": 0.08392,
-        "width": 780,
-        "height": 1170
-      }
-    },
-    {
-      "title": "Shelter",
-      "layout": "trending",
-      "from": "/AmFWVRdCn2J6AFfyHDA0GWQr518.jpg",
-      "to": "/gLsjSLr1ywUU4dGxGjcMxFiBcQD.jpg",
-      "old": {
-        "score": 1.76474,
-        "edgeStrength": 0.04799,
-        "width": 780,
-        "height": 1170
-      },
-      "new": {
-        "score": 2.99385,
-        "edgeStrength": 0.08392,
-        "width": 780,
-        "height": 1170
-      }
-    }
-  ],
-  "generatedAt": "2026-11-28T08:28:01.534814+00:00",
+  "displayUpgrades": [],
+  "generatedAt": "2026-11-28T16:33:59.607969+00:00",
   "overrides": {
     "movie:2609": {
       "title": "Planes, Trains and Automobiles",
@@ -5079,11 +4988,44 @@
           "selection": "alternate"
         }
       }
+    },
+    "tv:73223": {
+      "title": "Black Clover",
+      "layouts": {
+        "top20": {
+          "baseline": "/yFw4Jmar4hixDeogAEKP9Z1zIqO.jpg",
+          "posterPath": "/3dsYERW7SqdqnSNH0MHBEbCi8He.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 4,
+          "faceAssessment": "overlap_within_limit",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate"
+        },
+        "trending": {
+          "baseline": "/yFw4Jmar4hixDeogAEKP9Z1zIqO.jpg",
+          "posterPath": "/3dsYERW7SqdqnSNH0MHBEbCi8He.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 4,
+          "faceAssessment": "overlap_within_limit",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate"
+        }
+      }
     }
   },
   "textScreening": {
-    "clear": 14,
-    "text": 695,
+    "clear": 4,
+    "text": 622,
     "unknown": 0
   },
   "unresolved": {
@@ -5142,28 +5084,18 @@
       "status": "unresolved",
       "mode": "excluded"
     },
-    "movie:1457866": {
-      "title": "THE FURTHER MIS-ADVENTURES OF CLIFF BOOTH",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
     "movie:1611767": {
       "title": "Clashing Through the Snow",
       "status": "partial",
       "mode": "excluded"
     },
+    "movie:1457866": {
+      "title": "THE FURTHER MIS-ADVENTURES OF CLIFF BOOTH",
+      "status": "unresolved",
+      "mode": "excluded"
+    },
     "tv:314360": {
       "title": "YAGA",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
-    "movie:1709391": {
-      "title": "Hanuman Ansh",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
-    "movie:1084409": {
-      "title": "A Talent for Murder",
       "status": "unresolved",
       "mode": "excluded"
     },
