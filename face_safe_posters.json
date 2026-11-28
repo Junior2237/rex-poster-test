@@ -4455,6 +4455,356 @@
           "pixelSignature": "m5vIE3ElNFZ3JHAkRDhkVUARIRVFQzESISITZUESERACABAA"
         }
       }
+    },
+    "movie:13963": {
+      "title": "The Last Waltz",
+      "layouts": {
+        "top20": {
+          "baseline": "/c0qlGjXdyfrYN2wvaYU0E9yewF.jpg",
+          "posterPath": "/7amgGbkI62s8KrH8LpKDFr1HqQP.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "width": 1200,
+          "height": 1800,
+          "selection": "alternate",
+          "pixelSignature": "ERIiERAAIhRDIiAAVEdmd2IiRDmId2RDREVURDRDVVRDREZl"
+        },
+        "trending": {
+          "baseline": "/c0qlGjXdyfrYN2wvaYU0E9yewF.jpg",
+          "posterPath": "/7amgGbkI62s8KrH8LpKDFr1HqQP.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "width": 1200,
+          "height": 1800,
+          "selection": "alternate",
+          "pixelSignature": "ERIiERAAIhRDIiAAVEdmd2IiRDmId2RDREVURDRDVVRDREZl"
+        }
+      }
+    },
+    "movie:13203": {
+      "title": "Son in Law",
+      "layouts": {
+        "top20": {
+          "baseline": "/jK2pTTyUwQcF6ZwM7FyMIGR6efq.jpg",
+          "posterPath": "/dAylMrJzOQ3QXVq35lkEOJvLV3x.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 2,
+          "faceAssessment": "overlap_within_limit",
+          "width": 1057,
+          "height": 1500,
+          "selection": "alternate",
+          "pixelSignature": "eIeHzG2VZ3dkhmuoiHV4ZV7uVpaJRE3LqGdmVD2n1jxjpD10"
+        },
+        "trending": {
+          "baseline": "/jK2pTTyUwQcF6ZwM7FyMIGR6efq.jpg",
+          "posterPath": "/dAylMrJzOQ3QXVq35lkEOJvLV3x.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 2,
+          "faceAssessment": "overlap_within_limit",
+          "width": 1057,
+          "height": 1500,
+          "selection": "alternate",
+          "pixelSignature": "eIeHzG2VZ3dkhmuoiHV4ZV7uVpaJRE3LqGdmVD2n1jxjpD10"
+        }
+      }
+    },
+    "tv:220542": {
+      "title": "The Apothecary Diaries",
+      "layouts": {
+        "top20": {
+          "baseline": "/woiIhg5ccepHROYWRjy9A0f562A.jpg",
+          "posterPath": "/8HJzdLwQ0zxF7292vpETcg7uBox.jpg",
+          "before": 0.087,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 2,
+          "faceAssessment": "overlap_within_limit",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate",
+          "pixelSignature": "IiE1FWJFI0ZlVEJFI0RVMjIjMSZDhkIiMTVFZVESM1ZWMzET"
+        },
+        "trending": {
+          "baseline": "/woiIhg5ccepHROYWRjy9A0f562A.jpg",
+          "posterPath": "/8HJzdLwQ0zxF7292vpETcg7uBox.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 2,
+          "faceAssessment": "overlap_within_limit",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate",
+          "pixelSignature": "IiE1FWJFI0ZlVEJFI0RVMjIjMSZDhkIiMTVFZVESM1ZWMzET"
+        }
+      }
+    },
+    "movie:1078446": {
+      "title": "Violent Night 2",
+      "layouts": {
+        "top20": {
+          "baseline": "/umpPayqiHjj6ErEC4c1IJ8N28SN.jpg",
+          "posterPath": "/2blT1gJPExuyoxjbuq8oAkBn0LI.jpg",
+          "before": 0.123,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 2,
+          "faceAssessment": "overlap_within_limit",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate",
+          "pixelSignature": "EjETETU0ZVZEQiQiQzZFUjQzMiMzISMjdDEBEBESMiEBEBEB"
+        },
+        "trending": {
+          "baseline": "/umpPayqiHjj6ErEC4c1IJ8N28SN.jpg",
+          "posterPath": "/2blT1gJPExuyoxjbuq8oAkBn0LI.jpg",
+          "before": 0.055,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 2,
+          "faceAssessment": "overlap_within_limit",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate",
+          "pixelSignature": "EjETETU0ZVZEQiQiQzZFUjQzMiMzISMjdDEBEBESMiEBEBEB"
+        }
+      }
+    },
+    "movie:8871": {
+      "title": "How the Grinch Stole Christmas",
+      "layouts": {
+        "top20": {
+          "baseline": "/1w4eDWLktv0rSoluHg2KWTQGQEK.jpg",
+          "posterPath": "/trNgE6904wIRBjVm1gY045eMRY2.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate",
+          "pixelSignature": "ERERERERREVVMzERMzQ0IjERERIiMjERERERERERERERERER"
+        },
+        "trending": {
+          "baseline": "/1w4eDWLktv0rSoluHg2KWTQGQEK.jpg",
+          "posterPath": "/trNgE6904wIRBjVm1gY045eMRY2.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 0,
+          "faceAssessment": "no_faces_detected",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate",
+          "pixelSignature": "ERERERERREVVMzERMzQ0IjERERIiMjERERERERERERERERER"
+        }
+      }
+    },
+    "movie:1517868": {
+      "title": "Maddie's Secret",
+      "layouts": {
+        "top20": {
+          "baseline": "/vADal7sH7E9xFr4w2k4V3EPSzF6.jpg",
+          "posterPath": "/yNI6WbT0GG3Qou3K2wRgeWsHgR4.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 1,
+          "faceAssessment": "overlap_within_limit",
+          "width": 1500,
+          "height": 2250,
+          "selection": "alternate",
+          "pixelSignature": "ERERERABIiIiZVERMzVFZWABERdnVFABABERIiABABABIjAB"
+        },
+        "trending": {
+          "baseline": "/vADal7sH7E9xFr4w2k4V3EPSzF6.jpg",
+          "posterPath": "/yNI6WbT0GG3Qou3K2wRgeWsHgR4.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 1,
+          "faceAssessment": "overlap_within_limit",
+          "width": 1500,
+          "height": 2250,
+          "selection": "alternate",
+          "pixelSignature": "ERERERABIiIiZVERMzVFZWABERdnVFABABERIiABABABIjAB"
+        }
+      }
+    },
+    "movie:899112": {
+      "title": "Violent Night",
+      "layouts": {
+        "top20": {
+          "baseline": "/e8CpMgdyihz9Td7amQDqubPuzfN.jpg",
+          "posterPath": "/kqUrW9fU6QIHJxIaC1NmogAb3P8.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 1,
+          "faceAssessment": "overlap_within_limit",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate",
+          "pixelSignature": "EkvevMVERFdnmZUkNGd3ZFQRNFRFM0ZnI0ESABI0eKEiABM1"
+        },
+        "trending": {
+          "baseline": "/e8CpMgdyihz9Td7amQDqubPuzfN.jpg",
+          "posterPath": "/kqUrW9fU6QIHJxIaC1NmogAb3P8.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 1,
+          "faceAssessment": "overlap_within_limit",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate",
+          "pixelSignature": "EkvevMVERFdnmZUkNGd3ZFQRNFRFM0ZnI0ESABI0eKEiABM1"
+        }
+      }
+    },
+    "movie:1715686": {
+      "title": "Mickey's Home Alone",
+      "layouts": {
+        "top20": {
+          "baseline": "/yBPfZmi3Ou38aiZUxyzhPfhiquR.jpg",
+          "posterPath": "/hv797iuQ4K3hemQNJHEC9OtaZKA.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 1,
+          "faceAssessment": "overlap_within_limit",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate",
+          "pixelSignature": "gigSkSkyYilDZENCNDlkpVRjZRliZkFCMxQyQyUh1ktCoykx"
+        },
+        "trending": {
+          "baseline": "/yBPfZmi3Ou38aiZUxyzhPfhiquR.jpg",
+          "posterPath": "/hv797iuQ4K3hemQNJHEC9OtaZKA.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 1,
+          "faceAssessment": "overlap_within_limit",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate",
+          "pixelSignature": "gigSkSkyYilDZENCNDlkpVRjZRliZkFCMxQyQyUh1ktCoykx"
+        }
+      }
+    },
+    "tv:207484": {
+      "title": "Outlander: Blood of My Blood",
+      "layouts": {
+        "top20": {
+          "baseline": "/zAevvanUDo3UihDDa9DYdkzOG0v.jpg",
+          "posterPath": "/cbN4P3ULApoUAhF042jEf2vZZlH.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 4,
+          "faceAssessment": "overlap_within_limit",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate",
+          "pixelSignature": "iZmYiHqpmpZVdlZliHREVDmGh2ZlNDZlIhMyRCVUAQEQEQEQ"
+        },
+        "trending": {
+          "baseline": "/zAevvanUDo3UihDDa9DYdkzOG0v.jpg",
+          "posterPath": "/cbN4P3ULApoUAhF042jEf2vZZlH.jpg",
+          "before": 0.0,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 4,
+          "faceAssessment": "overlap_within_limit",
+          "width": 2000,
+          "height": 3000,
+          "selection": "alternate",
+          "pixelSignature": "iZmYiHqpmpZVdlZliHREVDmGh2ZlNDZlIhMyRCVUAQEQEQEQ"
+        }
+      }
+    },
+    "tv:256711": {
+      "title": "The Rainmaker",
+      "layouts": {
+        "top20": {
+          "baseline": "/q8l0lj20amBFi0SBs8NI9yJpaHq.jpg",
+          "posterPath": "/x0I32Y7mrxC3syb8ip05XYYXwoD.jpg",
+          "before": 1,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 1,
+          "faceAssessment": "overlap_within_limit",
+          "width": 666,
+          "height": 1000,
+          "selection": "alternate",
+          "pixelSignature": "MiIhQzMzMiIRZEVVIhJHEkZmIiE2NYQzMiElE2MzMiESAjM0"
+        },
+        "trending": {
+          "baseline": "/q8l0lj20amBFi0SBs8NI9yJpaHq.jpg",
+          "posterPath": "/x0I32Y7mrxC3syb8ip05XYYXwoD.jpg",
+          "before": 1,
+          "after": 0.0,
+          "textCheck": "clear",
+          "textModel": "ppocrv3-en",
+          "faceCheck": "clear",
+          "faceCount": 1,
+          "faceAssessment": "overlap_within_limit",
+          "width": 666,
+          "height": 1000,
+          "selection": "alternate",
+          "pixelSignature": "MiIhQzMzMiIRZEVVIhJHEkZmIiE2NYQzMiElE2MzMiESAjM0"
+        }
+      }
     }
   },
   "textScreening": {
@@ -4463,38 +4813,18 @@
     "unknown": 0
   },
   "unresolved": {
-    "movie:13963": {
-      "title": "The Last Waltz",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
     "movie:9089": {
       "title": "Home for the Holidays",
       "status": "unresolved",
       "mode": "excluded"
     },
-    "movie:13479": {
-      "title": "A Charlie Brown Thanksgiving",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
-    "movie:13785": {
-      "title": "Best in Show",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
-    "movie:13203": {
-      "title": "Son in Law",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
-    "movie:175574": {
-      "title": "Free Birds",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
     "movie:351339": {
       "title": "Anthropoid",
+      "status": "unresolved",
+      "mode": "excluded"
+    },
+    "movie:13479": {
+      "title": "A Charlie Brown Thanksgiving",
       "status": "unresolved",
       "mode": "excluded"
     },
@@ -4538,28 +4868,8 @@
       "status": "unresolved",
       "mode": "excluded"
     },
-    "movie:1643567": {
-      "title": "Ghosts: The Possession of Button House",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
-    "movie:1496785": {
-      "title": "Aadarsha Kutumbam House No: 47 - AK47",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
-    "tv:302837": {
-      "title": "Toos: The Van der Valk Kidnapping",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
     "movie:1457866": {
       "title": "THE FURTHER MIS-ADVENTURES OF CLIFF BOOTH",
-      "status": "unresolved",
-      "mode": "excluded"
-    },
-    "movie:1709391": {
-      "title": "Hanuman Ansh",
       "status": "unresolved",
       "mode": "excluded"
     },
@@ -4568,13 +4878,23 @@
       "status": "partial",
       "mode": "excluded"
     },
+    "tv:314360": {
+      "title": "YAGA",
+      "status": "unresolved",
+      "mode": "excluded"
+    },
+    "movie:1709391": {
+      "title": "Hanuman Ansh",
+      "status": "unresolved",
+      "mode": "excluded"
+    },
     "movie:1084409": {
       "title": "A Talent for Murder",
       "status": "unresolved",
       "mode": "excluded"
     },
-    "tv:314360": {
-      "title": "YAGA",
+    "tv:292742": {
+      "title": "S.W.A.T. Exiles",
       "status": "unresolved",
       "mode": "excluded"
     },
