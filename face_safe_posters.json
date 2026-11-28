@@ -3,7 +3,7 @@
   "algorithm": "yunet-ppocr-v5",
   "displayAuditVersion": 1,
   "displayUpgrades": [],
-  "generatedAt": "2026-11-28T16:33:59.607969+00:00",
+  "generatedAt": "2026-11-28T17:15:47.034171+00:00",
   "overrides": {
     "movie:2609": {
       "title": "Planes, Trains and Automobiles",
@@ -5024,8 +5024,8 @@
     }
   },
   "textScreening": {
-    "clear": 4,
-    "text": 622,
+    "clear": 3,
+    "text": 620,
     "unknown": 0
   },
   "unresolved": {
