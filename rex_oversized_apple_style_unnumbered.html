@@ -522,9 +522,11 @@ function updatePoster(item,art) {
  if(!art||displayedClean||pendingPoster)return;
  var key=titleKey(item), generation=++imageGeneration;
  pendingPoster=art.identity;
+ card.setAttribute("aria-busy","true");
  obtainApprovedFrame(art).then(function(frame){
   if(generation!==imageGeneration||key!==currentKey||!selected||titleKey(selected)!==key)return;
   pendingPoster='';
+  card.setAttribute("aria-busy","false");
   if(!frame)return;
   installFrame(frame,art.identity);
   displayedPoster=art.identity;

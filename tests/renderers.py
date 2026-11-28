@@ -124,10 +124,18 @@ def check(page, name, width, height, base):
     visible(records[0][2])
     assert page.locator("#poster").evaluate("c=>c.toDataURL('image/png')")==shown[225171]
     # With prior storage erased, the wrong opaque pixels must never paint.
-    page.evaluate("() => indexedDB.deleteDatabase('rex-approved-poster-frames-v1') && undefined")
+    page.evaluate("""async () => {
+      const db=await new Promise(r=>{const q=indexedDB.open('rex-approved-poster-frames-v1');q.onsuccess=()=>r(q.result);});
+      await new Promise((resolve,reject)=>{
+        const tx=db.transaction('frames','readwrite');
+        tx.oncomplete=resolve;tx.onerror=reject;tx.objectStore('frames').clear();
+      });
+      db.close();
+    }""")
     page.reload()
     show(records[0])
-    page.wait_for_function("() => document.querySelector('#poster').hidden")
+    page.wait_for_function("() => document.querySelector('#card').getAttribute('aria-busy') === 'false'")
+    assert page.locator('#poster').is_hidden()
     active[0]=records[0][0]
     page.route("**/native/fresh", lambda route: route.fulfill(body=frames[active[0]],content_type="image/jpeg"))
     update(dict(id=225171,mediaType="tv",title="Pluribus",backdropPaths=[f"{base}/native/fresh",logo]))

@@ -402,9 +402,11 @@ function _up(item,art) {
  if(!art||_dc||_pp)return;
  var key=_ak(item), generation=++_ig;
  _pp=art.identity;
+ card.setAttribute("aria-busy","true");
  obtainApprovedFrame(art).then(function(frame){
   if(generation!==_ig||key!==_cak||!selected||_ak(selected)!==key)return;
   _pp='';
+  card.setAttribute("aria-busy","false");
   if(!frame)return;
   installFrame(frame,art.identity);
   _dp=art.identity;
