@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="rex-widget" content="type=rail; height=480; item-ratio=5:6">
-<meta name="rex-fields" content="posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster,titleLogoAlternates,titleLogoRawPath,logoUrl,titleLogoPinned,faceSafePosterPath,nativePosterOnly">
+<meta name="rex-fields" content="artworkLayout,artworkSignature,lockedPosterPath,posterPath,backdropPath,backdropPaths,cleanPosterPath,titleLogoPath,titleLogoUrl,logoPath,originalNetwork,networkLogoPath,genreTitle,genreItems,description,detailPoster,titleLogoAlternates,titleLogoRawPath,logoUrl,titleLogoPinned,faceSafePosterPath,nativePosterOnly">
 <title>Rex — Numbered Top 20 Editorial</title>
 <style>
 *{box-sizing:border-box}
@@ -86,41 +86,170 @@ function _iid(value){var src=_av(value);try{src=decodeURIComponent(src)}catch(e)
  }
  return result;
 }
-function _frsel(item){var rule=_frr(item);if(!rule)return null;var posters=_frs(item,rule.poster),logos=_frs(item,rule.logo);return posters.length?{poster:posters[0],posters:posters,logo:logos[0]||'',manual:true}:null;}function approvedFile(value){
+function _frsel(item){var rule=_frr(item);if(!rule)return null;var posters=_frs(item,rule.poster),logos=_frs(item,rule.logo);return posters.length?{poster:posters[0],posters:posters,logo:logos[0]||'',manual:true}:null;}/* BEGIN POSTER VERIFICATION */
+// Generated into each standalone template. The release index survives storage eviction.
+var releasePosters = {"movie:2609":["Planes, Trains and Automobiles",{"top20":["/9vXTvhYrAX7Rl858FXCYvN2LzOo.jpg","////////3Luq7u//ZVNHV6//MzIjVGuqmZZmmZpk7u3d7u7t"],"trending":0}],"movie:1458300":["The Mosquito Bowl",{"top20":["/1j1u5xZ5Avk6sVUWMuJX8UE6lYM.jpg","qqu7u7zMmZeIVWRVRERUREREIiMzMzIiERIiEiERRDRDMzMz"],"trending":0}],"movie:1101383":["The End of Oak Street",{"top20":["/ffDlu6T4f3sxJqKzuzf0N5DFhBg.jpg","7bmZV5NpqFdlWJRpl1qqeaV5h1VVNEVkIxNCNDVkAAAAAAAA"],"trending":0}],"movie:70160":["The Hunger Games",{"top20":["/sfFRBRaoSyKgS6AB6LiBGa5ooOR.jpg","/ty6y6///tuXuX/t7dZTZD3Lu6ZCdk253LypuX7t////////"],"trending":0}],"movie:1280115":["Way of the Warrior Kid",{"top20":["/yKUkPG3Es9YWWg68Nmz4TeYxiCb.jpg","EAEAEAEAIQMhQxIQdBdRhiUxMhQyVCMhQxRCQyMhIRIRIRIQ"],"trending":0}],"movie:1071215":["Thanksgiving",{"top20":["/1hqRP0oQsPTuS82mSg2x6yy7JxD.jpg","AAAAAAAAAAAAIiAAERERERIiIAMhIiEhAAEQIiERAAAAAAAA"],"trending":0}],"movie:695721":["The Hunger Games: The Ballad of Songbirds & Snakes",{"top20":["/23kZGZYYTa4goHbPs1Mro3fMFNY.jpg","YyYyQgQQ2ouYljhBuEl0cychhShBUhMhMhQhUxUhAAEAAAAA"],"trending":0}],"movie:687163":["Project Hail Mary",{"top20":["/cdGVNiyUt289DgopWUdImNVVDaw.jpg","AQEQIxVyERIiiW3XIhhU/r3VIRVC3XvEEhEQqkrDEQEQRBqy"],"trending":0}],"movie:10719":["Elf",{"top20":["/zsKO3CblaLtJumWLsjEBPX8dP5P.jpg","3/3v3u3/7/vLu67/7/qqq67/7/zM3c7/7/zdzd7///7/3/3/"],"trending":0}],"movie:1339713":["Obsession",{"top20":["/o5VincY0eEAq4GHHiKcWjSuNPCm.jpg","EQERERIRIQIRERMiMiQzIRMhMiMzIREREREQEREREQEQEQEQ"],"trending":0}],"movie:771":["Home Alone",{"trending":["/zqWtmVMhfbnIlDruY6ndQw5ObEy.jpg","RXRXVXRXQ0dUdUhmdn2XpkdnZmyGtlM0UiYRYRQRQAIAUAQA"],"top20":["/7UJtxSnIk5IKFJL926Seio6PHU9.jpg","Vnd3iId3h3yHlUl3iZ2XtkVnVElDgzQzUAQAYAQAQAMAUAQA"]}],"movie:5825":["National Lampoon's Christmas Vacation",{"top20":["/6eSlCOEXO1SpCtxqeISiG5VcbWQ.jpg","E0FGNWAjRoZ4Z4RoE1d4Z3A1MiZnVnFFFXRnR3JGRmIjIjNW"],"trending":0}],"tv:171802":["Blade Runner 2099",{"trending":["/r2NdpdzuyeZEn0AdPk1d8iXnVJm.jpg","A0ERdCljA0MzYxhCE0VDQhdCEiVDZDMhEiMiMiESARARARAR"]}],"tv:290826":["DIG",{"top20":["/wd70MwWEkTf5wpUbA46UDpjAZ2M.jpg","JrJqFqFqSLSMSMSLdkmZmIl2hUh2uollZCZDdDVDUxUxUxUy"],"trending":0}],"tv:84773":["The Lord of the Rings: The Rings of Power",{"top20":["/qTMn0dFVxT6AreSF2Is2EEKxBZe.jpg","I1I1RWNFVnZUl1iGVUMzZTqGREVDQyMyIjMzMzEjERAAAAAR"],"trending":0}],"tv:124364":["FROM",{"top20":["/mPFwg9BjfgSFcINA0U7i1lpQAIS.jpg","3Zy2y43J7GqCly2luVdjiEuVlydjmElhdSVCdjdRVCVTRCVC"],"trending":0}],"tv:292741":["Nocturne",{"top20":["/yllwzRiqYnUXSV4TwvQz0MVstGL.jpg","mHypqHVDZT252plkhkqG2phkhkZDZUZDRDNCIhIhIhEhEhEh"],"trending":0}],"tv:247718":["MobLand",{"top20":["/o38vOfVhLq1wtgDVCoE4HRDDl30.jpg","qqqqqqmZM0VFVVM0IzIiMjEiESABAAARAAAAAAAAAAAAAAAA"],"trending":0}],"tv:248830":["Stick",{"top20":["/qGNdgWQdRzAWigtoWANIFrDLmV9.jpg","nOrevvnfmnmWmZmYpyyjtk1EMzVzdzZDNBNSRSIyJBJBJBJB"],"trending":0}],"tv:254630":["12 12 12",{"top20":["/dGW7lx1EjVlwXIbXqIRiWyrJPkN.jpg","ururVWM0mZd3ZVI0RWRVVENENWI0EjEiIzESESESERARARAR"],"trending":0}],"tv:279246":["The Remarried Empress",{"top20":["/AmpavsESFGTooPKkr8CwNRMPeQH.jpg","QyhkdTMhVDZUQzQxZCl2UzIRUydUQiEQQhUiMREAIRIREREA"],"trending":0}],"tv:1668":["Friends",{"top20":["/yx1BxA0P7cxU7bAn75Ltt1jqset.jpg","////////u7mZiIu7d3dlVEd3iIVVZUmIqqd3qZ3d3d3d3d3d"],"trending":0}],"tv:81723":["The Gilded Age",{"top20":["/xdLRCryLboh9k0ZVTCxTTduGXYY.jpg","qqmImIMzdlqZmYdUMidmeHVUIRIRV2RlMRAAEiIyAAIREiEi"],"trending":0}],"tv:273247":["The Lowdown",{"top20":["/34oYHJiRyywnbOvDbpkM8womBw4.jpg","yXhldlVmqHRDRDmGyoZEl1l1qXh2uouXyo257K7K25257Khl"],"trending":0}],"tv:225385":["Black Doves",{"top20":["/xzX1tPr8W9I9S1dhunTsH4XlSN1.jpg","AAAAAAAAQzERERMiQyERISMiMiEREiISERERERMiAAAAAAAA"],"trending":0}],"tv:303630":["Cupertino",{"top20":["/rv6dfhXIq5lLK4cQa8FHuUg2Ahh.jpg","e8e8e8e8i8i9jNjNiZjNjNi8M0d3rMqpABREVVVDAAMzMzRD"],"trending":0}],"movie:1003596":["Avengers: Doomsday",{"top20":["/zhYu1P6AloNRVYS6O89sEEpruy1.jpg","IiRERDEiVUiGMzVERDIiERRDRDEiIyIyIyEiRDZUERARARER"],"trending":0}],"movie:1538497":["Hexed",{"top20":["/vUEPTGdDMGtqlHqTnTCELujMzbp.jpg","EUM4MoADMnY3dsEWQmdbZZMUYWlodIIUMlUnMnImFGElElJG"],"trending":0}],"movie:1153576":["Street Fighter",{"top20":["/LqIboqIkbEJ0LXcfrY9Tk5uawL.jpg","AUIkMlAUQ0hVhVITRFhElEgzElVEdEczABESISABAAAAAAAA"],"trending":0}],"movie:1300968":["The Hunger Games: Sunrise on the Reaping",{"top20":["/xtAfkYImY13kPpqKmsdePQYzK3s.jpg","ZWRFM0M0y6uqmJZ4qXqIh2h3Zlh2ZVRWRVMyMyNEEzEhEhIj"],"trending":0}],"movie:969681":["Spider-Man: Brand New Day",{"top20":["/yxOxOBxspl3NgC676W62G02g1cR.jpg","EAIAMAEkEAIAUAI1QBQiQRNWMAUAgzd2AAIAQhMRIAEAAAAA"],"trending":0}],"movie:1368337":["The Odyssey",{"top20":["/ugEXTmwvFj8oqOui6ZwXjQgSwAp.jpg","e9nOnenOJHWKVXaLElM1NFJGETESM0IkABABESESAAAAABAB"],"trending":0}],"movie:1195803":["Wicker",{"top20":["/18U1TLC154qmWPXuiMt8PiFi83v.jpg","u7uqmad4uql2h3ZniIdmVWNFIyI0IzEjE0EzEzEjEjEjEjEi"],"trending":0}],"movie:1281331":["The Social Reckoning",{"top20":["/4o7wIbeTAqWs0Nya8DnwinyEgTr.jpg","AAAAAAAAhlQzdVl2dUQyhmhlIiIiMiQyAAAAAAAAAAAAAAAA"],"trending":0}],"movie:1400336":["Focker In-Law",{"top20":["/lPjpY0OpOfrfbj2nmR1Td6EpvvO.jpg","xmtEtEx3tUtUuGuY2pt2lll2qHllUkZWhlUiIBVWl3VDQzh3"],"trending":0}],"tv:310209":["Nine to Six",{"top20":["/c6iv1EvwsmTRH4cqzwfDQf1O0NG.jpg","3LqYqZ3M3Mh2mH3cy7qYqYuqiHREREiIZUIiMzh3VUIiMzmZ"],"trending":0}],"tv:338930":["Always on Call",{"top20":["/l7cUpr5l41orSDkIh9QUjHgbbbH.jpg","VTiGVCQyiFRCZTZUmWiFqpZkUyZkq5RDIQQymHZlQhUyhlqY"],"trending":0}],"movie:1496696":["Breeder",{"top20":["/auzVrJQj9f23WYFC2ivPSinzNHQ.jpg","MhlidBEQIQhSUyQgMgZCMhYwhAUxUwhQIQEAEAMQEAAAAAEA"],"trending":0}],"movie:1595124":["Steps",{"top20":["/idfbOZ6QBziR6suqFGIMJsSk3lV.jpg","hXhahbhrhnyauKuLl5yI2qlWd6p6lppqMndJdpd+Q5Zbd9Zc"],"trending":0}],"movie:1170608":["Dune: Part Three",{"trending":["/8tI06eBsuHPStjP2x9V7aUo6Q4I.jpg","ljt0yEyEdCuEuEZDpj7J25dDpj7IuWUiQhhkZCQyMQQyIRIQ"],"top20":["/pYu5uBU7TpflPvqijUwY1NvEchi.jpg","7uqGhkQx7suTp0UxqEdSl0UxZCl1h1VCZCdkdTQyQxQxQyMh"]}],"tv:218347":["Sweetpea",{"top20":["/6inwXPYV2702HFiC4oFBFIuLbkz.jpg","FEFEFEAzNVNVJEFERVRUNEEzNUMzMzEzNEIzREIzeIJEd2eI"],"trending":0}],"movie:1611767":["Clashing Through the Snow",{"trending":["/mHW2L9jNxXj0maTu39VdbNQ4PJv.jpg","YAUAYyYAYAlkYyYAUQMiEiYAURMiERQBQAMiERQRQAIhERMA"]}],"movie:1381071":["Godzilla Minus Zero",{"top20":["/5jpgbruR4XmnvNVguGroQpaX77d.jpg","iIqZzL7td3iH3c3cRDMyZmqpUiIhUyhkUyIRIRhTERERERQh"],"trending":0}],"movie:1423191":["Resident Evil",{"top20":["/din22fvRocM0qInDE0URXDJyjsj.jpg","QzhkZDMiqXMyMyqHdlIhIRZUQyERERMyMiIiIhIiAAAAAAAA"],"trending":0}],"movie:1263337":["Heart of the Beast",{"trending":["/4RLhArdnymkf2WpQ5R2RxbUC21e.jpg","NUNUNEJDVlREIiNDdlMiIRIyQzMiIiNDQyERESIiERIiARAB"],"top20":["/xMQPJ58oradSdkpkUagLkziOjDm.jpg","unh2VURFy4qGUzVV24qWZUVUh0h1VERDdkQzMyMyVDMiIiER"]}],"movie:1551025":["Guarding Stars",{"top20":["/hUaSF0UgGWzDgotlmUmQi928c20.jpg","7/7/zvvvuqiI3u7/iZIjZld2iZARIiRVRWIzESRWq8m8eZir"],"trending":0}],"movie:101299":["The Hunger Games: Catching Fire",{"trending":["/pjGkn73eCKE73wWx1RgkfTaiIhN.jpg","2mqFyW6363l0dT2m2lhkdTp0uEZCljljlzlilihShihSdBdB"],"top20":["/bvsdROLqkcZI1qmv0414egXd0Ky.jpg","AAEAQRIAAAUyUychEAdDZDYiIAQhMRYiMQEAMAIAMQQQMQAA"]}],"movie:131631":["The Hunger Games: Mockingjay - Part 1",{"top20":["/7FRAlGNvvf5hTuV9sIUyGxT0WEJ.jpg","MQZChidBhSqFhjpihCUyZCliYxZChjdCZBdCYxUxUhQhQQMQ"],"trending":0}],"movie:131634":["The Hunger Games: Mockingjay - Part 2",{"top20":["/2COYD5WV4cC1qPgdgIVcirEpqA7.jpg","xRgQIAUQtRkxtB2UxBch1yoxkgkgYQEAAAAAMAIAAAAAAAEA"],"trending":0}],"movie:1375441":["Primetime",{"top20":["/q6zV9EG2aOCTW8aiZBzXLIiw0Yz.jpg","J5GbBFARFoBWFWASA0A0ASAkASFoA0BWAiBnFFFmGbGKFoBn"],"trending":0}],"movie:299534":["Avengers: Endgame",{"trending":["/wqlm341ITPhC2I4W3FXQfUaI1dp.jpg","V6ZWEjESZ6VWI1IkVpNGIkRHRYNGIkI1M2RHI1EjRHNHIkAB"],"top20":["/nHLcTHuHyAc6G6jQXa6tQeouQ7z.jpg","mbqsd6dqmLd5d5dqqrZododpu9ZYVXmbmcM1IjRHIkERABES"]}],"movie:1384216":["The Dog Stars",{"top20":["/o3TY0dc236CM7eMwAsyghcXIzBL.jpg","VliZmrVmZmd2h1VUREREZmVlMyIiIiRDNDIyNDMzEhERERAQ"],"trending":0}],"tv:14658":["Survivor",{"top20":["/rlIuUR6RFnKooQ65t5UYkCtpxnU.jpg","/suomYRUl0pzd1VkRDl1ZkMzIzRERDIyIzIiIyMyEjMzIzMz"],"trending":0}],"tv:259909":["Dexter: Resurrection",{"top20":["/m146j8Jdfnblx0ApCda8DpfxEEC.jpg","AjEzEzAjBFZTZDBFBWmGqXBnJVdlhlVmQyQyIRUyIREQEQIR"],"trending":0}],"tv:153312":["Tulsa King",{"top20":["/yxWDzf7cFQIL99m0o8iu4rrzzWr.jpg","d2mZu7mIdUqYiHZlRDVVQ0MzQzVUZURDQydTdTUyEAEQIQEQ"],"trending":0}],"tv:5920":["The Mentalist",{"top20":["/oOuDnahbtMhF9vLwE9LiOS0oiJj.jpg","/9/9/9/9nMmIhlpVfMh3mHkza7EiVVhEapAAAAUznLIzMzhm"],"trending":0}],"tv:211288":["Tracker",{"top20":["/ac4r6lBZaSviJ2vMK9MyMC1baRa.jpg","eueueueti+i+i+i+nOd4aKnOisVVdUebNoNFIjV5RDQzRDRE"],"trending":0}],"tv:290856":["Marshals",{"top20":["/ukVaY6J9CWVYxrP8nAo5ZCU7BZY.jpg","zLvLmYqq3cuodTq6qYUxdkzMqYIRQyu6MQAAEQIhEAEAEQEQ"],"trending":0}],"tv:95480":["Slow Horses",{"top20":["/A3LSzbNOitRlzmRlcEnpe0tAfBm.jpg","/+/+/+/+/+/+/+7tJERVZ3JEASNERVEjEiREM0ASEiIiESEj"],"trending":0}],"tv:103540":["Percy Jackson and the Olympians",{"top20":["/gGjyOikfc252ScahlA3gRucz2ai.jpg","qGuX7Jynynl0unlkhkVCVDVEqXNERWV4d4VnNXJGI0E0AkAk"],"trending":0}],"tv:1416":["Grey's Anatomy",{"top20":["/jY8bOtqTqc7rXht8waha7Bzjw7E.jpg","7/rNRWAAzdeJESAA7umZmZEj7umaiaNF3e7/mrVn////RGNH"],"trending":0}],"tv:30957":["The Amazing Race",{"trending":["/eaX60GUoRHYCD3JAEtNFKrGpZeE.jpg","y57buozK/9//yoy6/+/+mHeJ7HmWNGNWylmGVmJFuUdkRURV"],"top20":["/pv0NvyYW8sAVrFbOcnQgrGNMd0t.jpg","Xee8mKuby6uXuXyIiFiGeJdoEzEzE1ASAiAiASABAiAhARAR"]}],"tv:208921":["Rivals",{"top20":["/pxBbWtjKz3TnCpCdbFeneNce8i1.jpg","mHh2hll1232m2m2mQyhkp1hkMhl1tlUyIhZTdTVCRCRCVSVS"],"trending":0}],"tv:1418":["The Big Bang Theory",{"top20":["/sWe0Itd99ip1EKHk5620WKPb2O2.jpg","MRQhUhQhMhZDZEQiZEdUh2dUZEdVhlhTEBEBERMhAAAAAAAA"],"trending":0}],"tv:270603":["The Exiled Heavy Knight Knows How to Game the System",{"top20":["/8fjzyHd67TaPUnbn8gsK12VbQjP.jpg","vveJM0RGqqmId3d3l3uqZmZmd2iHVVZVVUMiISZlMyMiIiVV"],"trending":0}],"movie:1368166":["The Housemaid",{"top20":["/wmn03MjXSrIJAHsdMJJRK35VfqH.jpg","VCRDZjZTlzNEVVqEhjM0VVuVhjIkIkl0ZCETETZCIiESESIi"],"trending":0}],"movie:1275779":["Disclosure Day",{"top20":["/mIOAQ1ljuiDaaCCxe6zcbbkUCbC.jpg","IjiIM0AUE0ZnVEI0NXVnRoRWFXnNi8NWIiqpqpMzEBIiMiEB"],"trending":0}],"movie:936075":["Michael",{"top20":["/okOIo64WWHBAzE6mdig5le78jvk.jpg","3cZU3M7aZUQhuXljuoZVh2hSy5ZVQzZCljIREAZEQhMhEAdT"],"trending":0}],"movie:83533":["Avatar: Fire and Ash",{"top20":["/dVv28yL7kyeMK3sUTWVSKrZC6tV.jpg","QiUhIRUhhUhUZDlUZEVEdUhll3h2mHVWVWZmdnZVESIzIjAB"],"trending":0}],"movie:1083381":["Backrooms",{"top20":["/8vs8jeaYeYbGBwLN1U3eNafHjZ5.jpg","qCqTmCVBmCqDmCZBmCmCmDQxhyhylyQxhidididSdidhZRUx"],"trending":0}],"movie:1226863":["The Super Mario Galaxy Movie",{"top20":["/pcTweebSCQYIbdpjbN3r0Tw8iI2.jpg","uuR8mMg8zOWKmHvPd9Rmd42+FdFaFXKOFpA0AzFWAiAhARAR"],"trending":0}],"movie:1314481":["The Devil Wears Prada 2",{"top20":["/AsiPtN0mHVaofCT9BrKVMu4GeUB.jpg","gAgAgAcAgRlEYRYRhVkzhmmIQzciyZu6gRkBoidm4RsRoA5E"],"trending":0}],"movie:454639":["Masters of the Universe",{"top20":["/AaY8qJx1KbOvZuAj1IIL5HTDjaP.jpg","ERMyIiMiIiVDZUIiM0dlhlhUt1uFdDZVQzVDMiQyUyUiMhQi"],"trending":0}],"movie:1081003":["Supergirl",{"top20":["/9WyCDqi6ogIWYCnlCLJfvNuR9dF.jpg","JqN7SKN7ohohpi5xdWgggxplFrQiYhJ9FZIjMjFtA3AkE2FK"],"trending":0}],"movie:1198994":["Send Help",{"top20":["/e7lx2JxRSia7uYHjdoEieQpcAVW.jpg","IAEAMAUAMAQAQAoAQAcAUAgyMAYAQAUhQAUAMRMRMAQAQhMh"],"trending":0}],"movie:1084244":["Toy Story 5",{"top20":["/q40Py29yikeMJOjBXDKSSA6ybMY.jpg","3M////7ulU/u3trKmH7cfNGrmIzMbOCdu73dvceq7u7u7u3u"],"trending":0}],"movie:1228710":["The Mandalorian and Grogu",{"trending":0,"top20":["/uj94Jm17VAcUgqG9EwmsU5CZXEm.jpg","kzpU7t//lUZDmJ3Nc0Q0Znh4MjNGRHNJdoRHM2Z6M3EUI2NH"]}],"movie:1327819":["Hoppers",{"top20":["/p5G1Fbn6hjQprNijkcjarf8FZWG.jpg","+w2i2S+wlyQhUypyUyYyYyZCUyQhQhYyMRERERMREANVNVEA"],"trending":0}],"movie:1236153":["Mercy",{"trending":["/f0ye7HWAqcSVJXcAGPDnDhYtuCP.jpg","3c7d7Muqqqy6mIiIh4mYiIiJmZmYd3mHIzIzIzQ0ERERERAR"]}],"movie:1318447":["Apex",{"top20":["/fcXYtiOCEP8Nqpc0ib57Mmf3Or2.jpg","EQAAAAAAEQAAAAAAEQVDMhAAAAMhEQAAAAAAAAAAAAAAAAAA"],"trending":0}],"movie:1306368":["The Rip",{"top20":["/y20kqEAJvZLn3FmC3LLoWyeXUdK.jpg","AAAAAAAAAAAAEQMQERMydSpiIhUydTYxQgdTEQIQQQhREAEA"],"trending":0}],"movie:1301421":["The Sheep Detectives",{"top20":["/8PTIEKIK9QkffYsbmn0EozCkE39.jpg","ZCIzNEMhdkVUQzdkd3SrWrh2Z2a8e8iHVDVDdUZUQyQhh1VE"],"trending":0}],"movie:1171145":["Crime 101",{"trending":["/nLacDm0Oq0cZnf8EhqXHsi9TQXm.jpg","7s7s7s7syX2626yGtTtTtTtTpTcytkpTmHMidluoRUMiMzMz"]}],"movie:1290821":["Shelter",{"top20":["/AmFWVRdCn2J6AFfyHDA0GWQr518.jpg","V3eYeIZ3q6mXqoeHiYIiVDmHeHMzIhdlq5RVMzREiYmXREd1"],"trending":0}],"movie:1325734":["The Drama",{"top20":["/8aZWT5wYQYYpDnHzdThlvhPZTJt.jpg","mYVlZ1VUmHdlVUd3MzVUiHmGAAIiZll2AAERhld3ERQymZmZ"],"trending":0}],"movie:1317288":["Marty Supreme",{"trending":["/jAH9pv4gl9taAD7fRI0Pd9ebr2e.jpg","IhAAQzQyMhMRVDVDdlQhdEZlMRMRMRhUIRMRMRMRIRQRQyUy"],"top20":["/kplxz3TwILtQ7fkvXS0lW9oe8dk.jpg","AAAAAAAAARAAAAAAASZVsSUBAAMiwRgRAAAAAAAAAAAAAAAA"]}],"tv:250307":["The Pitt",{"top20":["/flgp5KE4Ed0lmhYodj65EGmCfZe.jpg","ZWmZ3d/uVVupyq28REh3ZWU2QzZWVVdmMRVDRFNEIRISIiES"],"trending":0}],"tv:270476":["Widow's Bay",{"top20":["/7HdUreTP4GNHf4LhgrxvLUVEK4r.jpg","I0JFJFI1aZmHmYWINnQzVEVnIjIRNDJFEREBIRESEBEBEBEB"],"trending":0}],"tv:224372":["A Knight of the Seven Kingdoms",{"top20":["/2sddK6rP3VaoETfa7ADE2KCkfpj.jpg","MzMzNURmRDq6zcq7mYh23b3tEQEQMymXAAAAAAIhAAAAAAAA"],"trending":0}],"tv:106379":["Fallout",{"top20":["/7TBfMjYvAuSVHw1B7E5GZT3I4GG.jpg","i9rNasSbu7qGh2iZ2nVCZVuWhSQyQylSMQIRIgMgIQIQIQIQ"],"trending":0}],"tv:95350":["Lanterns",{"top20":["/9i6966Py1jvnGHFFwxf3CGku7GV.jpg","JCNCNCIyRDVTMyIhRTZTMhIyRUIyIiMyRkIiERIhVlERERER"],"trending":0}],"tv:202555":["Daredevil: Born Again",{"top20":["/dTFeULXN1AIEinHLBNenk5ZSy7I.jpg","UAYRMRIRMSQzZVIRIiVVy7VVMiQzdVh3IRERMjEREREAEAEA"],"trending":0}],"tv:226637":["High Potential",{"trending":["/6ozHJmqt7VbPsTrCkhT0DOYW4vn.jpg","qHqHEiRDl2hlVDQzVUZEVEQzIjQ0M0IiIiESASABERESECAB"],"top20":["/k1WZ8v7hUZ7QDseZH9TWVaAyTc0.jpg","d1iGmYh3mHqGqYh3Mzp3ZEIiERQyIRIRERZUREERh2iIu6h3"]}],"tv:157741":["Landman",{"top20":["/ydEBy8eud6L5J5YA1SWso6oUkO2.jpg","l0hkhkdTpjpjlTlTlShCdChTdCdChShTcxhChCdCQRQQMQMQ"],"trending":0}],"tv:125988":["Silo",{"top20":["/ipj4SerOtCTdIEqMuerAohD6Hfv.jpg","tSpStStSpChCtSxRpCQhYytSlCQhhCtRcxARMhpBQhARIRcx"],"trending":0}],"tv:245927":["Paradise",{"trending":["/n6quIwv07YaKDONN1OEdyW6JI9i.jpg","NVZmiHmZVlVlmXiYV2VUVlV3VmVlRmNVE0EzE0EiAiAiASAS"],"top20":["/pVEt73YgxSQsZkN1LURHLLxd4xD.jpg","ASISISARNViHmYZmeHy53bq5Z2VlmpiYNURVV2I0EjEzEzAS"]}],"tv:220102":["Spider-Noir",{"trending":["/yeQ78tsOdSVQYDCTl4txH8pnG0c.jpg","MzAAIiMiMyMzMiVDh3REQyUzmIMiZDVD7d7ch2QzqZmIVVMz"],"top20":["/2pdafG1pR8EiDnoh1MRYcPRYsda.jpg","ERREVVERMziIiIVVIid3d3ZmAAREREERAAERERAAAAERERAA"]}],"tv:241609":["Your Friends & Neighbors",{"top20":["/1e8NbJqmfhBVrzI7exgv2q6NPMY.jpg","VCZTZTVCdkZCZCZTZj26h1VCQyZVRDQzMhIiERMhQxQyERQx"],"trending":0}],"tv:243875":["Georgie & Mandy's First Marriage",{"top20":["/6Yl0O29P5r3RDbqz4ZzR3gNUrwa.jpg","pk2n2ot1dCpkyEyFdTYypTpTdUZUljhCZDdTlShSQRhChSdC"],"trending":0}],"tv:278178":["I Will Find You",{"trending":["/qGv0tGmhkAUrdCxWIOxtC8gZhip.jpg","/+u6u6/t/+iImY7t/tVVl2zLy6VEZlqpiHIyRDqYEyEiEiZl"]}],"tv:299167":["Dutton Ranch",{"top20":["/91a2gwK9g61pubHzShTVjMEkJEM.jpg","AAEAAAAAIAMQIQEAEAMRYyMQEAEAUhQhEAAAQhMhAAAAAAAA"],"trending":0}],"tv:94997":["House of the Dragon",{"top20":["/elwO2VlWzvUWsGGeeypZzpa61Jm.jpg","EQIQMhMhEQIRUyQhEAIQQyEQIREAQhIRMhEAIQMhIQEAIQQQ"],"trending":0}],"tv:200875":["IT: Welcome to Derry",{"top20":["/xcxFRWCE4ccsaGEEPnvvRR32f6Y.jpg","AREiASAREiIzIzEiEiEiIiEiARNEMzAREAMAQAEAEAEAIAEA"],"trending":0}],"tv:288673":["Carrie",{"top20":["/7CDmD9H4FRyTngJI717TrKIppb0.jpg","AiFVFVAzEzNlRmFDRCRTRURCQgQxUxQhIiZCVCQxJEEzEzIz"],"trending":0}],"tv:250923":["Nobody Wants This",{"trending":["/pb7ZRFWp9Y3gre049cpiarjUXhh.jpg","IiIhMhUyVDuGlkZDuHt2uGp1hUMhZDlkARERUAUhERERUAUR"],"top20":["/uOsvjNjYYshi44tR5onbTGAiexS.jpg","qWmFuWuWuWUyuGuXZDh2lkyoQyqYh1qWIiZEMzQyVDl1RDdU"]}],"tv:136315":["The Bear",{"trending":["/bu99Db7vDhqUjJHdcmXj74j9Gu1.jpg","IRVDMiERVEl2iHMzMyZVZVQzQylldlMiMydldURDAAEREREA"]}],"tv:295778":["Scrubs",{"top20":["/ouzcrmqJHMV0FpYjO1wtIvw3rRw.jpg","7c3c3c3c7t3L3L7t3cdmZlipqHVVNDJEZmZ3VlRVmrmqmqmq"],"trending":0}],"tv:273207":["Neagley",{"top20":["/7a9RmJA142gqRkzkLd2HAirBguU.jpg","6h2h6h6h2hpy2S6h2RhjVC6hlxIiIiyBpwERMh2QpwEAIRyQ"],"trending":0}],"tv:256721":["Gachiakuta",{"trending":["/dvRzzC8tEDlONN2BRpnsSe9nV0O.jpg","oAkhoyoAgAYhgykAgRhDlTkQchgylToxUhYzdDgikAkilEkR"]}],"movie:1329016":["Tony",{"top20":["/5yDTCHGyueYGMNXTkkGoO6WeHCR.jpg","////////l1VCUyhk24uXqXqGuWl1uXqX7cy63L3c////////"],"trending":0}],"movie:1131943":["Madden",{"top20":["/poP4sBdJcT2IuemmsQQIKD1zRSO.jpg","//////////////////VVmZ//iIAAIizMiIAAMzzLu7AAVV//"],"trending":0}],"movie:950028":["The Invite",{"top20":["/k9qMT4XeMrN9ypDlYdKhoFRokGT.jpg","d3d1VViXeHh2RUd2h2iYVUqGmHdlVURE3M/u7umZ////////"],"trending":0}],"movie:1366":["Rocky",{"top20":["/a6PzbOo4iwXCBB7wxV6fn4CxDqZ.jpg","7v7/////vM3dzd7uRWVnaJiqNEIzNFZ4NFNERWRmVnVnVnVn"],"trending":0}],"movie:1291595":["Insidious: Out of the Further",{"top20":["/oGFnKv1xZRVDXtAaEJDaaYgnhz.jpg","ASASASAREjI0E0EjMjdFdFIic0hFhFUjMzEjIjM0ARASASAS"],"trending":0}],"movie:466272":["Once Upon a Time in... Hollywood",{"top20":["/uZjggcd4h3YMSdeJPokRdOmet6e.jpg","RUVlVlRUd1iGmXmXdTl1qXunUyhkl1t0MhdCdSdCEAMQIQEA"],"trending":0}],"movie:360920":["The Grinch",{"trending":["/77u5Gt4Jrx8euPTB0ieEoUzlKDT.jpg","ajejejaji0m0i0i0nEizm0nEnEiivUnEnEaSiznEizaRaiiz"],"top20":["/ajL4pxKtDe0ZSy40N3qxg1QE7NL.jpg","I0M1NFIkRFZVZFM1ZmZldUZXVEdDZDdEYzciYRczczYRURYS"]}],"movie:313922":["Green Room",{"top20":["/4auknsjj4GxvSFTSdwdnWhZY2nl.jpg","ESERERERIiiHh2IhIiMzQzEQERAAAAAAAAARAAAAARAAAAAA"],"trending":0}],"movie:1290418":["The Cycle",{"trending":["/5g3QqlM8Y3yiE8NePkiOkfZcDwJ.jpg","AAAAREREARABZVVUd1IiMzREd2VVVlERABIiMzAAAAAAAAAA"]}],"movie:1430077":["Hokum",{"top20":["/iMBtiiVyA9fEeyKBwUyUGyRDmny.jpg","AAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAEQIQAAEQEQIQIR"],"trending":0}],"movie:675871":["Super Troopers 3",{"top20":["/p2zAh93tyYYtTdu44Q4lmBswIW8.jpg","yHhWQ0UilVY1QlQjdWhVdUhllkhlYyUyMiMiIiMiMSQiMiMj"],"trending":0}],"movie:948":["Halloween",{"trending":["/w39fBQxL8rVqxC0PqcFkl8nEyBi.jpg","AAAAAAAAAAMzQzAAERREh2EREhZVZmIiERVEZUIhAAAAAAAA"],"top20":["/hckmpqmkWyj7ZNldWDdeccfbDB.jpg","AAAAAAAAAAAAAAAAIRQzVDIRAAIhdUMiAAAAMzERAAAAAAAA"]}],"movie:1240889":["Teenage Sex and Death at Camp Miasma",{"trending":["/sh0nv7dOHXpivK3AQj8Pk8c7Qni.jpg","zM27y7zMq8lnuJms3dqIy73d7u3N3d3e////////////////"],"top20":["/mYAorRMCxzKBNeQTIYPuP76TR8c.jpg","uIuIuIuIyYyYp2t3yYp2l2p2hmlml3l3dlhVdVZURDUzQiVE"]}],"movie:1377237":["Runner",{"top20":["/qnljRFaateP78qdmgLvtNPOGOYM.jpg","ogYgVUmH6AtyhkdDcxZChUtilBYyljxRcxYxYxcxEQEQAAEQ"],"trending":0}],"tv:249565":["The Good Daughter",{"top20":["/AjBPC5UQ5zxAfvaLWBzEvbVXGDb.jpg","66yX2p7K/cdDZD26llUxUyllUxQhUyUyUgMQQhUyQgQgQgQg"],"trending":0}],"tv:203857":["The Diplomat",{"top20":["/wnhAyE5ruuJAkLlPSHN8IzBtV4J.jpg","MQEQEQIRlBYyQxZDhBQhUxZCUxUyIRQhEQAAIRIQAAAAAAAA"],"trending":0}],"tv:275139":["Phony",{"trending":["/1uoDUNDdWSVgPibJbdKTPFWBaMB.jpg","d3d3eIeId2dUhliIdUl1yXdmUyhkp1h1VCVCZDdUQyQyQyZD"],"top20":["/rUqvfIc0tT3p15I1rDLUsII5269.jpg","dUd2eIeIuGdkd3iIuGMiVDiIlkp1qHiIZUZDdlVmIRVEVUIi"]}],"tv:120911":["The Terminal List",{"top20":["/cgwBW1o5kLycu0eWbvjHH5CJ1FK.jpg","NWABARNWRWESIjNWVnESEjRVRnASASRWNWARARNWE0AiAiEj"],"trending":0}],"movie:1401459":["Fjord",{"top20":["/r1BXUIKS07lv0FaxL0DSWxRxSm0.jpg","IiVEREMzMiVEREIRERZUREZDIiZURDIiIzVDMiIREiIiQzZD"],"trending":0}],"movie:1567605":["Ebenezer",{"top20":["/8N1tLtaAVzMVF6yOyQiqHADUQtN.jpg","EhIhIxEgMyZDIhEhNCdUMhERNCVDERERIiIhERERERERERER"],"trending":0}],"movie:1283515":["Verity",{"top20":["/iT72Y5FgZxU8hEiwGP9Wb2xLtm9.jpg","qqmZmZqrmZdmREmJMzeIREREIiMzM0ESERESIjERERARERER"],"trending":0}],"movie:1204680":["Coyote vs. Acme",{"top20":["/7wKuuZvEh54r5LACiRLkCEAiKjp.jpg","//////////7d7u////7tuq////u7h3////ZmIi////mZER//"],"trending":0}],"tv:1421":["Modern Family",{"top20":["/dfxUmffGEwgPVO68c6JwCltDmcL.jpg","////////////////7d7d7u7d3Mu6zLy7zMupupzL///u//7u"],"trending":0}],"movie:840464":["Greenland 2: Migration",{"top20":["/oEGnHmRkpNfUsxnh0gOKuTqNeQk.jpg","vLq6ZmREzbu6d2REq6iHVEMziHQzIiMzRDIiIiIiERERABER"],"trending":0}],"movie:1137844":["Mayday",{"trending":["/dzOnDgSDZ0NMGGRwq0I0CyxCdsI.jpg","vJzazKvKh1h2mGqXRDVDVDVDVEZDVDUyMiQzMiQyERIhEQIh"],"top20":["/kSugk0ePNV0orfemIpPy4J4BpN2.jpg","d4eImad4mZiJmaiJVVREM0ZmQ0MzMjREIiIiERESMzMjMzM0"]}],"movie:1234731":["Anaconda",{"top20":["/p9abmxhlhTGRsEyPSDMRfKAs1vM.jpg","IxRCMxMxNAQyIhRhRRQyERMxVCZURDRCVRRBNBRBIgIgIgIg"],"trending":0}],"tv:287620":["Stuart Fails to Save the Universe",{"top20":["/pJqLXigWsah7jwgYMdEDikP2Krl.jpg","M1IRU0VFdnVFdnM2l5VYd4VXyWZXRFx3RGIkMjc0ESEREBMS"],"trending":0}],"movie:1597":["Meet the Parents",{"top20":["/t6Qs4qaANlikve2OmO0s3U1w9nv.jpg","/////////u7M7d7uuHllararqIdUWJaIqYZUaIaIqZmImqq7"],"trending":0}],"tv:225171":["Pluribus",{"top20":["/g6y5N9aTnvgrI092oflyoK82IGj.jpg","VWVVVURFIzZUhkIjIziZqqM0RFiZmZVVM0VVZmNEEiIiMzIi"],"trending":0}],"tv:244447":["The Hunting Wives",{"top20":["/rnu5OUtv5X865QEmrdqYEmzZiT2.jpg","EzRlNEEzJERmRlIzZEVVZll2QiZDllqXMRMhQiMRMRIRIRIR"],"trending":0}],"tv:322052":["Wintertime",{"top20":["/lDKxuOXnlEullJvCpmbW1XJ8naZ.jpg","ARARABABARARARARASERERERAiIiIiIzAREREREiARARERER"],"trending":0}],"movie:1400837":["Other Mommy",{"top20":["/zrGOYS3mKAaiyviBrCfzYi6qVlQ.jpg","IAIAIAQAYAUAQAYAcAUAQAcAUAQAQAYAQAURQQQQQAYAUAMA"],"trending":0}],"movie:931285":["Mortal Kombat II",{"trending":["/gzNDVSaIxZaBm6MCD1qnrpF8t70.jpg","EAEAAAABEAYzREABQRU0VFIjQiUzZEREMRERIRESAAAAAAAA"],"top20":["/c7Qb0Z4j07UMQC7cW0H4No1jYiJ.jpg","h2MzQiMRZVIiMiERQzIRIRERMhQQMRERUyQiMhIhdCdDZDMh"]}],"movie:2758":["Addams Family Values",{"top20":["/oe2EmsNJ2Z5vx4tF0V8ZpdrIZmO.jpg","EQIRhkERZCMhZTZTqFQzmG25qGQyUyymdkQyQyl2mFZDdTdT"],"trending":0}],"movie:940721":["Godzilla Minus One",{"top20":["/uUm4oooZLRcuutZ6JOAj8WOBy7n.jpg","iZmqiZeZu7iIZmq7u7dmVViIu7mYd3iIiHd2iHmZd2RDh3qY"],"trending":0}],"tv:291507":["The Body",{"top20":["/iAbat5mIHdWcnj0wZJ8847SOWVO.jpg","AAEAEAIBEARDVDZDEQQyVEiGEQIAIAMREAEAEAEAEAAAIBMi"],"trending":0}],"tv:117488":["Yellowjackets",{"top20":["/opFbPbD8eTv0rcuTj2Kp8yY16Xa.jpg","MDkWkWICIRolklMRcjlDpTYiYTciYiUSEBEBEBECABABABAB"],"trending":0}],"tv:2190":["South Park",{"top20":["/la1aQtFQOXwOiyjo9yuTyIDucj7.jpg","ttt9k8k8g8c7ZJYpcrlpmoUmQWQSchUlUYQWIEIDg8crUXUX"],"trending":0}],"tv:326247":["Fool Night",{"top20":["/yvnbT2cpGClfx6ktTxGrKKkGhG3.jpg","//7u7u////3c7d////3c3c////u7ur////zMzM////3d3d//"],"trending":0}],"tv:213562":["Crystal Lake",{"top20":["/xYsP3FBkNzZiWf79yBQeLiHXnr2.jpg","ZlQzMiQidlVDhkhkVEQzZCZTMiMiMhIRIRMiMhVDIRIRQiZD"],"trending":0}],"movie:1765072":["You Can See Everything",{"top20":["/cwLLPcaJ0Z7T5Wg2TIETXacOKDa.jpg","VFZVy7h3d2VDy7qql2Qzy63MdVVDy6upQzdmy7upUzh3y77c"],"trending":0}],"movie:1391021":["Once Upon a Time in the Middle East",{"top20":["/cXDHS6K6J6tfJCzBPAvTOWkTDT4.jpg","ABEBERABESIjiHMiZUp0uVRDMit0pSUyERlScxMRABlCYhAB"],"trending":0}],"movie:1506401":["The Child",{"top20":["/8YPJyLwChJrtC8TW1Ji0SlpCYWp.jpg","I1FGNoI2ZVE1FGJGM0E1E1E1ESE1E0E0ABESZEI0EBASASND"],"trending":0}],"tv:456":["The Simpsons",{"top20":["/a8VtXmtONbQcqvyddzrDPNl8gcL.jpg","i5zG3E3Ee5q2y1/Dmper3E/DiWaZioy1rHrImVeY7Ea7l2hV"],"trending":0}],"tv:97546":["Ted Lasso",{"top20":["/uqZjoWvpGMdQ6K9L8MsxngHBKy6.jpg","JtJtJtJtJtJtJtJtJtVqRrJtJtRYZ5JtJbZGQ2FbJsE6FLJc"],"trending":0}],"movie:1439930":["The Punisher: One Last Kill",{"top20":["/dGsmBrsvU7U4ixRKnTXeyyQiltD.jpg","ZmVVZmMzREREREIiZmZmZmVVZmVVMzREMzIiIiERERIiIiER"],"trending":0}],"movie:1265609":["War Machine",{"top20":["/sNcd70Q6sEBnF3YEd3kC9jIUO5E.jpg","EREREREBIiIiMzMiMzIRIiIiIjERERESIiESERERERERARER"],"trending":0}],"tv:198178":["Wonder Man",{"top20":["/gNk4kuXQdK7vGOVYtwTirekLqV1.jpg","/t/c26uY3Ly5yphmuXhldldll2ZDQzZUVDQzMiMyMiMhMhIh"],"trending":0}],"movie:1480665":["The Hunchback, Soul of Paris",{"top20":["/ckuwCKjClzlsA5W5v45cs3NR4zn.jpg","eHRUNDIimpVlVVZ2Z2ZlREmXIyMzMyVUERIhQyZCEREREREQ"],"trending":0}],"tv:45790":["JoJo's Bizarre Adventure",{"top20":["/cg2x9hQMiCJdWLBQfeNmpbrsLrb.jpg","m5vIE3ElNFZ3JHAkRDhkVUARIRVFQzESISITZUESERACABAA"],"trending":0}],"movie:13963":["The Last Waltz",{"top20":["/7amgGbkI62s8KrH8LpKDFr1HqQP.jpg","ERIiERAAIhRDIiAAVEdmd2IiRDmId2RDREVURDRDVVRDREZl"],"trending":0}],"movie:13203":["Son in Law",{"top20":["/dAylMrJzOQ3QXVq35lkEOJvLV3x.jpg","eIeHzG2VZ3dkhmuoiHV4ZV7uVpaJRE3LqGdmVD2n1jxjpD10"],"trending":0}],"tv:220542":["The Apothecary Diaries",{"top20":["/8HJzdLwQ0zxF7292vpETcg7uBox.jpg","IiE1FWJFI0ZlVEJFI0RVMjIjMSZDhkIiMTVFZVESM1ZWMzET"],"trending":0}],"movie:1078446":["Violent Night 2",{"top20":["/2blT1gJPExuyoxjbuq8oAkBn0LI.jpg","EjETETU0ZVZEQiQiQzZFUjQzMiMzISMjdDEBEBESMiEBEBEB"],"trending":0}],"movie:8871":["How the Grinch Stole Christmas",{"top20":["/trNgE6904wIRBjVm1gY045eMRY2.jpg","ERERERERREVVMzERMzQ0IjERERIiMjERERERERERERERERER"],"trending":0}],"movie:1517868":["Maddie's Secret",{"top20":["/yNI6WbT0GG3Qou3K2wRgeWsHgR4.jpg","ERERERABIiIiZVERMzVFZWABERdnVFABABERIiABABABIjAB"],"trending":0}],"movie:899112":["Violent Night",{"top20":["/kqUrW9fU6QIHJxIaC1NmogAb3P8.jpg","EkvevMVERFdnmZUkNGd3ZFQRNFRFM0ZnI0ESABI0eKEiABM1"],"trending":0}],"movie:1715686":["Mickey's Home Alone",{"top20":["/hv797iuQ4K3hemQNJHEC9OtaZKA.jpg","gigSkSkyYilDZENCNDlkpVRjZRliZkFCMxQyQyUh1ktCoykx"],"trending":0}],"tv:207484":["Outlander: Blood of My Blood",{"top20":["/cbN4P3ULApoUAhF042jEf2vZZlH.jpg","iZmYiHqpmpZVdlZliHREVDmGh2ZlNDZlIhMyRCVUAQEQEQEQ"],"trending":0}],"tv:256711":["The Rainmaker",{"top20":["/x0I32Y7mrxC3syb8ip05XYYXwoD.jpg","MiIhQzMzMiIRZEVVIhJHEkZmIiE2NYQzMiElE2MzMiESAjM0"],"trending":0}]};
+var savedFrames = new Map();
+var posterDatabase;
+function releaseRule(item) {
+ var id = item.tmdbId || item.id;
+ var entry = releasePosters[item.mediaType + ':' + id];
+ if (!entry) {
+  var name = String(item.title || '').trim().toLowerCase();
+  var matches = Object.keys(releasePosters).filter(function(key) {
+   return releasePosters[key][0].toLowerCase() === name;
+  });
+  if (matches.length === 1) entry = releasePosters[matches[0]];
+ }
+ var claim = approvedFile(item.lockedPosterPath) || approvedFile(item.faceSafePosterPath) || approvedFile(item.cleanPosterPath);
+ if (!entry) return claim ? [claim, item.artworkSignature || ''] : null;
+ var layouts = entry[1];
+ if(layouts.trending===0) layouts.trending=layouts.top20;
+ if (layouts[item.artworkLayout]) return layouts[item.artworkLayout];
+ var choices = Object.values(layouts);
+ return choices.find(function(rule){return rule[0] === claim;}) || layouts.top20 || choices[0];
+}
+function frameDatabase() {
+ if (!posterDatabase) posterDatabase = new Promise(function(resolve) {
+  try {
+   var request = indexedDB.open('rex-approved-poster-frames-v1', 1);
+   request.onupgradeneeded = function(){request.result.createObjectStore('frames');};
+   request.onsuccess = function(){resolve(request.result);};
+   request.onblocked = request.onerror = function(){resolve(null);};
+  } catch (_) { resolve(null); }
+ });
+ return posterDatabase;
+}
+async function storedFrame(path) {
+ var db = await frameDatabase();
+ if (!db) return null;
+ return new Promise(function(resolve) {
+  try {
+   var req = db.transaction('frames').objectStore('frames').get(path);
+   req.onsuccess = function(){resolve(req.result || null);};
+   req.onerror = function(){resolve(null);};
+  } catch (_) {resolve(null);}
+ });
+}
+function retainFrame(path, canvas) {
+ savedFrames.delete(path);
+ savedFrames.set(path,canvas);
+ if (savedFrames.size > 4) savedFrames.delete(savedFrames.keys().next().value);
+ try {
+  canvas.toBlob(async function(blob) {
+   if (!blob) return;
+   try {
+    var bytes=await blob.arrayBuffer(),db=await frameDatabase();
+    if(db) db.transaction('frames','readwrite').objectStore('frames').put(bytes,path);
+   } catch (_) {}
+  },'image/png');
+ } catch (_) {}
+}
+function matchesPosterPixels(image, signature) {
+ var small = document.createElement('canvas');
+ small.width=64; small.height=96;
+ var ctx=small.getContext('2d',{willReadFrequently:true});
+ ctx.imageSmoothingQuality='high';
+ ctx.drawImage(image,0,0,64,96);
+ var pixels=ctx.getImageData(0,0,64,96).data, packed=atob(signature);
+ if (packed.length !== 36) return false;
+ var error=0, index=0;
+ for (var y=0;y<6;y++) for (var x=0;x<4;x++) {
+  var sums=[0,0,0];
+  for(var yy=0;yy<16;yy++) for(var xx=0;xx<16;xx++) {
+   var off=4*((y*16+yy)*64+x*16+xx);
+   for(var c=0;c<3;c++) sums[c]+=pixels[off+c];
+  }
+  for(var ch=0;ch<3;ch++,index++) {
+   var pair=packed.charCodeAt(index>>1);
+   var ref=16*((index%2)?(pair&15):(pair>>4))+7.5;
+   error+=Math.pow(ref-sums[ch]/256,2);
+  }
+ }
+ return Math.sqrt(error/72) <= 10;
+}
+function freezeDecoded(image) {
+ var canvas=document.createElement('canvas');
+ canvas.width=image.naturalWidth; canvas.height=image.naturalHeight;
+ canvas.getContext('2d').drawImage(image,0,0);
+ return canvas;
+}
+function installFrame(frame, path) {
+ var prior=el('poster'), node=document.createElement('canvas');
+ node.id=prior.id; node.className=prior.className;
+ node.width=frame.width; node.height=frame.height;
+ node.setAttribute('aria-hidden','true');
+ node.dataset.poster=path;
+ node.getContext('2d').drawImage(frame,0,0);
+ prior.replaceWith(node);
+}
+function readImage(src) {
+ return new Promise(function(resolve) {
+  var image=new Image();
+  image.onload=function(){resolve(image);};
+  image.onerror=function(){resolve(null);};
+  image.src=src;
+ });
+}
+async function obtainApprovedFrame(art) {
+ var path=art.identity, signature=art.signature;
+ if(savedFrames.has(path)) return savedFrames.get(path);
+ // Disk can recover a recycled native reference after the app restarts.
+ var disk=storedFrame(path).then(async function(blob){
+  if (!blob) return null;
+  var url=URL.createObjectURL(new Blob([blob],{type:'image/png'}));
+  try {var image=await readImage(url);return image ? freezeDecoded(image) : null;}
+  finally {URL.revokeObjectURL(url);}
+ }).catch(function(){return null;});
+ var incoming=(async function(){
+  for (var i=0;i<art.refs.length;i++) {
+   var src=art.refs[i], named=approvedFile(src);
+   if(named && named!==path) continue;
+   var image=await readImage(src);
+   if(!image) continue;
+   if(signature) {
+    try {if(!matchesPosterPixels(image,signature)) continue;}
+    catch (_) {if(named!==path) continue;}
+   } else if(named!==path) continue;
+   var frame=freezeDecoded(image);
+   retainFrame(path,frame);
+   return frame;
+  }
+  return null;
+ })().catch(function(){return null;});
+ // A failed route never wins against one that can still return verified pixels.
+ return new Promise(function(resolve){
+  var remaining=2;
+  [disk,incoming].forEach(function(task){task.then(function(result){
+   if(result)resolve(result);
+   else if(--remaining===0)resolve(null);
+  });});
+ });
+}
+/* END POSTER VERIFICATION */
+function approvedFile(value){
  var src=_av(value);
  try{src=decodeURIComponent(src)}catch(e){}
  var m=src.match(/\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp)(?=$|[?#&/])/ig);
- return m&&m.length?m[m.length-1].toLowerCase():'';
+ return m&&m.length?m[m.length-1]:'';
 }
 function _ca(item) {
  if(!item||item.nativePosterOnly)return null;
  var refs=[],bundle=_rab(item);
  // These are alternate reference forms of the same source-selected image,
  // not different artwork. Never use the actual landscape backdrop.
- [item.faceSafePosterPath,item.cleanPosterPath,item.coverUrl,item.posterPath,item.detailPoster].forEach(function(value){
+ [item.lockedPosterPath,item.faceSafePosterPath,item.cleanPosterPath,bundle&&bundle.poster,item.backdropPath,item.coverUrl,item.posterPath,item.detailPoster].forEach(function(value){
   var ref=_av(value);
   if(ref&&refs.indexOf(ref)<0)refs.push(ref);
  });
- if(!refs.length&&bundle&&bundle.poster)refs.push(bundle.poster);
- if(!refs.length)return null;
- // The verified source path is authoritative; native wrappers may contain stale artwork.
- var expected=approvedFile(item.faceSafePosterPath)||approvedFile(item.cleanPosterPath)||approvedFile(refs[0]);
- if(expected){
-  refs=refs.filter(function(ref){var f=approvedFile(ref);return !f||f===expected;});
- }
- if(!refs.length)return null;
- return {poster:refs[0],refs:refs,v:true,identity:expected,logo:_av(item.titleLogoPath||item.titleLogoUrl||item.logoPath)||(bundle&&bundle.logo)||''};
+ var rule=releaseRule(item);
+ if(!rule)return null;
+ refs=refs.filter(function(ref){var file=approvedFile(ref);return !file||file===rule[0];});
+ return {poster:rule[0],refs:refs,v:true,identity:rule[0],signature:rule[1],logo:_av(item.titleLogoPath||item.titleLogoUrl||item.logoPath)||(bundle&&bundle.logo)||''};
 }
 function _lock(item) {
  var incoming=_ca(item);
  if(_la&&_la.poster){
-  // Accept only a new explicit approved filename, never a resized wrapper
-  // or an interim snapshot. Keep normal artwork locking intact.
-  if(incoming&&incoming.identity&&_la.identity&&incoming.identity!==_la.identity){
-   _reset();
-   _la=incoming;
-   return _la;
-  }
   if(!_dc&&incoming&&(!_la.identity||!incoming.identity||_la.identity===incoming.identity)){
    incoming.refs.forEach(function(ref){if(_la.refs.indexOf(ref)<0)_la.refs.push(ref);});
   }
@@ -129,27 +258,22 @@ function _lock(item) {
  _la=incoming;
  return _la;
 }
-function _ak(item){if(!item)return '';return String(item.id==null?'':item.id)+'|'+_nm(item).trim().toLowerCase();}function _reset(){_ig++;_dp='';_pp='';_la=null;_dc=false;_fcp='';_fa='';_ff=Object.create(null);_si(el('poster'),'');_lreq++;_lk='';var logo=el('logo');logo.onload=null;logo.onerror=null;logo.style.transform='';_si(logo,'');el('title').hidden=true;}
+function _ak(item){if(!item)return '';return item.id!=null ? String(item.mediaType||'')+'|'+item.id : _nm(item).trim().toLowerCase();}function _reset(){_ig++;_dp='';_pp='';_la=null;_dc=false;_fcp='';_fa='';_ff=Object.create(null);_si(el('poster'),'');_lreq++;_lk='';var logo=el('logo');logo.onload=null;logo.onerror=null;logo.style.transform='';_si(logo,'');el('title').hidden=true;}
 var _rlm=Object.create(null);function _rlr(item){var keys=_raks(item);for(var i=0;i<keys.length;i++){var key=keys[i]+':logo360',entry=_rlm[key];if(!entry){try{entry=JSON.parse(localStorage.getItem(key)||'null')}catch(e){}}if(entry&&entry.src&&Date.now()-entry.at>=0&&Date.now()-entry.at<_rat)return entry.src;}return '';}function _rlw(item,src){if(!src)return;_raks(item).forEach(function(k){var key=k+':logo360',entry={src:src,at:Date.now()};_rlm[key]=entry;try{localStorage.setItem(key,JSON.stringify(entry))}catch(e){}});}function _rlc(item,art){if(!item)return [];var fixed=_frr(item),bundle=_rab(item),result=[];function append(v){var src=_av(v);if(src&&result.indexOf(src)<0)result.push(src);}function _ap(path){_frs(item,path).forEach(append);}[item.titleLogoPath,item.titleLogoUrl,item.logoUrl,item.logoPath,item.titleLogoRawPath,bundle&&bundle.logo,art&&art.logo].forEach(function(v){var src=_av(v);if(src.charAt(0)==='/')_ap(src);append(src);});var _rm=_rlr(item);if(_rm)append(_rm);if(Array.isArray(item.titleLogoAlternates))item.titleLogoAlternates.forEach(function(v){var src=_av(v);if(src.charAt(0)==='/')_ap(src);append(src);});if(fixed){_ap(fixed.logo);(fixed.logoAlternates||[]).forEach(_ap);}var paths=Array.isArray(item.backdropPaths)?item.backdropPaths.map(_av).filter(Boolean):[];var excluded=[item.backdropPath,item.posterPath,item.coverUrl,item.detailPoster,item.cleanPosterPath,art&&art.poster,bundle&&bundle.poster].map(_iid).filter(Boolean);for(var i=paths.length-1;i>=0;i--){var p=paths[i],identity=_iid(p);if(excluded.indexOf(identity)<0&&/\.png(?:$|[?#&/])/i.test(identity))append(p);}if(fixed&&paths.length===3&&excluded.indexOf(_iid(paths[2]))<0)append(paths[2]);return result;}function _spb(item,art){if(!item)return;if(art&&art.n){_lreq++;_lk='';el('logo').hidden=el('title').hidden=true;el('logo').removeAttribute('src');return;}_rtl(_rlc(item,art),_nm(item));}function _up(item,art) {
- if(!art||!art.poster||_dc||_pp)return;
- var refs=art.refs||[art.poster],src='',key=_ak(item);
- for(var i=0;i<refs.length;i++){if(!_ff[refs[i]]){src=refs[i];break;}}
- if(!src)return;
- _pp=src;
- var generation=++_ig,image=new Image();
- image.onload=function(){
+ if(!art||_dc||_pp)return;
+ var key=_ak(item), generation=++_ig;
+ _pp=art.identity;
+ card.setAttribute("aria-busy","true");
+ obtainApprovedFrame(art).then(function(frame){
   if(generation!==_ig||key!==_cak||!_sel||_ak(_sel)!==key)return;
-  _pp='';_dp=src;_dc=true;
-  _si(el('poster'),src);
+  _pp='';
+  card.setAttribute("aria-busy","false");
+  if(!frame)return;
+  installFrame(frame,art.identity);
+  _dp=art.identity;
+  _dc=true;
   _spb(_sel,_la);
- };
- image.onerror=function(){
-  if(generation!==_ig)return;
-  _pp='';_ff[src]=true;
-  if(_sel&&_ak(_sel)===key)_up(_sel,_la);
- };
- image.src=src;
- if(image.complete&&image.naturalWidth>0&&_pp===src)image.onload();
+ });
 }
 var _lreq=0,_lk='';var _lb=Object.create(null);function _bounds(im){var w=im.naturalWidth,h=im.naturalHeight,key=im.getAttribute('src')||im.src,b=[0,0,1,1];if(!w||!h)return b;if(_lb[key])return _lb[key];try{var c=document.createElement('canvas'),f=Math.min(1,256/Math.max(w,h));c.width=Math.max(1,Math.round(w*f));c.height=Math.max(1,Math.round(h*f));var x=c.getContext('2d'),W=c.width,H=c.height;x.drawImage(im,0,0,W,H);var a=x.getImageData(0,0,W,H).data,l=W,t=H,r=-1,d=-1;for(var j=0;j<H;j++)for(var i=0;i<W;i++)if(a[(j*W+i)*4+3]>8){l=Math.min(l,i);t=Math.min(t,j);r=Math.max(r,i);d=Math.max(d,j);}if(r>=l&&d>=t)b=[Math.max(0,l-1)/W,Math.max(0,t-1)/H,Math.min(W,r+2)/W,Math.min(H,d+2)/H];}catch(e){}return _lb[key]=b;}function _lg(W,H,nw,nh,b,center){var q=Math.min(W/nw,H/nh),w=nw*q,h=nh*q,x=center?(W-w)/2:0,y=H-h;var bw=w*(b[2]-b[0]),bh=h*(b[3]-b[1]),k=Math.min(4,W/bw,H/bh);return [k,(center?(W-bw*k)/2:0)-(x+w*b[0])*k,H-bh*k-(y+h*b[1])*k,Math.min(bh*k/H,bw*k/W)];}function _fit(im,paint){var l=el('logo'),W=l.clientWidth,H=l.clientHeight;if(!W||!H||!im.naturalWidth||!im.naturalHeight)return 1;var a=_lg(W,H,im.naturalWidth,im.naturalHeight,_bounds(im),false);if(paint){l.style.transformOrigin='0 0';l.style.transform='translate('+a[1]+'px,'+a[2]+'px) scale('+a[0]+')';}return a[3];}function _rtl(_srcs,name){var logo=el('logo'),title=el('title');title.textContent=name;logo.alt='';var key=JSON.stringify([_sel&&_sel.id,_srcs]);if(key===_lk)return;_lk=key;var rq=++_lreq,index=0,item=_sel;var probed=false,visible=logo.getAttribute('src');if(visible&&!logo.hidden&&logo.complete&&logo.naturalWidth>0){title.hidden=true;return;}logo.hidden=true;title.hidden=false;logo.style.transform='';logo.onload=null;logo.onerror=null;logo.removeAttribute('src');function next(){if(rq!==_lreq)return;if(index>=_srcs.length){logo.hidden=true;title.hidden=false;logo.removeAttribute('src');return;}var src=_srcs[index++];function success(){if(rq!==_lreq||logo.getAttribute('src')!==src)return;logo.hidden=false;title.hidden=true;_rlw(item,src);var v=_fit(logo,true);if(probed||v>=.68||!item||item.titleLogoPinned||(_frr(item)&&_frr(item).logo&&!/last waltz/i.test(name)))return;probed=true;var _sn2=[_iid(src)],ps=_srcs.filter(function(p){var k=_iid(p);if(_sn2.indexOf(k)>=0)return false;_sn2.push(k);return true;}).slice(0,3),best=src;function test(){if(rq!==_lreq)return;if(!ps.length){if(best!==src){var old=src;src=best;logo.onerror=function(){src=old;logo.onerror=null;logo.setAttribute('src',old);};logo.setAttribute('src',best);}return;}var p=ps.shift(),im=new Image();im.onerror=test;im.onload=function(){if(rq!==_lreq)return;var q=_fit(im,false);if(q>v+.08){v=q;best=p;}test();};im.src=p;}test();}logo.onload=success;logo.onerror=function(){if(rq===_lreq&&logo.getAttribute('src')===src)next();};logo.setAttribute('src',src);if(logo.complete&&logo.naturalWidth>0)success();}next();}function _nm(item){return str(item&&(item.title||item.name)||'Untitled').replace(/^\s*#?\s*(?:20|1[0-9]|[1-9])\s*[.\-:)]+\s+/,'')}function _tk(item){return norm(_nm(item)).replace(/\s+(?:19|20)\d{2}$/,'').trim()}function mediaType(item){return norm(item&&(item.mediaType||item.type||item.contentType||item.kind)||'')}function _yr(item){var fields=[item.year,item.releaseYear,item.releaseDate,item.firstAirDate,item.premiered,_nm(item)];for(var i=0;i<fields.length;i++){var m=str(fields[i]).match(/\b(19\d{2}|20\d{2})\b/);if(m)return +m[1]}return null}var CURATED={'frieren beyond journeys end':['Anime','Fantasy'],
 'frieren':['Anime','Fantasy'],

@@ -1,7 +1,7 @@
 
 /*
  * TODAY'S TOP 20 — REX
- * Version 3.6.15 — Universal verified textless poster policy
+ * Version 3.7.0 — Append-only approved artwork
  *
  * Carries title logos through the documented backdropPaths array.
  * Transports the locked portrait as native poster and first backdrop entry; retains the real backdrop in the bundle.
@@ -62,7 +62,7 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.6.17",
+  version: "3.7.0",
   requiredVersion: "0.0.1",
 
   modules: [
@@ -447,11 +447,8 @@ function startupCachePrune() {
 }
 
 async function loadCachedRow(key, target, loader) {
-  // The manifest version participates in the row-cache identity so a new
-  // scheduled selection cannot be hidden by the module's old cached list.
-  var manifest=await faceManifest();
-  key="locked-v3617:"+key;
-  if(manifest&&manifest.generatedAt)key+=":"+manifest.generatedAt;
+  // Approved files never change. Ranking rows expire independently.
+  key = "approved-v1:" + key;
   var cached = startupCacheRead("row:" + key, CACHE_SECONDS);
   if (Array.isArray(cached) && cached.length === target) return cached;
   var started = Date.now();
@@ -801,24 +798,43 @@ async function applyArtworkOverride(artwork,mediaType,tmdbId,premiumPortrait,com
 }
 
 var faceManifestPromise=null,faceManifestMemory=null,faceManifestAt=0;
-function validFaceManifest(data){
-  if(!data||data.schemaVersion!==1||(data.algorithm!=="yunet-ppocr-v5"&&data.algorithm!=="yunet-ppocr-v4"&&data.algorithm!=="yunet-ppocr-v3")||!data.overrides||typeof data.overrides!=="object")return null;
-  if(!data.generatedAt)return data;
-  var age=Date.now()-Date.parse(data.generatedAt);
-  return Number.isFinite(age)&&age>=-300000&&(data.algorithm==="yunet-ppocr-v5"||data.algorithm==="yunet-ppocr-v4"||age<=72*3600000)?data:null;
+function validFaceManifest(data) {
+  if (!data || data.schemaVersion !== 1 || data.algorithm !== "yunet-ppocr-v5" ||
+      data.registryPolicy !== "append-only-v1" || !data.overrides ||
+      !Object.keys(data.overrides).length) return null;
+  return data;
+}
+
+// A stale CDN response cannot remove an approval already seen on this device.
+function extendsApprovals(next, previous) {
+  if (!next) return false;
+  if (!previous) return true;
+  return Object.keys(previous.overrides).every(function(key) {
+    var oldLayouts = previous.overrides[key].layouts;
+    var row = next.overrides[key];
+    return row && row.layouts && Object.keys(oldLayouts).every(function(layout) {
+      return row.layouts[layout] && row.layouts[layout].posterPath === oldLayouts[layout].posterPath;
+    });
+  });
 }
 async function faceManifest(){
   if(faceManifestMemory&&Date.now()-faceManifestAt<300000)return faceManifestMemory;
-  var cached=validFaceManifest(startupCacheRead("face-manifest-recovery-v3617",300));
+  var cached=validFaceManifest(startupCacheRead("approved-manifest-v1",300));
   if(cached)return cached;
   if(faceManifestPromise)return faceManifestPromise;
   faceManifestPromise=(async function(){
     var data=null;
     try{
-      data=validFaceManifest(unwrap(await Widget.http.get("https://raw.githubusercontent.com/Junior2237/rex-poster-test/refs/heads/main/face_safe_posters.json?recovery=v3617",{headers:{Accept:"application/json"}})));
+      data=validFaceManifest(unwrap(await Widget.http.get("https://raw.githubusercontent.com/Junior2237/rex-poster-test/refs/heads/main/face_safe_posters.json?registry=append-only-v1",{headers:{Accept:"application/json"}})));
     }catch(e){}
-    if(data)startupCacheWrite("face-manifest-recovery-v3617",data);
-    faceManifestMemory=data||validFaceManifest(startupCacheRead("face-manifest-recovery-v3617",Infinity))||{overrides:{}};
+    var prior = validFaceManifest(faceManifestMemory) ||
+      validFaceManifest(startupCacheRead("approved-manifest-v1", Infinity));
+    if (extendsApprovals(data, prior)) {
+      startupCacheWrite("approved-manifest-v1", data);
+      faceManifestMemory = data;
+    } else {
+      faceManifestMemory = prior || {overrides:{}};
+    }
     faceManifestAt=Date.now();
     return faceManifestMemory;
   })();
@@ -835,7 +851,7 @@ function applyFaceSafePoster(artwork,manifest,mediaType,tmdbId,premiumPortrait){
     if(choice.faceCheck!=="clear"||(choice.selection!=="confirmed"&&choice.selection!=="alternate"))return artwork;
   }else if(!(Number(choice.before)>=.12&&Number(choice.before)-choice.after>=.10))return artwork;
   var changed=choice.posterPath!==artwork.cleanPoster;
-  return Object.assign({},artwork,{cleanPoster:choice.posterPath,verifiedPoster:choice.posterPath,faceSafePoster:choice.posterPath});
+  return Object.assign({},artwork,{cleanPoster:choice.posterPath,verifiedPoster:choice.posterPath,faceSafePoster:choice.posterPath,artworkSignature:choice.pixelSignature || ""});
 }
 
 function hasEligibleTextlessPoster(artwork){
@@ -934,6 +950,8 @@ async function buildItem(
     // A single approved portrait is carried through every native/custom field.
     // Keep the genuine landscape in the bundle, never as a poster alternative.
     assignPosterFields(item, artwork, premiumPortrait);
+    item.artworkLayout = premiumPortrait ? "trending" : "top20";
+    item.artworkSignature = artwork.artworkSignature || "";
     if (artwork.releaseDate) item.releaseDate = artwork.releaseDate;
     item.backdropPath = artwork.cleanPoster;
     item.backdropPaths = nativeArtworkBundle(artwork);
