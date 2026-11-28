@@ -37,7 +37,7 @@ var BATCH_SIZE = 4;
 var CACHE_SECONDS = 1800;
 var ARTWORK_CACHE_SECONDS = 14400;
 var DAILY_WORKERS = 6;
-var STARTUP_CACHE_PREFIX = "rex-lock-expanded-v1:";
+var STARTUP_CACHE_PREFIX = "rex-lock-expanded-v2:";
 
 var TMDB_BASE =
   "https://image.tmdb.org/t/p/original";
@@ -62,13 +62,13 @@ var WidgetMetadata = {
   description:
     "Fast Top 20 with native posters and compatible title logos",
   author: "Junior",
-  version: "3.7.1",
+  version: "3.7.2",
   requiredVersion: "0.0.1",
 
   modules: [
     {id:'loadPosterLockCheck',title:'Poster Lock Check — Pluribus and The Pitt',functionName:'loadPosterLockCheck',cacheDuration:0,params:[]},
-    {id:'loadPosterLockCheckTV',title:'Poster Lock Check — 20 TV Shows',functionName:'loadPosterLockCheckTV',cacheDuration:1800,params:[]},
-    {id:'loadPosterLockCheckMovies',title:'Poster Lock Check — 20 Movies',functionName:'loadPosterLockCheckMovies',cacheDuration:1800,params:[]},
+    {id:'loadPosterLockCheckTV',title:'Poster Lock Check — Trakt Daily Top 20 TV Shows',functionName:'loadPosterLockCheckTV',cacheDuration:1800,params:[TRAKT_PARAM]},
+    {id:'loadPosterLockCheckMovies',title:'Poster Lock Check — Trakt Daily Top 20 Movies',functionName:'loadPosterLockCheckMovies',cacheDuration:1800,params:[TRAKT_PARAM]},
     {
       id: "native-top20-movies-with-posters",
       title: "Today's Top 20 Movies — Fast",
@@ -1482,37 +1482,34 @@ async function loadPosterLockCheck() {
   return items.filter(Boolean);
 }
 
-/* Expand the known working reproduction path, not the production charts.
- * Both rows use only immutable approved artwork. No Trakt credentials needed.
- * A failed metadata or logo fetch cannot substitute an unapproved poster.
+/* Read the actual two automated Trakt lists, preserving membership and order.
+ * The working reproduction's trending-layout artwork remains unchanged.
+ * No catalogue-derived ranking, re-ranking or substitute titles.
  */
-async function loadExpandedPosterLockCheck(mediaType) {
-  var manifest = await faceManifest();
-  var keys = Object.keys(manifest.overrides).filter(function(key) {
-    var row = manifest.overrides[key];
-    return key.indexOf(mediaType + ":") === 0 && row.layouts && row.layouts.trending;
+async function loadExpandedPosterLockCheck(mediaType, params) {
+  var slug=mediaType==="movie"?MOVIES_LIST:TV_LIST;
+  var clientId=String((params||{}).traktClientId||"").trim();
+  if(!clientId)throw new Error("Missing Trakt Client ID.");
+  return loadCachedRow("lock-check-trakt-"+slug, MAX_ITEMS, async function(){
+    var entries=await fetchTraktList(slug,mediaType,clientId);
+    if(!entries.length)throw new Error("Trakt returned no titles: "+slug);
+    var results=new Array(entries.length);
+    var next=0;
+    async function worker(){
+      while(next<entries.length){
+        var index=next++;
+        var entry=entries[index];
+        try{
+          results[index]=await buildItem(entry,mediaType,true);
+          if(!results[index])console.warn("No verified artwork or logo for Trakt rank",entry.rank,(entry.row.movie||entry.row.show||entry.row).title);
+        }catch(error){console.warn("Lock-check item failed:",entry.rank,errorText(error));results[index]=null;}
+      }
+    }
+    var workers=[];
+    for(var w=0;w<Math.min(DAILY_WORKERS,entries.length);w++)workers.push(worker());
+    await Promise.all(workers);
+    return results.filter(Boolean);
   });
-  var preferred = mediaType === "tv" ? [225171,250307,244447] : [1153576];
-  var ids = preferred.filter(function(id){return keys.indexOf(mediaType+":"+id)>=0;});
-  keys.forEach(function(key){
-    var id=Number(key.split(":")[1]);
-    if(ids.indexOf(id)<0)ids.push(id);
-  });
-  var results=[];
-  for(var start=0;start<ids.length&&results.length<20;start+=4){
-    var batch=await Promise.all(ids.slice(start,start+4).map(async function(id){
-      var row=manifest.overrides[mediaType+":"+id];
-      var subject={title:row.title,ids:{tmdb:id}};
-      try {
-        var entry={row:mediaType==="movie"?{movie:subject}:{show:subject},rank:1};
-        return await buildItem(entry,mediaType,true);
-      } catch(error){return null;}
-    }));
-    batch.forEach(function(item){
-      if(item&&results.length<20){item.rank=results.length+1;item.position=item.rank;results.push(item);}
-    });
-  }
-  return results;
 }
-async function loadPosterLockCheckTV(){return loadExpandedPosterLockCheck("tv");}
-async function loadPosterLockCheckMovies(){return loadExpandedPosterLockCheck("movie");}
+async function loadPosterLockCheckTV(params){return loadExpandedPosterLockCheck("tv",params);}
+async function loadPosterLockCheckMovies(params){return loadExpandedPosterLockCheck("movie",params);}
